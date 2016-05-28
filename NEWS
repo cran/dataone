@@ -1,0 +1,23 @@
+# Version 2.0.0
+
+## New features and functions
+
+* Complete rewrite of the package, eliminating all dependencies on Java
+
+* Support for the DataONE v2 API, as well as the existing v1 API
+
+* DataONE authentication tokens are supported for any DataONE node
+  that has implemented the DataONE v2 API (https://purl.dataone.org/architecture).
+  Tokens are supported in both the production and test environments.
+
+## NEW S4 CLASSES
+
+* Class CNode - provides methods to search, get and send data to a DataONE Coordinating Node
+
+* Class MNode - provides methods to search, get and send data to a DataONE Member Node
+
+* Class D1Client - provides a higher level methods to interact with DataONE
+  Coordinating Nodes and Member Nodes
+  
+* Class AuthenticationManager - provides methods to obtain information about
+  DataONE authentication tokens or certificates 
