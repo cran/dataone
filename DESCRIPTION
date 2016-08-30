@@ -1,6 +1,6 @@
 Package: dataone
-Version: 2.0.0
-Date: 2016-05-24
+Version: 2.0.1
+Date: 2016-08-17
 Title: R Interface to the DataONE REST API
 Authors@R: c( 
   person("Matthew B.", "Jones", role = c("aut", "cre"), email = "jones@nceas.ucsb.edu"), 
@@ -35,7 +35,7 @@ Collate: 'AbstractTableDescriber.R' 'auth_request.R' 'D1Node.R'
         'dataone-package.R' 'yyy.R' 'zzz.R'
 RoxygenNote: 5.0.1
 NeedsCompilation: no
-Packaged: 2016-05-27 18:24:44 UTC; jones
+Packaged: 2016-08-29 22:49:18 UTC; jones
 Author: Matthew B. Jones [aut, cre],
   Peter Slaughter [aut],
   Rob Nahf [aut],
@@ -47,6 +47,5 @@ Author: Matthew B. Jones [aut, cre],
   Scott Chamberlain [aut],
   Regents of the University of California [cph]
 Maintainer: Matthew B. Jones <jones@nceas.ucsb.edu>
-X-CRAN-Comment: Archived on 2014-08-29 as dataonelibs was.
 Repository: CRAN
-Date/Publication: 2016-05-28 01:52:05
+Date/Publication: 2016-08-30 01:33:34

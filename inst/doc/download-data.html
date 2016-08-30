@@ -11,7 +11,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 
-<meta name="date" content="2016-05-27" />
+<meta name="date" content="2016-08-29" />
 
 <title>Downloading Data From DataONE</title>
 
@@ -68,7 +68,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 
 <h1 class="title toc-ignore">Downloading Data From DataONE</h1>
-<h4 class="date"><em>2016-05-27</em></h4>
+<h4 class="date"><em>2016-08-29</em></h4>
 
 
 
@@ -90,10 +90,10 @@ queryParams &lt;-<span class="st"> </span><span class="kw">list</span>(<span cla
                     <span class="dt">fq=</span><span class="st">&quot;formatType:METADATA&quot;</span>, <span class="dt">fl=</span><span class="st">&quot;id,title,abstract&quot;</span>) 
 result &lt;-<span class="st"> </span><span class="kw">query</span>(cn, <span class="dt">solrQuery=</span>queryParams, <span class="dt">as=</span><span class="st">&quot;data.frame&quot;</span>, <span class="dt">parse=</span><span class="ot">FALSE</span>)
 result[<span class="dv">1</span>,<span class="kw">c</span>(<span class="st">&quot;id&quot;</span>, <span class="st">&quot;title&quot;</span>)]</code></pre></div>
-<pre><code>##                                 id
-## 1 doi:10.6085/AA/knb-lter-sbc.14.6
-##                                                                                                            title
-## 1 SBCLTER: Reef: Historical Kelp Database for giant kelp (Macrocystis pyrifera) biomass in California and Mexico</code></pre>
+<pre><code>##                                                                  id
+## 1 https://pasta.lternet.edu/package/metadata/eml/knb-lter-sbc/14/13
+##                                                                                                             title
+## 1 SBC LTER: Reef: Historical Kelp Database for giant kelp (Macrocystis pyrifera) biomass in California and Mexico</code></pre>
 <p>The <em>result</em> object, a data.frame, can be inspected to determine which matching dataset to download, as multiple matching dataset identifiers may be returned from the query. Each object in DataONE is uniquely identified by a Persistent Identifier (PID) that can be used to refer to the object and perform operations on it, such as downloading it to a local machine.</p>
 <p>(As an alternative to retrieving dataset information from a query, it is of course possible to use the DataONE web browser search interface located at <a href="http://search.dataone.org" class="uri">http://search.dataone.org</a> to find the identifiers of data to download.)</p>
 <p>In the R example, after inspecting the <em>result</em> data, we will use the first matching dataset:</p>
