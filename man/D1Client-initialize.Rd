@@ -2,8 +2,8 @@
 % Please edit documentation in R/D1Client.R
 \docType{methods}
 \name{initialize,D1Client-method}
-\alias{D1Client-initialize}
 \alias{initialize,D1Client-method}
+\alias{D1Client-initialize}
 \title{Initialize a D1Client object}
 \usage{
 \S4method{initialize}{D1Client}(.Object, cn = NA, mn = NA,
@@ -16,7 +16,7 @@
 
 \item{mn}{The Member Node object to associate this D1Client with.}
 
-\item{env}{The DataONE environment to intialize this D1Client with, e.g. "PROD", "STAGING", "SANDBOX", "DEV"}
+\item{env}{The DataONE environment to initialize this D1Client with, e.g. "PROD", "STAGING", "SANDBOX", "DEV"}
 
 \item{mNodeid}{The node identifier of the Member Node to associate with this D1Client.}
 }
@@ -30,4 +30,3 @@ d1c <- D1Client("PROD", "urn:node:KNB")
 \seealso{
 \code{\link[=D1Client-class]{dataone}}{ class description.}
 }
-

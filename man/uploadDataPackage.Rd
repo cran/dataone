@@ -11,7 +11,8 @@ uploadDataPackage(x, ...)
 \S4method{uploadDataPackage}{D1Client}(x, dp, replicate = NA,
   numberReplicas = NA, preferredNodes = NA, public = as.logical(FALSE),
   accessRules = NA, quiet = as.logical(TRUE),
-  resolveURI = as.character(NA), ...)
+  resolveURI = as.character(NA), packageId = as.character(NA),
+  as = "character", ...)
 }
 \arguments{
 \item{x}{A D1Client instance.}
@@ -33,6 +34,10 @@ uploadDataPackage(x, ...)
 \item{quiet}{A \code{'logical'}. If TRUE (the default) then informational messages will not be printed.}
 
 \item{resolveURI}{A URI to prepend to identifiers (i.e. for use when creating the ResourceMap). See \link[datapack]{serializePackage}}
+
+\item{packageId}{A value of type \code{"character"} specifying a unique identifier to use for the uploaded package (resource map pid)}
+
+\item{as}{A value of type \code{"character"} that specifies the return value. Possible values are \code{"character"} (the default) or \code{"DataPackage"}.}
 }
 \value{
 id The identifier of the resource map for this data package
@@ -62,10 +67,10 @@ dp <- new("DataPackage")
 sampleData <- system.file("extdata/sample.csv", package="dataone")
 dataObj <- new("DataObject", format="text/csv", file=sampleData)
 dataObj <- setPublicAccess(dataObj)
-sampleEML <- system.file("extdata/sample-eml.xml", package="dataone")
+sampleEML <- system.file("extdata/strix-pacific-northwest.xml", package="dataone")
 metadataObj <- new("DataObject", format="eml://ecoinformatics.org/eml-2.1.1", file=sampleEML)
 metadataObj <- setPublicAccess(metadataObj)
-dp <- addData(dp, do = dataObj, mo = metadataObj)
+dp <- addMember(dp, do = dataObj, mo = metadataObj)
 d1c <- D1Client("STAGING", "urn:node:mnStageUCSB2")
 # Upload all members of the DataPackage to DataONE (requires authentication)
 packageId <- uploadDataPackage(d1c, dp, replicate=TRUE, public=TRUE, numberReplicas=2)
@@ -74,4 +79,3 @@ packageId <- uploadDataPackage(d1c, dp, replicate=TRUE, public=TRUE, numberRepli
 \seealso{
 \code{\link[=D1Client-class]{D1Client}}{ class description.}
 }
-

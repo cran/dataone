@@ -1,89 +1,90 @@
 context("CNode tests")
 test_that("dataone library loads", {
-	library(dataone)
+	expect_true(require(dataone))
 })
 test_that("CNode constructors", {
 	library(dataone)
     # If not specified, "PROD" environment is used.
-	cn <- CNode()
-	expect_that(cn@endpoint, matches("https://cn.dataone.org/cn"))
-	cn <- CNode("PROD")
-	expect_that(cn@endpoint, matches("https://cn.dataone.org/cn"))
+	#cn <- CNode()
+	expect_match(cnProd@endpoint, "https://cn.dataone.org/cn")
+	#cn <- CNode("PROD")
+	expect_match(cnProd@endpoint, "https://cn.dataone.org/cn")
 	# Skip unstable test environments.
 	skip_on_cran()
 	cn <- CNode("STAGING2")
-	expect_that(cn@endpoint, matches("https://cn-stage-2.test.dataone.org/cn"))
-	cn <- CNode("DEV")
-	expect_that(cn@endpoint, matches("https://cn-dev.test.dataone.org/cn"))
+	expect_match(cn@endpoint, "https://cn-stage-2.test.dataone.org/cn")
+	#cn <- CNode("DEV")
+	#expect_match(cn@endpoint, "https://cn-dev.test.dataone.org/cn")
 })
 test_that("CNode listNodes()", {
   library(dataone)
-  cn <- CNode("PROD")
-  nodelist <- listNodes(cn)
+  #cn <- CNode("PROD")
+  nodelist <- listNodes(cnProd)
   expect_that(length(nodelist) > 0, is_true())
-  expect_that(class(nodelist[[1]]), matches("Node"))
-  expect_that(nodelist[[1]]@identifier, matches("urn:node:"))
-  expect_that(nodelist[[1]]@type, matches("cn|mn"))
-  expect_that(nodelist[[1]]@state, matches("up"))
-  expect_that(nodelist[[length(nodelist)]]@identifier, matches("urn:node:"))
-  expect_that(nodelist[[length(nodelist)]]@baseURL, matches("http"))
-  expect_that(nodelist[[length(nodelist)]]@subject, matches("urn:node:"))
-  expect_that(nodelist[[length(nodelist)]]@type, matches("cn|mn"))
+  expect_match(class(nodelist[[1]]), "Node")
+  expect_match(nodelist[[1]]@identifier, "urn:node:")
+  expect_match(nodelist[[1]]@type, "cn|mn")
+  expect_match(nodelist[[1]]@state, "up")
+  expect_match(nodelist[[length(nodelist)]]@identifier, "urn:node:")
+  expect_match(nodelist[[length(nodelist)]]@baseURL, "http")
+  expect_match(nodelist[[length(nodelist)]]@subject, "urn:node:")
+  expect_match(nodelist[[length(nodelist)]]@type, "cn|mn")
 })
 
 test_that("CNode getObject()", {
   library(dataone)
   library(XML)
-  cn <- CNode("PROD")
+  #cn <- CNode("PROD")
   pid <- "aceasdata.3.2"
-  obj <- getObject(cn, pid)
+  obj <- getObject(cnProd, pid)
   xml <- xmlParseDoc(rawToChar(obj), asText=TRUE)
   cname <- class(xml)[1]
-  expect_that(cname, matches("XML"))
-  chksum <- getChecksum(cn, pid)
+  expect_match(cname, "XML")
+  chksum <- getChecksum(cnProd, pid)
   expect_that(chksum, is_a("character"))
   expect_false(is.null(chksum))
 })
 
 test_that("CNode getSystemMetadata()", {
   library(dataone)
-  cn <- CNode("PROD")
+  #cn <- CNode("PROD")
   pid <- "aceasdata.3.2"
-  sysmeta <- getSystemMetadata(cn, pid)
-  expect_that(sysmeta@identifier, matches(pid))
+  sysmeta <- getSystemMetadata(cnProd, pid)
+  expect_match(sysmeta@identifier, pid)
 })
 
 test_that("CNode describeObject()", {
   library(dataone)
-  cn <- CNode("PROD")
+  #cn <- CNode("PROD")
   pid <- "aceasdata.3.2"
-  res <- dataone::describeObject(cn, pid)
+  res <- dataone::describeObject(cnProd, pid)
   expect_is(res, "list")
-  expect_that(res$`content-type`, matches("text/xml"))
+  expect_match(res$`content-type`, "text/xml")
 })
 
 test_that("CNode getMNode()", {
   library(dataone)
-  cn <- CNode("PROD")
-  nodelist <- listNodes(cn)
+  skip_on_cran()
+  #cn <- CNode("PROD")
+  nodelist <- listNodes(cnProd)
   nodeid <- nodelist[[length(nodelist)]]@identifier
-  newnode <- getMNode(cn, nodeid)
-  expect_that(class(newnode), matches("Node"))
-  expect_that(newnode@identifier, matches("urn:node:"))
-  expect_that(newnode@type, matches("cn|mn"))
-  expect_that(newnode@baseURL, matches("http"))
-  expect_that(newnode@subject, matches("urn:node:"))
-  suppressWarnings(newnode <- getMNode(cn, "NOT_A_NODE_ID"))
+  newnode <- getMNode(cnProd, nodeid)
+  expect_match(class(newnode), "Node")
+  expect_match(newnode@identifier, "urn:node:")
+  expect_match(newnode@type, "cn|mn")
+  expect_match(newnode@baseURL, "http")
+  expect_match(newnode@subject, "urn:node:")
+  suppressWarnings(newnode <- getMNode(cnProd, "NOT_A_NODE_ID"))
   expect_that(newnode, is_a("NULL"))
 })
 
 test_that("CNode resolve()",{
   library(dataone) 
-  cn <- CNode("PROD")
+  #cn <- CNode("PROD")
   id <- "0d7d8e0e-93f5-40ab-9916-501d7cf93e15"
-  res <- resolve(cn,id)
-  expect_that(res$id, matches(id) )
-  expect_that(typeof(res$data),matches("list") )
+  res <- resolve(cnProd,id)
+  expect_match(res$id, id)
+  expect_match(typeof(res$data),"list")
 })
 
 test_that("CNode reserveIdentifier(), hasReservation() works",{
@@ -91,7 +92,7 @@ test_that("CNode reserveIdentifier(), hasReservation() works",{
   skip_on_cran()
   library(dataone)
   library(uuid)
-  cn <- CNode("STAGING")
+  cn <- CNode("STAGING2")
    
   # For hasReservation(), we have to use the same subject that is in the authorization token or X.509 certificate.
   # Until the dataone package can decrypt auth tokens, we have to manually provide same subject
@@ -119,15 +120,16 @@ test_that("CNode reserveIdentifier(), hasReservation() works",{
 })
 
 test_that("CNode listFormats, getFormat",{
+  skip_on_cran()
   library(dataone) 
-  cn <- CNode("PROD")
-  fmts <- listFormats(cn)
+  #cn <- CNode("PROD")
+  fmts <- listFormats(cnProd)
   expect_that(is.data.frame(fmts),is_true())
   expect_gt(length(grep("eml", fmts$ID)), 0)
   # CHeck that the name returned by getFormat matches the name
   # requested, and in the data.frame from listFormats
   for (i in 1:length(fmts)) {
-    thisFmt <- getFormat(cn, fmts[i,'ID'])
+    thisFmt <- getFormat(cnProd, fmts[i,'ID'])
     expect_match(fmts[i,'Name'], thisFmt$name)
   }
 })

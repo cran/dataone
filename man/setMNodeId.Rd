@@ -16,7 +16,7 @@ setMNodeId(x, id)
 \item{id}{A DataONE member node identifier.}
 }
 \description{
-The membor node identifier is the URN identifier used by
+The member node identifier is the URN identifier used by
 DataONE to uniquely identifier a node, for example "urn:node:KNB" specifies
 the "Knowledge Network for Biodiversity" member node.
 }
@@ -24,10 +24,9 @@ the "Knowledge Network for Biodiversity" member node.
 One Member Node can be associated with the client as the default to which
 data and metadata are written.
 }
-\author{
-setMNodeId
-}
 \seealso{
 \code{\link[=D1Client-class]{D1Client}}{ class description.}
 }
-
+\author{
+setMNodeId
+}

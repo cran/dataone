@@ -31,7 +31,7 @@ csvfile <- tempfile(pattern = "file", tmpdir = tempdir(), fileext = ".csv")
 write.csv(testdf, csvfile, row.names=FALSE)
 d1c <- D1Client("STAGING", "urn:node:mnStageUCSB2")
 dp <- new("DataPackage")
-emlFile <- system.file("extdata/sample-eml.xml", package="dataone")
+emlFile <- system.file("extdata/strix-pacific-northwest.xml", package="dataone")
 emlChar <- readLines(emlFile)
 emlRaw <- charToRaw(paste(emlChar, collapse="\\n"))
 emlId <- sprintf("urn:uuid:\%s", UUIDgenerate())
@@ -41,7 +41,7 @@ sdf <- read.csv(csvfile)
 stf <- charToRaw(convert.csv(d1c, sdf))
 sciId <- sprintf("urn:uuid:\%s", UUIDgenerate())
 sciObj <- new("D1Object", id=sciId, format="text/csv", data=stf, mnNodeId=getMNodeId(d1c))
-dp <- addData(dp, do=sciObj, mo=metadataObj)
+dp <- addMember(dp, do=sciObj, mo=metadataObj)
 expect_true(is.element(sciObj@dataObject@sysmeta@identifier, getIdentifiers(dp)))
 resourceMapId <- createDataPackage(d1c, dp, replicate=TRUE, public=TRUE)
 }
@@ -49,4 +49,3 @@ resourceMapId <- createDataPackage(d1c, dp, replicate=TRUE, public=TRUE)
 \seealso{
 \code{\link[=D1Client-class]{D1Client}}{ class description.}
 }
-

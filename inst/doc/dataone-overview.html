@@ -4,14 +4,14 @@
 
 <head>
 
-<meta charset="utf-8">
+<meta charset="utf-8" />
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="pandoc" />
 
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 
-<meta name="date" content="2016-08-29" />
+<meta name="date" content="2017-08-18" />
 
 <title>dataone R package overview</title>
 
@@ -68,183 +68,68 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 
 <h1 class="title toc-ignore">dataone R package overview</h1>
-<h4 class="date"><em>2016-08-29</em></h4>
+<h4 class="date"><em>2017-08-18</em></h4>
 
 
 
 <div id="dataone-r-package-overview" class="section level2">
 <h2><em>dataone</em> R Package Overview</h2>
-<p>The <em>dataone</em> R package enables R scripts to search, download and upload science data and metadata to the <a href="https://www.dataone.org/current-member-nodes">DataONE Federation</a>. This package calls DataONE web services that allow client programs to interact with DataONE Coordinating Nodes (CN) and Member Nodes (MN).</p>
-<p>Searching for data in DataONE described in vignette <em>searching-dataone</em>.</p>
-<p>Downloading data from DataONE described in vignette <em>download-data</em></p>
-<p>Uploading data to DataONE is described in vignette <em>upload-data</em>. This document also discusses maintenance operations that can be performed on datasets after they have been uploaded to a DataONE MN, such as updating the dataset or updating system information about the dataset.</p>
-<p>If more detailed information is required than is provided by the <em>dataone</em> R package help, then in-depth documentation for the DataONE web services can be found at:</p>
-<ul>
-<li>Detailed overview <a href="https://purl.dataone.org/architecture/apis/CN_APIs.html">DataONE CN API</a></li>
-<li>Detailed overview <a href="https://purl.dataone.org/architecture/apis/MN_APIs.html">DataONE MN API</a></li>
-</ul>
-<p>Note: In this R package documentation, <em>dataone</em> refers to the R package and <em>DataONE</em> refers to the Federation of Member Nodes and the computer infrastructure comprising these data repositories.</p>
-<p>Please see the <a href="https://purl.dataone.org/architecture/glossary.html">DataONE Glossary</a> for definitions of some terms used in this document that are used to describe DataONE services and architecture.</p>
-<p>For additional information about the DataONE Federation, please <a href="https://www.dataone.org" class="uri">https://www.dataone.org</a>.</p>
+<p>The <em>dataone</em> R package enables R scripts to search, download and upload science data and metadata to the <a href="https://www.dataone.org">DataONE Federation</a>. This package calls DataONE web services that allow client programs to interact with <a href="current-member-nodes#uploads">Member Nodes (MN)</a> and <a href="coordinating-nodes">DataONE Coordinating Nodes (CN)</a>.</p>
 </div>
-<div id="new-features-in-dataone-version-2.0" class="section level2">
-<h2>New Features in <em>dataone</em> Version 2.0</h2>
-<div id="series-identifiers" class="section level3">
-<h3>1. Series Identifiers</h3>
-<p>Each data, metadata, and resource map object in DataONE has a unique identifier, refered to in DataONE documentation as a Persistent Identifier (PID). A PID is associated with one object in DataONE and always refers to the same object, the same set of bytes that are stored on the DataONE network.</p>
-<p>A data or metadata object can be updated on a DataONE Member Node by using the R method dataone::updateObject(), so that a new version of the object becomes the active version that is discoverable in searches of DataONE. The older version is still available if the PID is known, but this version will not show up in DataONE searches. In order to download the new version, the new PID must be discovered and specified when the object is downloaded.</p>
-<p>With <em>dataone</em> Version 2.0, an additional, optional identifier can be associated with an object, the Series Identifier (SID). Using SIDs the most current version of an object can be obtained, without the need to determine the PID of the latest version. For example, if the SID is specified when the object is downloaded, the most recent version of that object will be downloaded.</p>
-</div>
-<div id="new-authentication-mechanism" class="section level3">
-<h3>2. New Authentication Mechanism</h3>
-<p>Uploading data to DataONE requires that a DataONE user identity be provided. In DataONE Version 1.x, the identity of a user was provided by an X.509 client certificate. DataONE Version 2.0 adds an additional method to provide identity information - an <em>authentication token</em>. Authentication tokens can be used with Member Nodes that have been upgraded to the DataONE Version 2.0 Member Node API.</p>
-<p>The process of providing user identity information either via an X.509 certificate or via an authentication token is refered to as <em>authentication</em>.</p>
-<p>Authentication tokens can be obtained from a user’s DataONE account settings web page. To create an authentication token:</p>
-<ul>
-<li>Navigate to <a href="https://search.dataone.org" class="uri">https://search.dataone.org</a></li>
-<li>Click <em>Sign in</em>, or <em>Sign up</em> if necessary</li>
-<li>Once signed in, click on the user name and select ‘My profile’ in the drop down menu.</li>
-<li>Click on the “Settings” tab.</li>
-<li>Click the “Apps” menu item.</li>
-<li>Click on the “Token for DataONE R” tab.</li>
-<li>Click “Renew authentication token” if the token you have been using has expired.</li>
-<li>Click on the “Copy” button below the text window to copy the authentication string to the paste buffer.</li>
-<li>Note the identity string and expiration date of the token.</li>
-<li><p>In the R console, paste the string which is similiar to this example:</p>
-<pre><code>  options(dataone_token = &quot;eyJhbGciOiJSUzI1NiJ9...&quot;)</code></pre>
-<p>(For this example, the typically very long token value has been truncated for brevity, however the entire string must be used for the token to be valid.)</p></li>
-<li>Note that this command can be entered in a user’s ~/.Rprofile file so that this command is entered when R is started.</li>
-<li><p>Remember that the console command must be re-entered with a new token value when the token expires</p></li>
-</ul>
-<p>If the authentication token is defined as shown above, it will automatically be used when using methods from the <em>dataone</em> R client.</p>
-<p><span style="color:red"> <em>The authentication token must be safegaurded like a password. Anyone with access to it can access content in DataONE as the user identity contained in the token. Care should be taken to not add this code to any published scripts or documents. This code will expire after a certain time period after which it will be necessary to obtain a new one.</em> </span></p>
-<p>Note that the token shown above is for use in the DataONE production environment. If it is necessary to use authentication in a DataONE test environment, then the steps shown above should be followed by navigating to the following web page to generate the token: <a href="https://search.test.dataone.org" class="uri">https://search.test.dataone.org</a>. If you generate a token from this web page, then the R option name used should be “dataone_test_token”, not “dataone_token”, for example:</p>
-<pre><code>options(dataone_test_token = &quot;eyJhbGciOiJSUzI1NiJ9...&quot;)</code></pre>
-<p>(For this example, the typically very long token value has been truncated for brevity, however the entire string must be used for the token to be valid.)</p>
-<p>For an explanation of DataONE environments, please see <a href="#environments">DataONE environments</a>.</p>
-<p>Detailed, technical information about user identities and authentication in DataONE can be viewed at</p>
-<p><a href="https://purl.dataone.org/architecture/design/Authentication.html">DataONE Authentication</a></p>
-<p>You can check your token by entering the following R commands:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">libary</span>(dataone)
-am &lt;-<span class="st"> </span><span class="kw">AuthenticationManager</span>()
-<span class="kw">getTokenInfo</span>(am)</code></pre></div>
-<p>The most important column of the information returned by <code>getTokenInfo()</code> is the <code>expired</code> column. If a token is expired, then it will not provide authentication and must be re-created from the user’s profile page as shown above.</p>
-</div>
-<div id="ability-to-update-system-metadata" class="section level3">
-<h3>3. Ability To Update System Metadata</h3>
-<p>Metadata is maintained by DataONE for each object that has been uploaded to it. This SystemMetadata for an object contains information such as the access policy that determines the users that can read or update the data, the data’s format type, how many replicated copies of the data to create, etc.</p>
-<p>Member Nodes that have been upgraded to DataONE Version 2.0 Member Node API now the have the ability to update the system metadata of a data object without having to update (replace) the data object itself. So for example, an object can be uploaded to DataONE without having ‘public’ read enabled (the data creator or <em>rightsholder</em> and possibly a specified list of users could have access however). At a later date, the system metadata. could be updated to allow public read.</p>
-<p>See <code>help(&quot;updateSystemMetadata&quot;)</code> for more information.</p>
-</div>
-</div>
-<div id="known-issues-with-version-2.0" class="section level2">
-<h2>Known Issues with Version 2.0</h2>
-<div id="error-using-x.509-certificates" class="section level3">
-<h3>Error Using X.509 Certificates</h3>
-<p>Using an X.509 certificate for DataONE authenticatin on certain versions of Mac OS X can cause the following error:</p>
-<pre><code>Error in curl::curl_fetch_memory(url, handle = handle) : 
-Problem with the local SSL certificate </code></pre>
-<p>Changes in the Mac OS X system libraries in OS X Mavericks have taken away support of these X.509 certificates. A workaround to make these certificates usable on Mac OS X with R is to install a version of the <em>curl</em> R package that supports these certificates.</p>
-<p>On Mac OS X, the libcurl library can be installed with either <a href="https://www.macports.org">Mac Ports</a> package manager or the <a href="http://brew.sh">HomeBrew</a> package manager. The HomeBrew package manager can be significantly faster to install but either one will work provided the directions shown below are followed.</p>
-<p>You can check if you have MacPorts installed by entering the following command in a terminal window:</p>
-<pre><code>port version</code></pre>
-<div id="create-new-curl-package-using-macports" class="section level4">
-<h4>Create new <em>curl</em> package using MacPorts</h4>
-<p>If MacPorts is being used on your system, the following commands can be entered to install a <em>curl</em> package that can read the certificate and allow them to be used by the <em>dataone</em> package for authentication to a DataONE node. In a terminal window enter the commands:</p>
-<pre><code>sudo port install curl</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">Sys.setenv</span>(<span class="dt">LIB_DIR=</span><span class="st">&quot;/opt/local/lib&quot;</span>)
-<span class="kw">Sys.setenv</span>(<span class="dt">INCLUDE_DIR=</span><span class="st">&quot;/opt/local/include&quot;</span>)
-<span class="kw">install.packages</span>(<span class="st">&quot;curl&quot;</span>, <span class="dt">type=</span><span class="st">&quot;source&quot;</span>)
-<span class="kw">library</span>(curl)
-<span class="kw">library</span>(dataone)
-
-<span class="co"># Remove the environment variables as they are no longer needed.</span>
-<span class="kw">Sys.setenv</span>(<span class="dt">LIB_DIR=</span><span class="st">&quot;&quot;</span>)
-<span class="kw">Sys.setenv</span>(<span class="dt">INCLUDE_DIR=</span><span class="st">&quot;&quot;</span>)</code></pre></div>
-<p>At this point you should be able to use X.509 Certificates.</p>
-</div>
-<div id="create-new-curl-package-using-homebrew" class="section level4">
-<h4>Create new <em>curl</em> package using HomeBrew</h4>
-<p>The HomeBrew software can be installed with the following command entered at a terminal window:</p>
-<pre><code>ruby -e &quot;$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)&quot;</code></pre>
-<p>Once HomeBrew has been installed, you can get the required curl libraries by entering the command:</p>
-<pre><code>brew install curl --with-openssl
-brew link curl --force</code></pre>
-<p>In the R console enter the commands:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">Sys.setenv</span>(<span class="dt">LIB_DIR=</span><span class="st">&quot;/usr/local/opt/curl/lib&quot;</span>)
-<span class="kw">Sys.setenv</span>(<span class="dt">INCLUDE_DIR=</span><span class="st">&quot;/usr/local/opt/curl/include&quot;</span>)
-<span class="kw">install.packages</span>(<span class="st">&quot;curl&quot;</span>, <span class="dt">type=</span><span class="st">&quot;source&quot;</span>)
-<span class="kw">library</span>(curl)
-<span class="kw">library</span>(dataone)
-
-<span class="co"># Remove the environment variables as they are no longer needed.</span>
-<span class="kw">Sys.setenv</span>(<span class="dt">LIB_DIR=</span><span class="st">&quot;&quot;</span>)
-<span class="kw">Sys.setenv</span>(<span class="dt">INCLUDE_DIR=</span><span class="st">&quot;&quot;</span>)</code></pre></div>
-<p>At this point you should be able to use X.509 Certificates.</p>
-</div>
-</div>
-</div>
-<div id="dataone-environments" class="section level2">
-<h2><a name="environments"></a> DataONE Environments</h2>
-<p>DataONE nodes are separated into several networks or <em>environments</em>. Each environment provides an isolated installations of the DataONE services, such that nodes in one environment do not communicate with nodes in another.</p>
-<p>Currently DataONE uses the following environments: <em>production</em>, <em>staging</em>, <em>staging2</em>, <em>sandbox</em>, <em>sandbox2</em>, <em>dev</em> and <em>dev2</em>. All environments except production are <em>test</em> environments that may have different version of software than the released version of the DataONE infrastructure, and may experience service outages as required by the DataONE development team.</p>
-<p>Most users will only need to use the production and staging2 environments.</p>
-<p>The production environment is the current working release of the DataONE infrastructure and is the environment that supports the operations necessary to fully implement the DataONE system. There is only one production environment.</p>
-<p>The staging environment provides an installation of DataONE infrastructure that is a copy of the production environment. It is used to prepare for a new release of the infrastructure by testing the upgrade and software replacement procedures.</p>
-<p>The staging2 is a copy of the production environment and can be used by DataONE Member Nodes that are preparing to join the production environment. Staging2 usually has the released version of the DataONE infrastructure, and is more stable that the other test environments.</p>
-<p>The sandbox and sandbox2 environments offer more stable environments than the dev environments, and is intended to provide a more stable system where new features or alternative implementations may be evaluated within an environment that is close to a particular release of the DataONE infrastructure.</p>
-<p>The dev and dev2 environments are intended for use by DataONE developers and are unstable, with software upgrades and service outages occurring as needed by the development staff.</p>
-<p>The <em>dataone</em> R package uses the following abbreviations for the DataONE environments:</p>
-<table>
-<thead>
-<tr class="header">
-<th align="left">DataONE environment</th>
-<th align="left"><em>dataone</em> R package abbreviation</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td align="left">production</td>
-<td align="left">PROD</td>
-</tr>
-<tr class="even">
-<td align="left">stage</td>
-<td align="left">STAGING</td>
-</tr>
-<tr class="odd">
-<td align="left">stage 2</td>
-<td align="left">STAGING2</td>
-</tr>
-<tr class="even">
-<td align="left">sandbox</td>
-<td align="left">SANDBOX</td>
-</tr>
-<tr class="odd">
-<td align="left">sandbox2</td>
-<td align="left">SANDBOX2</td>
-</tr>
-<tr class="even">
-<td align="left">dev</td>
-<td align="left">DEV</td>
-</tr>
-<tr class="odd">
-<td align="left">dev2</td>
-<td align="left">DEV2</td>
-</tr>
-</tbody>
-</table>
-<p>Each DataONE environment has a CN that maintains a registry of all MNs in that network. The CN can be queried for a list of all MNs in a network, for example, to see the MNs that are currently in the production environmemt:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">cn &lt;-<span class="st"> </span><span class="kw">CNode</span>(<span class="st">&quot;PROD&quot;</span>)
-<span class="kw">unlist</span>(<span class="kw">lapply</span>(<span class="kw">listNodes</span>(cn), function(x) x@identifier))</code></pre></div>
-<p>To see the URL service endpoint for a CN, you can view the <code>endpoint</code> slot:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">cn@endpoint</code></pre></div>
-<p>To see the member nodes that are currenly in the STAGE2 environment:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">cn &lt;-<span class="st"> </span><span class="kw">CNode</span>(<span class="st">&quot;STAGING2&quot;</span>)
-<span class="kw">unlist</span>(<span class="kw">lapply</span>(<span class="kw">listNodes</span>(cn), function(x) x@identifier))</code></pre></div>
-<p>Using the node identifiers retrieved from these commands, the CN can be used to create a <em>MNode</em> object that can be used to interact with a DataONE MN. This example obtains an MNode object for the Knowledge Network for Biocomplexity Member Node and queries the node’s data holdings for datasets that mention “hydrocarbon” in the abstract and “aquaculture” in the keywords:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">cn &lt;-<span class="st"> </span><span class="kw">CNode</span>(<span class="st">&quot;PROD&quot;</span>)
+<div id="quick-start" class="section level2">
+<h2>Quick Start</h2>
+<p>See the full manual (<code>help dataone</code>) for documentation.</p>
+<p>To search the DataONE Federation Member Node <em>Knowledge Network for Biocomplexity (KNB)</em> for a dataset:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(dataone)
+cn &lt;-<span class="st"> </span><span class="kw">CNode</span>(<span class="st">&quot;PROD&quot;</span>)
 mn &lt;-<span class="st"> </span><span class="kw">getMNode</span>(cn, <span class="st">&quot;urn:node:KNB&quot;</span>)
-result &lt;-<span class="st"> </span><span class="kw">query</span>(mn, <span class="dt">searchTerms=</span><span class="kw">list</span>(<span class="dt">abstract=</span><span class="st">&quot;hydrocarbon&quot;</span>, <span class="dt">keywords=</span><span class="st">&quot;aquaculture&quot;</span>), <span class="dt">as=</span><span class="st">&quot;data.frame&quot;</span>)</code></pre></div>
+mySearchTerms &lt;-<span class="st"> </span><span class="kw">list</span>(<span class="dt">q=</span><span class="st">&quot;abstract:salmon+AND+keywords:acoustics+AND+keywords:</span><span class="ch">\&quot;</span><span class="st">Oncorhynchus nerka</span><span class="ch">\&quot;</span><span class="st">&quot;</span>,
+                      <span class="dt">fl=</span><span class="st">&quot;id,title,dateUploaded,abstract,size&quot;</span>,
+                      <span class="dt">fq=</span><span class="st">&quot;dateUploaded:[2013-01-01T00:00:00.000Z TO 2014-01-01T00:00:00.000Z]&quot;</span>,
+                      <span class="dt">sort=</span><span class="st">&quot;dateUploaded+desc&quot;</span>)
+result &lt;-<span class="st"> </span><span class="kw">query</span>(mn, <span class="dt">solrQuery=</span>mySearchTerms, <span class="dt">as=</span><span class="st">&quot;data.frame&quot;</span>)
+result[<span class="dv">1</span>,<span class="kw">c</span>(<span class="st">&quot;id&quot;</span>, <span class="st">&quot;title&quot;</span>)]</code></pre></div>
+<pre><code>##                     id
+## 1 doi:10.5063/F1F18WN4
+##                                                                                                                      title
+## 1 Improving Preseason Forecasts of Sockeye Salmon Runs through Salmon Smolt Monitoring in Kenai River, Alaska: 2005 - 2007</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">pid &lt;-<span class="st"> </span>result[<span class="dv">1</span>,<span class="st">'id'</span>]</code></pre></div>
+<p>The metadata file located in the above search can be downloaded with the commands:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(XML)
+metadata &lt;-<span class="st"> </span><span class="kw">rawToChar</span>(<span class="kw">getObject</span>(mn, pid))</code></pre></div>
+<p>The metadata file that describes the located research can be viewed in an XML viewer or text editor, once it is written to a disk file. This file details a data file (CSV) that can be obtained using the listed identifier, using the commands:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">dataRaw &lt;-<span class="st"> </span><span class="kw">getObject</span>(mn, <span class="st">&quot;df35d.443.1&quot;</span>)
+dataChar &lt;-<span class="st"> </span><span class="kw">rawToChar</span>(dataRaw)
+theData &lt;-<span class="st"> </span><span class="kw">textConnection</span>(dataChar)
+df &lt;-<span class="st"> </span><span class="kw">read.csv</span>(theData, <span class="dt">stringsAsFactors=</span><span class="ot">FALSE</span>)
+df[<span class="dv">1</span>,]</code></pre></div>
+<pre><code>##      stno      date tmil tpno subw subn subf subc dyen awln mdnn enrg
+## 1 2005501 5/13/2005 2210    1 -999 -999 -999 -999    0    0    0    0
+##   comments
+## 1</code></pre>
+<p>Uploading a CSV file to a DataONE Member Node requires user authentication. DataONE user authentication is described in the vignette <code>DataONE-Federation</code>.</p>
+<p>Once the authentication steps have been followed, uploading is done with:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(datapack)
+<span class="kw">library</span>(uuid)
+d1c &lt;-<span class="st"> </span><span class="kw">D1Client</span>(<span class="st">&quot;STAGING&quot;</span>, <span class="st">&quot;urn:node:mnStageUCSB2&quot;</span>)
+id &lt;-<span class="st"> </span><span class="kw">paste</span>(<span class="st">&quot;urn:uuid:&quot;</span>, <span class="kw">UUIDgenerate</span>(), <span class="dt">sep=</span><span class="st">&quot;&quot;</span>)
+testdf &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">x=</span><span class="dv">1</span>:<span class="dv">10</span>,<span class="dt">y=</span><span class="dv">11</span>:<span class="dv">20</span>)
+csvfile &lt;-<span class="st"> </span><span class="kw">paste</span>(<span class="kw">tempfile</span>(), <span class="st">&quot;.csv&quot;</span>, <span class="dt">sep=</span><span class="st">&quot;&quot;</span>)
+<span class="kw">write.csv</span>(testdf, csvfile, <span class="dt">row.names=</span><span class="ot">FALSE</span>)
+<span class="co"># Build a DataObject containing the csv, and upload it to the Member Node</span>
+d1Object &lt;-<span class="st"> </span><span class="kw">new</span>(<span class="st">&quot;DataObject&quot;</span>, id, <span class="dt">format=</span><span class="st">&quot;text/csv&quot;</span>, <span class="dt">filename=</span>csvfile)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">uploadDataObject</span>(d1c, d1Object, <span class="dt">public=</span><span class="ot">TRUE</span>)</code></pre></div>
+</div>
+<div id="additional-resources" class="section level2">
+<h2>Additional Resources</h2>
+<p>The <code>dataone</code> R package vignettes can be viewed using the R <code>vignette</code> comand, for example <code>vignette(&quot;dataone-overview&quot;)</code>.</p>
+<p>The <code>dataone</code> vignettes describe these topics:</p>
+<ul>
+<li><p>Searching for data in DataONE described in vignette <em>searching-dataone</em>.</p></li>
+<li><p>Downloading data from DataONE described in vignette <em>download-data</em></p></li>
+<li><p>Uploading data to DataONE is described in vignettes <em>upload-data</em> and <em>update-package</em>.</p></li>
+<li><p>The DataONE Federation is described in the vignettes <em>DataONE-Federation</em>.</p></li>
+</ul>
 </div>
 <div id="acknowledgements" class="section level2">
 <h2>Acknowledgements</h2>
@@ -263,7 +148,7 @@ result &lt;-<span class="st"> </span><span class="kw">query</span>(mn, <span cla
   (function () {
     var script = document.createElement("script");
     script.type = "text/javascript";
-    script.src  = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
     document.getElementsByTagName("head")[0].appendChild(script);
   })();
 </script>

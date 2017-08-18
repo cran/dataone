@@ -1,6 +1,6 @@
 context("D1Node tests")
 test_that("dataone library loads", {
-  library(dataone)
+  expect_true(require(dataone))
 })
 
 test_that("CNode ping", {
@@ -16,7 +16,7 @@ test_that("CNode object index query works with query list param", {
   queryParams <- "q=id:doi*&rows=2&wt=xml"
   cn <- CNode("PROD")  
   am <- AuthenticationManager()
-  suppressMessages(authValid <- isAuthValid(am, cn))
+  suppressMessages(authValid <- dataone:::isAuthValid(am, cn))
   if (authValid) {
     if(getAuthMethod(am, cn) == "cert" && grepl("apple-darwin", sessionInfo()$platform)) skip("Skip authentication w/cert on Mac OS X")
   }
@@ -25,6 +25,7 @@ test_that("CNode object index query works with query list param", {
   expect_true(length(result) == 2)
   expect_match(result[[2]]$id, "doi:")
   size <- result[[1]]$size
+  expect_is(result[[1]]$dateUploaded, "POSIXct")
   expect_is(size, "numeric")
 
   # Test query of CN object index using query list
@@ -34,7 +35,8 @@ test_that("CNode object index query works with query list param", {
   expect_match(result[[1]]$id, "doi:")
   size <- result[[1]]$size
   expect_is(result[[1]]$size, "numeric")
-  expect_match(result[[1]]$abstract, "chlorophyll")
+  expect_is(result[[1]]$dateUploaded, "POSIXct")
+  expect_match(result[[1]]$abstract, "chlorophyll", ignore.case=TRUE)
   
   # Test a query that contains embedded quotes
   queryParamList <- list(q="(attribute:lake) and (attribute:\"Percent Nitrogen\")", rows="10",
@@ -85,12 +87,12 @@ test_that("Object listing works for CNode, MNode", {
   fromDate <- "20-01-01T01:01:01.000+00:00" # Invalid year
   toDate <- "2015-12-31T01:01:01.000+00:00" # valid
   err <- try(objects <- listObjects(cn, fromDate=fromDate, toDate=toDate, formatId=formatId, start=start, count=count), silent=TRUE)
-  expect_that(class(err), (matches("try-error")))
+  expect_match(class(err), ("try-error"))
   
   fromDate <- "2013-01-01T01:01:01.000+00:00" # valid
   toDate <- "01/01/15" # Invalid - not ISO 8601
   try(objects <- listObjects(cn, fromDate=fromDate, toDate=toDate, formatId=formatId, start=start, count=count), silent=TRUE)
-  expect_that(class(err), (matches("try-error")))
+  expect_match(class(err), ("try-error"))
 
 })
 
@@ -127,7 +129,7 @@ test_that("CNode object index query works with query string param", {
   
   cn <- CNode("PROD")
   am <- AuthenticationManager()
-  suppressMessages(authValid <- isAuthValid(am, cn))
+  suppressMessages(authValid <- dataone:::isAuthValid(am, cn))
   if (authValid) {
     if(getAuthMethod(am, cn) == "cert" && grepl("apple-darwin", sessionInfo()$platform)) skip("Skip authentication w/cert on Mac OS X")
   }
@@ -148,7 +150,7 @@ test_that("MNode object index query works", {
   mn_uri <- "https://knb.ecoinformatics.org/knb/d1/mn/v2"
   mn <- MNode(mn_uri)
   am <- AuthenticationManager()
-  suppressMessages(authValid <- isAuthValid(am, mn))
+  suppressMessages(authValid <- dataone:::isAuthValid(am, mn))
   if (authValid) {
     if(getAuthMethod(am, mn) == "cert" && grepl("apple-darwin", sessionInfo()$platform)) skip("Skip authentication w/cert on Mac OS X")
   }
@@ -185,34 +187,64 @@ test_that("D1Node archive() works",{
   testdf <- data.frame(x=1:10,y=11:20)
   csvfile <- tempfile(pattern = "file", tmpdir = tempdir(), fileext = ".csv")
   write.csv(testdf, csvfile, row.names=FALSE)
-  mnId <- "urn:node:mnStageUCSB2"
-  d1c <- new("D1Client", env="STAGING", mNodeid=mnId)
+  #mnId <- "urn:node:mnStageUCSB2"
+  #d1c <- new("D1Client", env="STAGING", mNodeid=mnId)
+  d1cTest
   am <- AuthenticationManager()
-  suppressMessages(authValid <- isAuthValid(am, d1c@mn))
+  suppressMessages(authValid <- dataone:::isAuthValid(am, d1cTest@mn))
   if (authValid) {
-    if(getAuthMethod(am, d1c@mn) == "cert" && grepl("apple-darwin", sessionInfo()$platform)) skip("Skip authentication w/cert on Mac OS X")
+    if(getAuthMethod(am, d1cTest@mn) == "cert" && grepl("apple-darwin", sessionInfo()$platform)) skip("Skip authentication w/cert on Mac OS X")
     # Set 'subject' to authentication subject, if available, so we will have permission to change this object
-    subject <- getAuthSubject(am, d1c@mn)
+    subject <- getAuthSubject(am, d1cTest@mn)
     # If subject isn't available from the current authentication method, then get from DataONE
     if (is.na(subject) || subject == "public") {
-      creds <- echoCredentials(d1c@cn)
+      creds <- echoCredentials(d1cTest@cn)
       subject <- creds$person$subject
       if(is.null(subject) || is.na(subject)) skip("This test requires a valid DataONE user identity>\")")
     }
     
-    do1 <- new("DataObject", format="text/csv", user=subject, mnNodeId=mnId, filename=csvfile)
+    do1 <- new("DataObject", format="text/csv", user=subject, filename=csvfile)
     # Set replication off, to prevent the bug of serialNumber increasing due to replication bug
-    uploadDataObject(d1c, do1, replicate=FALSE, public=TRUE)
+    uploadDataObject(d1cTest, do1, replicate=FALSE, public=TRUE)
     id1 <- getIdentifier(do1)
-    md1 <- getSystemMetadata(d1c@mn, id1)
+    md1 <- getSystemMetadata(d1cTest@mn, id1)
     # Run the archive test if both metadata objects sync'd
     if (!is.null(md1)) {
-      tstPid <- archive(d1c@mn, id1)
+      tstPid <- archive(d1cTest@mn, id1)
       expect_equal(tstPid, id1)
     }
-    tstMd1 <- getSystemMetadata(d1c@mn, id1)
+    tstMd1 <- getSystemMetadata(d1cTest@mn, id1)
     expect_true(tstMd1@archived, info=sprintf("Pid %s was not archived properly", id1))
   } else {
       skip("This test requires valid authentication.")
   }
 })
+
+test_that("D1Node isAuthorized() works",{
+  skip_on_cran()
+  library(dataone)
+  cn <- CNode("PROD")
+  am <- AuthenticationManager()
+  suppressMessages(authValid <- dataone:::isAuthValid(am, cn))
+  # Don't use a cert on Mac OS X
+  if (authValid) {
+    if(getAuthMethod(am, cn) == "cert" && grepl("apple-darwin", sessionInfo()$platform)) skip("Skip authentication w/cert on Mac OS X")
+  }
+  # Send an authorization check to the D1 production CN.
+  canRead <- isAuthorized(cn, "doi:10.6073/pasta/7fcb8fea57843fae65f63094472f502d", "read")
+  expect_true(canRead)
+  canWrite <- isAuthorized(cn, "doi:10.6073/pasta/7fcb8fea57843fae65f63094472f502d", "write")
+  expect_false(canWrite)
+  canChange <- isAuthorized(cn, "doi:10.6073/pasta/7fcb8fea57843fae65f63094472f502d", "changePermission")
+  expect_false(canChange)
+    
+  # Now send a check to a member node.
+  mn <- getMNode(cn, "urn:node:KNB")
+  canRead <- isAuthorized(mn, "doi:10.6085/AA/pisco_recruitment.149.1", "read")
+  expect_true(canRead)
+  canWrite <- isAuthorized(mn, "doi:10.6085/AA/pisco_recruitment.149.1", "write")
+  expect_false(canWrite)
+  canChange <- isAuthorized(mn, "doi:10.6085/AA/pisco_recruitment.149.1", "changePermission")
+  expect_false(canChange)
+})
+

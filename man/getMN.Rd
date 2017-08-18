@@ -16,7 +16,7 @@ getMN(x, nodeid, ...)
 \arguments{
 \item{x}{A D1Client object.}
 
-\item{nodeid}{The identifier of the node to retreive.}
+\item{nodeid}{The identifier of the node to retrieve.}
 
 \item{...}{(Not yet used)}
 }
@@ -35,4 +35,3 @@ testMN <- getMN(cli)
 \seealso{
 \code{\link[=D1Client-class]{D1Client}}{ class description.}
 }
-

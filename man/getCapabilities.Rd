@@ -20,7 +20,7 @@ an XMLInternalDocument object representing the DataONE environment
 }
 \description{
 Access the DataONE getCapabilities() service for the Member Node, which returns an XML
-decription of the repository and the services it offers.
+description of the repository and the services it offers.
 }
 \examples{
 library(dataone)
@@ -31,4 +31,3 @@ xml <- getCapabilities(mn)
 \seealso{
 \url{https://purl.dataone.org/architecture/apis/MN_APIs.html#MN_core.getCapabilities}
 }
-

@@ -20,12 +20,12 @@ updateSystemMetadata(x, ...)
 \item{sysmeta}{a SystemMetadata instance with updated information.}
 }
 \value{
-A logical value, TRUE if the operation was sucessful, FALSE if there was an error.
+A logical value, TRUE if the operation was successful, FALSE if there was an error.
 }
 \description{
 A modified SytemMetadata object can be sent to DataONE that contains
 updated information. This function allow updating of the system metadata without
-updating the object that it describes, so that mutable attribures such as accessPolicy
+updating the object that it describes, so that mutable attributes such as accessPolicy
 can be updated easily.
 }
 \details{
@@ -43,4 +43,3 @@ Please see the vignette *upload-data* for an example: \code{vignette("upload-dat
 \seealso{
 \url{https://purl.dataone.org/architecture/apis/MN_APIs.html#MNStorage.updateSystemMetadata}
 }
-

@@ -56,7 +56,7 @@ setClass("CNode", slots = c(endpoint = "character"), contains="D1Node")
 #########################
 
 #' Create a CNode object.
-#' @details For an explaination of DataONE Coordinatine Nodes, see the 
+#' @details For an explanation of DataONE Coordinating Nodes, see the 
 #' section \emph{"DataONE Environments"} in the overview vignette by entering the R command: \code{vignette("dataone-overview")}.
 #' @param x The label for the DataONE environment to be using ('PROD','STAGING', 'STAGING2,'SANDBOX', 'SANDBOX2','DEV', 'DEV2')
 #' @param ... (not yet used)
@@ -160,8 +160,17 @@ setGeneric("listFormats", function(x, ...) {
 #' @export
 setMethod("listFormats", signature("CNode"), function(x) {
   url <- paste(x@endpoint,"formats",sep="/")
-  out <- GET(url, user_agent(get_user_agent()))
-  out <- xmlToList(xmlParse(content(out,as="text")))
+  response <- GET(url, user_agent(get_user_agent()))
+  # Use charset 'utf-8' if not specified in response headers
+  charset <- "utf-8"
+  if("content-type" %in% names(response$headers)) {
+      media <- parse_media(response$headers[['content-type']])
+      if("params" %in% names(media) && "charset" %in% names(media$params)) {
+          charset <- media$params$charset
+      }
+  }  
+  
+  out <- xmlToList(xmlParse(content(response, as="text", encoding=charset)))
   ## Below could be done with plyr functionality, but I want to reduce
   ## dependencies in the package
   #df <- data.frame(matrix(NA,ncol=length(out[[1]]),nrow=(length(out)-1)))
@@ -213,7 +222,7 @@ setGeneric("getFormat", function(x, ...) {
 #' @param formatId The formatId to retrieve.
 #' @export
 setMethod("getFormat", signature("CNode"), function(x, formatId) {
-  url <- paste(x@endpoint,"formats", URLencode(formatId), sep="/")
+  url <- paste(x@endpoint,"formats", URLencode(formatId, reserved=T), sep="/")
   response <- GET(url, user_agent(get_user_agent()))
   
   if(response$status != "200") {
@@ -237,7 +246,7 @@ setMethod("getFormat", signature("CNode"), function(x, formatId) {
 #' pid <- "doi:10.5063/F1QN64NZ"
 #' chksum <- getChecksum(cn, pid)
 setMethod("getChecksum", signature("CNode"), function(x, pid, ...) {
-  url <- paste(x@endpoint, "checksum", pid, sep="/")
+  url <- paste(x@endpoint, "checksum", URLencode(pid, reserved=T), sep="/")
   response <- GET(url, user_agent(get_user_agent()))
   if (is.raw(response$content)) {
     tmpres <- content(response, as="raw")
@@ -290,7 +299,16 @@ setMethod("listNodes", signature("CNode"), function(x, url=as.character(NA), ...
         return(NULL)
     }
     
-    xml <- xmlParse(content(response, as="text"))
+    # Use charset 'utf-8' if not specified in response headers
+    charset <- "utf-8"
+    if("content-type" %in% names(response$headers)) {
+        media <- parse_media(response$headers[['content-type']])
+        if("params" %in% names(media) && "charset" %in% names(media$params)) {
+            charset <- media$params$charset
+        }
+    } 
+    
+    xml <- xmlParse(content(response, as="text", encoding=charset))
     #node_identifiers <- sapply(getNodeSet(xml, "//identifier"), xmlValue)
     nodes <- getNodeSet(xml, "//node")
     nodelist <- sapply(nodes, D1Node)
@@ -299,7 +317,7 @@ setMethod("listNodes", signature("CNode"), function(x, url=as.character(NA), ...
 
 #' Reserve a identifier that is unique in the DataONE network.
 #' @description The reserveIdentifier method contains the DataONE CN and reserves the specified
-#' identfier that the user has provided. Once a an identifier has been reserved, it and can not be used by any other user.
+#' identifier that the user has provided. Once a an identifier has been reserved, it and can not be used by any other user.
 #' @details This method requires a DataONE authentication token or X.509 Certificate. The reservation is made
 #' for the DataONE user identity that created the current authentication token or X.509 certificate.
 #' @rdname reserveIdentifier
@@ -322,7 +340,7 @@ setGeneric("reserveIdentifier", function(x, ...) {
 
 #' @rdname reserveIdentifier
 #' @param id The identifier that is to be reserved.
-#' @return The reserved pid if it was sucessfully reserved, otherwise NULL
+#' @return The reserved pid if it was successfully reserved, otherwise NULL
 setMethod("reserveIdentifier", signature("CNode"), function(x, id) {
   url <- paste(x@endpoint, "reserve", sep="/")
   response <- auth_post(url, encode="multipart", body=list(pid=id), node=x)
@@ -335,7 +353,7 @@ setMethod("reserveIdentifier", signature("CNode"), function(x, id) {
     resultText <- content(response, as="text")
     doc <- xmlInternalTreeParse(resultText)
     # XML doc is similiar to: <d1:identifier xmlns:d1="http://ns.dataone.org/service/types/v1">WedSep91341002015-ub14</d1:identifier>
-    nodes <- getNodeSet(doc, "/d1:identifier")
+    nodes <- getNodeSet(doc, "/*[local-name() = 'identifier']")
     id <- xmlValue(nodes[[1]])
     # Return the identifier as a character value
     return(id)
@@ -343,7 +361,7 @@ setMethod("reserveIdentifier", signature("CNode"), function(x, id) {
 })
 
 #' Checks to determine if the supplied subject is the owner of the reservation of id.
-#' @description The hasReservation method checks the reserveration of an identfier that has
+#' @description The hasReservation method checks the reservation of an identfier that has
 #' previously been reserved with the \code{reserveIdentifier} method. The identifier must have
 #' been reserved by the specified DataONE user identity (\code{subject}).
 #' @details To determine the DataONE identity that is currently being used for DataONE
@@ -373,7 +391,7 @@ setGeneric("hasReservation", function(x, ...) {
 #' @return A logical value where TRUE means a reservation exists for the specified pid by the subject.
 setMethod("hasReservation", signature("CNode"), function(x, pid, subject=as.character(NA)) {
   stopifnot(is.character(pid))
-  url <- paste(x@endpoint, "reserve", pid, sep="/")
+  url <- paste(x@endpoint, "reserve", URLencode(pid, reserved=T), sep="/")
   # Obtain the subject from the client certificate if it has not been specified
   if(is.na(subject)) {
     am <- AuthenticationManager()
@@ -392,7 +410,7 @@ setMethod("hasReservation", signature("CNode"), function(x, pid, subject=as.char
   # codes and their meaning are shown below:
   #     Status code      meaning
   #     200              A reservation for the pid and subject combination exists
-  #     401              Unauthorized - pid reservation exists, but subject doesn't have priviledge
+  #     401              Unauthorized - pid reservation exists, but subject doesn't have privilege
   #                      to access it
   #     404              A reservation for the pid does not exist
   # 
@@ -441,7 +459,7 @@ setMethod("setObsoletedBy", signature("CNode", "character"), function(x, pid, ob
 
 #' @rdname getObject
 setMethod("getObject", signature("CNode"), function(x, pid) {
-    url <- paste(x@endpoint, "object", pid, sep="/")
+    url <- paste(x@endpoint, "object", URLencode(pid, reserved=T), sep="/")
     response <- auth_get(url, node=x)
     
     if(response$status != "200") {
@@ -470,7 +488,7 @@ setMethod("getObject", signature("CNode"), function(x, pid) {
 setMethod("getSystemMetadata", signature("CNode"), function(x, pid) {
   stopifnot(is.character(pid))
     # TODO: need to properly URL-escape the PID
-    url <- paste(x@endpoint, "meta", pid, sep="/")
+    url <- paste(x@endpoint, "meta", URLencode(pid, reserved=T), sep="/")
     response <- auth_get(url, node=x)
     
     if(response$status != "200") {
@@ -508,7 +526,7 @@ setGeneric("resolve", function(x, ...) {
 #' @export
 setMethod("resolve", signature("CNode"), function(x, pid){
   stopifnot(is.character(pid))
-  url <- paste(x@endpoint,"resolve",pid,sep="/")
+  url <- paste(x@endpoint,"resolve",URLencode(pid, reserved=T),sep="/")
   config <- c(add_headers(Accept = "text/xml"), config(followlocation = 0L))
   res <- auth_get(url, nconfig=config, node=x)
   # Check if there was an error downloading the object
@@ -555,7 +573,7 @@ setMethod("resolve", signature("CNode"), function(x, pid){
 #' Get a reference to a node based on its identifier
 #' @rdname getMNode
 #' @aliases getMNode
-#' @details For an explainatin of DataONE Coordinatine Nodes and Member Node
+#' @details For an explanation of DataONE Coordinatine Nodes and Member Node
 #' identifiers, see the section \emph{"DataONE Environments"} in the overview vignette 
 #' by entering the R command: \code{vignette("dataone-overview")}.
 #' @param x The coordinating node to query for its registered Member Nodes
@@ -627,45 +645,4 @@ setMethod("echoCredentials", signature(x = "CNode"), function(x) {
   }
   result <- xmlToList(xmlParse(content(response,as="text")))
   return(result)
-})
-
-#' Check if an action is authorized for the specified identifier
-#' @description Test if the user identified by the provided token has 
-#' authorization for operation on the specified object.
-#' @details The identifer parameter may be either a DataONE persistant identifier (pid)
-#' or series identifier (sid).
-#' @rdname isAuthorized
-#' @aliases isAuthorized
-#' @param x The node to send the request to.
-#' @param ... (Not yet used)
-#' @return a logical, TRUE if the action is authorized, false if not.
-#' @seealso \code{\link[=CNode-class]{CNode}}{ class description.}
-#' @export
-#' @examples \dontrun{
-#' cn <- CNode("STAGING")
-#' isAuthorized(cn, "doi:10.5072/FK2/LTER/sbclter.842.1", "read")
-#' isAuthorized(cn, "doi:10.5072/FK2/LTER/sbclter.842.1", "write")
-#' isAuthorized(cn, "doi:10.5072/FK2/LTER/sbclter.842.1", "changePermission")
-#' }
-setGeneric("isAuthorized", function(x, ...) {
-  standardGeneric("isAuthorized")
-})
-
-#' @rdname isAuthorized
-#' @param id The DataONE identifier (pid or sid) to check access for.
-#' @param action The DataONE action to check, possible values: "read", "write", "changePermission"
-#' @export
-setMethod("isAuthorized", signature("CNode"), function(x, id, action) {
-  url <- sprintf("%s/isAuthorized/%s?action=%s", x@endpoint,id,action)
-  response <- auth_get(url, node=x)
-  # Status = 200 means that the action is authorized for the id.
-  # Status = 401 means that the subject is not authorized for the action, not an error.
-  if(response$status == "401") {
-    return(FALSE)
-  } else if (response$status != "200") {
-    warning(sprintf("Error checking authorized for action \"%s\" on id:\" %s\": %s", action, id, getErrorDescription(response)))
-    return(FALSE)
-  } else {
-    return(TRUE)
-  }
 })

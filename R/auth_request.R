@@ -33,21 +33,51 @@
 #' @import httr
 auth_get <- function(url, nconfig=config(), node) {
   response <- NULL
+  if (missing(url) || missing(node)) {
+      stop("Error: url or node is missing. Please report this error.")
+  }
   am <- AuthenticationManager()
-  if(!missing(node) && isAuthValid(am, node)) {
+  if(isAuthValid(am, node)) {
     if(getAuthMethod(am, node) == "token") {
       # Authentication will use an authentication token.
       authToken <- getToken(am, node)
       response <- GET(url, config = nconfig, user_agent(get_user_agent()), add_headers(Authorization = sprintf("Bearer %s", authToken)))
     } else {
-      # Authenticatin will use a certificate.
+      # Authentication will use a certificate.
       cert <- getCert(am)
       new_config <- c(nconfig, config(sslcert = cert))
       response <- GET(url, config = new_config, user_agent(get_user_agent()))
     }
   } else {
     # Send request as the public user
-    message("Attempting to call as public user without being authenticated.")
+    # Warn the user if their auth token or certificate has expired. The regular auth checks
+    # are designed to check for and return whatever valid auth mechanism is used, and are not
+    # designed to find an invalid, i.e. expired one, so we have to perform these checks manually.
+    # First check if a token is present, for the appropriate D1 environment, i.e. v1 vs v2, production
+    # vs development.
+    authToken <- getToken(am, node)
+    if(!is.null(authToken)) {
+      tokenInfo <- getTokenDetails(attr(authToken, "name"))
+      if(tokenInfo$expired) {
+        msg <- "You attempted this operation with an expired token, so you were not authenticated."
+        msg <- paste0(msg, "\nYou may wish to try again with a valid token.")
+        msg <- paste0(msg, "\nAttempting to perform this operation as the public user without being authenticated.")
+        message(msg)
+      }
+    } else {
+      # If no token, then check for a certificate
+      certInfo <- getCertInfo(am)
+      # A certificate exists
+      if(!is.na(certInfo$file)) {
+        if(certInfo$expired) {
+          msg <- sprintf("You attempted this operation with an expired certificate located at %s", certInfo$file)
+          msg <- paste0(msg, sprintf("\nso you were not authenticated. You may wish to try again with a valid certificate."))
+          msg <- paste0(msg, sprintf("\nAttempting to perform this operation as the public user without being authenticated."))
+          message(msg)
+        }
+      }
+    }
+      
     response <- GET(url, config=nconfig, user_agent(get_user_agent()))   # the anonymous access case
   }
   rm(am)
@@ -72,8 +102,11 @@ auth_get <- function(url, nconfig=config(), node) {
 #' @import httr
 auth_head <- function(url, nconfig=config(), node) {
   response <- NULL
+  if (missing(url) || missing(node)) {
+      stop("Error: url or node is missing. Please report this error.")
+  }
   am <- AuthenticationManager()
-  if(!missing(node) && isAuthValid(am, node)) {
+  if(isAuthValid(am, node)) {
     if(getAuthMethod(am, node) == "token") {
       # Authentication will use an authentication token.
       authToken <- getToken(am, node)
@@ -96,7 +129,7 @@ auth_head <- function(url, nconfig=config(), node) {
   
 #' POST, PUT, or DELETE a resource with authenticated credentials.
 #' @description POST, PUT, or DELETE data to a URL using an HTTP request using authentication credentials 
-#' provided in a client authentication, either via authentiction token or certificate.
+#' provided in a client authentication, either via authentication token or certificate.
 #' If the user does not have a valid token or certificate, request fails.
 #' @param method a string indicating which HTTP method to use (post, put, or delete)
 #' @param url The URL to be accessed via authenticated PUT

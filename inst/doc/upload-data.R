@@ -1,43 +1,80 @@
+## ------------------------------------------------------------------------
+library(dataone)
+library(datapack)
+library(uuid)
+
+dp <- new("DataPackage")
+
+emlFile <- system.file("extdata/strix-pacific-northwest.xml", package="dataone")
+metadataObj <- new("DataObject", format="eml://ecoinformatics.org/eml-2.1.1", filename=emlFile)
+dp <- addMember(dp, metadataObj)
+
+sourceData <- system.file("extdata/OwlNightj.csv", package="dataone")
+sourceObj <- new("DataObject", format="text/csv", filename=sourceData) 
+dp <- addMember(dp, sourceObj, metadataObj)
+
+progFile <- system.file("extdata/filterObs.R", package="dataone")
+progObj <- new("DataObject", format="application/R", filename=progFile, mediaType="text/x-rsrc")
+dp <- addMember(dp, progObj, metadataObj)
+
+outputData <- system.file("extdata/Strix-occidentalis-obs.csv", package="dataone")
+outputObj <- new("DataObject", format="text/csv", filename=outputData) 
+dp <- addMember(dp, outputObj, metadataObj)
+
+myAccessRules <- data.frame(subject="http://orcid.org/0000-0002-2192-403X", permission="changePermission") 
+
+
 ## ---- eval=FALSE---------------------------------------------------------
-#  library(dataone)
-#  library(datapack)
-#  library(uuid)
-#  dp <- new("DataPackage")
-#  sampleData <- system.file("extdata/sample.csv", package="dataone")
-#  # Create a unique identifier string for the data object in a standard format.
-#  dataId  <- paste("urn:uuid:", UUIDgenerate(), sep="")
-#  dataObj <- new("DataObject", id=dataId, format="text/csv", file=sampleData)
-#  dataObj <- setPublicAccess(dataObj)
-#  sampleEML <- system.file("extdata/sample-eml.xml", package="dataone")
-#  # Create a unique id string for the data object in a standard format
-#  # Alternatively DOI string could used using "generateIdentifier(mn, scheme="DOI")"
-#  metadataId <- paste("urn:uuid:", UUIDgenerate(), sep="")
-#  metadataObj <- new("DataObject", id=metadataId, format="eml://ecoinformatics.org/eml-2.1.1", file=sampleEML)
-#  metadataObj <- setPublicAccess(metadataObj)
-#  dp <- addData(dp, dataObj, metadataObj)
 #  d1c <- D1Client("STAGING", "urn:node:mnStageUCSB2")
-#  packageId <- uploadDataPackage(d1c, dp, replicate=TRUE, public=TRUE, numberReplicas=2)
+#  packageId <- uploadDataPackage(d1c, dp, public=TRUE, accessRules=myAccessRules, quiet=FALSE)
 
-## ----eval=F--------------------------------------------------------------
-#  library(dataone)
-#  library(datapack)
-#  library(uuid)
-#  dp <- new("DataPackage")
+## ------------------------------------------------------------------------
+library(dataone)
+library(datapack)
+library(uuid)
 
-## ----eval=F--------------------------------------------------------------
-#  sampleData <- system.file("extdata/sample.csv", package="dataone")
-#  dataId <- paste("urn:uuid:", UUIDgenerate(), sep="")
-#  dataObj <- new("DataObject", id=dataId, format="text/csv", file=sampleData)
+dp <- new("DataPackage")
 
-## ----eval=F--------------------------------------------------------------
-#  dataObj <- setPublicAccess(dataObj)
+## ------------------------------------------------------------------------
+emlFile <- system.file("extdata/strix-pacific-northwest.xml", package="dataone")
+metadataObj <- new("DataObject", format="eml://ecoinformatics.org/eml-2.1.1", filename=emlFile)
 
-## ----eval=F--------------------------------------------------------------
-#  accessRules <- data.frame(subject="CN=Peter Smith A10499,O=Google,C=US,DC=cilogon,DC=org", permission="changePermission") dataObj <- addAccessRule(dataObj, accessRules)
+## ------------------------------------------------------------------------
+dp <- addMember(dp, metadataObj)
 
-## ----eval=F--------------------------------------------------------------
-#  sampleEML <- system.file("extdata/sample-eml.xml", package="dataone")
-#  metadataObj <- new("DataObject", format="eml://ecoinformatics.org/eml-2.1.1", file=sampleEML)
+## ---- eval=FALSE---------------------------------------------------------
+#  dp <- addMember(dp, sourceObj, metadataObj)
+
+## ---- eval=FALSE---------------------------------------------------------
+#  dp <- addMember(dp, metadataObj)
+#  dp <- addMember(dp, sourceObj)
+#  dp <- insertRelationship(dp, getIdentifier(metadataObj), getIdentifier(sourceObj))
+
+## ------------------------------------------------------------------------
+sourceData <- system.file("extdata/OwlNightj.csv", package="dataone")
+sourceObj <- new("DataObject", format="text/csv", filename=sourceData) 
+dp <- addMember(dp, sourceObj, metadataObj)
+
+## ------------------------------------------------------------------------
+progFile <- system.file("extdata/filterObs.R", package="dataone")
+progObj <- new("DataObject", format="application/R", filename=progFile, mediaType="text/x-rsrc")
+dp <- addMember(dp, progObj, mo=metadataObj)
+
+outputData <- system.file("extdata/Strix-occidentalis-obs.csv", package="dataone")
+outputObj <- new("DataObject", format="text/csv", filename=outputData) 
+dp <- addMember(dp, outputObj, mo=metadataObj)
+
+## ------------------------------------------------------------------------
+sourceObj <- setPublicAccess(sourceObj)
+
+## ------------------------------------------------------------------------
+myAccessRules <- data.frame(subject="http://orcid.org/0000-0002-2192-403X", permission="changePermission") 
+sourceObj <- addAccessRule(sourceObj, myAccessRules)
+
+## ---- eval=FALSE---------------------------------------------------------
+#  d1c <- D1Client("STAGING", "urn:node:mnStageUCSB2")
+#  packageId <- uploadDataPackage(d1c, dp, public=TRUE, accessRules=myAccessRules, quiet=FALSE)
+#  message(sprintf("Uploaded package with identifier: %s", packageId))
 
 ## ---- eval=FALSE---------------------------------------------------------
 #  cn <- CNode("STAGING")
@@ -45,46 +82,35 @@
 #  doi <- generateIdentifier(mn, "DOI")
 #  metadataObj <- new("DataObject", id=doi, format="eml://ecoinformatics.org/eml-2.1.1", file=sampleEML)
 
-## ---- eval=F-------------------------------------------------------------
-#  dp <- addData(dp, metadataObj)
+## ------------------------------------------------------------------------
+library(digest)
+# Create a system metadata object for a data file. 
+# Just for demonstration purposes, create a temporary data file.
+testdf <- data.frame(x=1:20,y=11:30)
+csvfile <- paste(tempfile(), ".csv", sep="")
+write.csv(testdf, csvfile, row.names=FALSE)
+format <- "text/csv"
+size <- file.info(csvfile)$size
+sha1 <- digest(csvfile, algo="sha1", serialize=FALSE, file=TRUE)
+# Generate a unique identifier for the dataset
+pid <- sprintf("urn:uuid:%s", UUIDgenerate())
+sysmeta <- new("SystemMetadata", identifier=pid, formatId=format, size=size, checksum=sha1)
+sysmeta <- addAccessRule(sysmeta, "public", "read")
 
-## ---- eval=F-------------------------------------------------------------
-#  dp <- addData(dp, do = dataObj, mo = metadataObj)
-
-## ---- eval=FALSE---------------------------------------------------------
-#  d1c <- D1Client("STAGING", "urn:node:mnStageUCSB2")
-#  packageId <- uploadDataPackage(d1c, dp, replicate=TRUE, numberReplicas=2)
-#  message(sprintf("Uploaded data package with identifier: %s", packageId))
-
-## ----eval=F--------------------------------------------------------------
-#  library(digest)
-#  # Create a system metadata object for a data file.
-#  # Just for demonstration purposes, create a temporary data file.
-#  testdf <- data.frame(x=1:20,y=11:30)
-#  csvfile <- paste(tempfile(), ".csv", sep="")
-#  write.csv(testdf, csvfile, row.names=FALSE)
-#  format <- "text/csv"
-#  size <- file.info(csvfile)$size
-#  sha1 <- digest(csvfile, algo="sha1", serialize=FALSE, file=TRUE)
-#  # Generate a unique identifier for the dataset
-#  pid <- sprintf("urn:uuid:%s", UUIDgenerate())
-#  sysmeta <- new("SystemMetadata", identifier=pid, formatId=format, size=size, checksum=sha1)
-#  sysmeta <- addAccessRule(sysmeta, "public", "read")
-
-## ----eval=F--------------------------------------------------------------
-#  # Create a system metadata object for a data file.
-#  # Just for demonstration purposes, create a temporary data file.
-#  testdf <- data.frame(x=1:20,y=11:30)
-#  csvfile <- paste(tempfile(), ".csv", sep="")
-#  write.csv(testdf, csvfile, row.names=FALSE)
-#  format <- "text/csv"
-#  size <- file.info(csvfile)$size
-#  sha1 <- digest(csvfile, algo="sha1", serialize=FALSE, file=TRUE)
-#  # Generate a unique identifier for the dataset
-#  pid <- sprintf("urn:uuid:%s", UUIDgenerate())
-#  # The seriesId can be any unique character string.
-#  seriesId <- sprintf("urn:uuid:%s", UUIDgenerate())
-#  sysmeta <- new("SystemMetadata", identifier=pid, formatId=format, size=size, checksum=sha1,  seriesId=seriesId)
+## ------------------------------------------------------------------------
+# Create a system metadata object for a data file. 
+# Just for demonstration purposes, create a temporary data file.
+testdf <- data.frame(x=1:20,y=11:30)
+csvfile <- paste(tempfile(), ".csv", sep="")
+write.csv(testdf, csvfile, row.names=FALSE)
+format <- "text/csv"
+size <- file.info(csvfile)$size
+sha1 <- digest(csvfile, algo="sha1", serialize=FALSE, file=TRUE)
+# Generate a unique identifier for the dataset
+pid <- sprintf("urn:uuid:%s", UUIDgenerate())
+# The seriesId can be any unique character string.
+seriesId <- sprintf("urn:uuid:%s", UUIDgenerate())
+sysmeta <- new("SystemMetadata", identifier=pid, formatId=format, size=size, checksum=sha1,  seriesId=seriesId)
 
 ## ----eval=F--------------------------------------------------------------
 #  cn <- CNode("STAGING")

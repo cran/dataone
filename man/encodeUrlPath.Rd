@@ -21,7 +21,7 @@ encodeUrlPath(x, ...)
 the encoded form of the input
 }
 \description{
-Encodes the characters of the input so they are not interpretted as reserved
+Encodes the characters of the input so they are not interpreted as reserved
 characters in url strings.  Will also encode non-ASCII unicode characters.
 }
 \examples{
@@ -34,4 +34,3 @@ fullyEncodedPath <- paste0("cn/v1/object/",
 \seealso{
 \code{\link[=D1Client-class]{D1Client}}{ class description.}
 }
-

@@ -4,6 +4,7 @@
 \name{documented.d1Identifiers}
 \alias{documented.d1Identifiers}
 \alias{documented.d1Identifiers,EMLParser-method}
+\alias{documented.d1Identifiers}
 \title{Get DataONE identifiers}
 \usage{
 documented.d1Identifiers(x, ...)
@@ -19,9 +20,8 @@ documented.d1Identifiers(x, ...)
 vector of dataONE identifiers
 }
 \description{
-Get the DataONE identiifer associated with each table
+Get the DataONE identifier associated with each table
 }
 \author{
 rnahf
 }
-

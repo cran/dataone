@@ -4,14 +4,14 @@
 
 <head>
 
-<meta charset="utf-8">
+<meta charset="utf-8" />
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="pandoc" />
 
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 
-<meta name="date" content="2016-08-29" />
+<meta name="date" content="2017-08-18" />
 
 <title>Downloading Data From DataONE</title>
 
@@ -68,7 +68,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 
 <h1 class="title toc-ignore">Downloading Data From DataONE</h1>
-<h4 class="date"><em>2016-08-29</em></h4>
+<h4 class="date"><em>2017-08-18</em></h4>
 
 
 
@@ -78,6 +78,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <div id="downloading-data-from-dataone" class="section level2">
 <h2>Downloading Data from DataONE</h2>
 <p>This document describes how to download data from the DataONE Federation of Member Nodes. Before data can be downloaded from DataONE it is necessary to find the identifiers that are associated with the data. The DataONE search facility is used to find these identifiers that are used to download any metadata file or dataset.</p>
+<p>Note: In this R package documentation, <em>dataone</em> refers to the R package and <em>DataONE</em> refers to the Federation of Member Nodes and the computer infrastructure comprising these data repositories.</p>
 <p>The <em>dataone::query</em> method is used to send data searches from R to the DataONE search facility, and is shown in the examples in the next section. A more complete description of using the query method to search DataONE is available in the <em>searching-dataone</em> vignette (<code>vignette(&quot;searching-dataone&quot;</code>)).</p>
 <div id="search-all-of-dataone-for-datasets-of-interest" class="section level3">
 <h3>Search all of DataONE For Datasets of Interest</h3>
@@ -90,10 +91,10 @@ queryParams &lt;-<span class="st"> </span><span class="kw">list</span>(<span cla
                     <span class="dt">fq=</span><span class="st">&quot;formatType:METADATA&quot;</span>, <span class="dt">fl=</span><span class="st">&quot;id,title,abstract&quot;</span>) 
 result &lt;-<span class="st"> </span><span class="kw">query</span>(cn, <span class="dt">solrQuery=</span>queryParams, <span class="dt">as=</span><span class="st">&quot;data.frame&quot;</span>, <span class="dt">parse=</span><span class="ot">FALSE</span>)
 result[<span class="dv">1</span>,<span class="kw">c</span>(<span class="st">&quot;id&quot;</span>, <span class="st">&quot;title&quot;</span>)]</code></pre></div>
-<pre><code>##                                                                  id
-## 1 https://pasta.lternet.edu/package/metadata/eml/knb-lter-sbc/14/13
-##                                                                                                             title
-## 1 SBC LTER: Reef: Historical Kelp Database for giant kelp (Macrocystis pyrifera) biomass in California and Mexico</code></pre>
+<pre><code>##                                 id
+## 1 doi:10.6073/AA/knb-lter-sbc.14.4
+##                                                                                                            title
+## 1 SBCLTER: Reef: Historical Kelp Database for giant kelp (Macrocystis pyrifera) biomass in California and Mexico</code></pre>
 <p>The <em>result</em> object, a data.frame, can be inspected to determine which matching dataset to download, as multiple matching dataset identifiers may be returned from the query. Each object in DataONE is uniquely identified by a Persistent Identifier (PID) that can be used to refer to the object and perform operations on it, such as downloading it to a local machine.</p>
 <p>(As an alternative to retrieving dataset information from a query, it is of course possible to use the DataONE web browser search interface located at <a href="http://search.dataone.org" class="uri">http://search.dataone.org</a> to find the identifiers of data to download.)</p>
 <p>In the R example, after inspecting the <em>result</em> data, we will use the first matching dataset:</p>
@@ -164,7 +165,7 @@ bagitFileName &lt;-<span class="st"> </span><span class="kw">getPackage</span>(m
   (function () {
     var script = document.createElement("script");
     script.type = "text/javascript";
-    script.src  = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
     document.getElementsByTagName("head")[0].appendChild(script);
   })();
 </script>

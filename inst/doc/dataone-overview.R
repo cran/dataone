@@ -1,43 +1,37 @@
-## ---- eval=F-------------------------------------------------------------
-#  libary(dataone)
-#  am <- AuthenticationManager()
-#  getTokenInfo(am)
+## ------------------------------------------------------------------------
+library(dataone)
+cn <- CNode("PROD")
+mn <- getMNode(cn, "urn:node:KNB")
+mySearchTerms <- list(q="abstract:salmon+AND+keywords:acoustics+AND+keywords:\"Oncorhynchus nerka\"",
+                      fl="id,title,dateUploaded,abstract,size",
+                      fq="dateUploaded:[2013-01-01T00:00:00.000Z TO 2014-01-01T00:00:00.000Z]",
+                      sort="dateUploaded+desc")
+result <- query(mn, solrQuery=mySearchTerms, as="data.frame")
+result[1,c("id", "title")]
+pid <- result[1,'id']
 
-## ---- eval=F-------------------------------------------------------------
-#  Sys.setenv(LIB_DIR="/opt/local/lib")
-#  Sys.setenv(INCLUDE_DIR="/opt/local/include")
-#  install.packages("curl", type="source")
-#  library(curl)
-#  library(dataone)
-#  
-#  # Remove the environment variables as they are no longer needed.
-#  Sys.setenv(LIB_DIR="")
-#  Sys.setenv(INCLUDE_DIR="")
+## ------------------------------------------------------------------------
+library(XML)
+metadata <- rawToChar(getObject(mn, pid))
 
-## ---- eval=F-------------------------------------------------------------
-#  Sys.setenv(LIB_DIR="/usr/local/opt/curl/lib")
-#  Sys.setenv(INCLUDE_DIR="/usr/local/opt/curl/include")
-#  install.packages("curl", type="source")
-#  library(curl)
-#  library(dataone)
-#  
-#  # Remove the environment variables as they are no longer needed.
-#  Sys.setenv(LIB_DIR="")
-#  Sys.setenv(INCLUDE_DIR="")
+## ------------------------------------------------------------------------
+dataRaw <- getObject(mn, "df35d.443.1")
+dataChar <- rawToChar(dataRaw)
+theData <- textConnection(dataChar)
+df <- read.csv(theData, stringsAsFactors=FALSE)
+df[1,]
 
-## ---- eval=F-------------------------------------------------------------
-#  cn <- CNode("PROD")
-#  unlist(lapply(listNodes(cn), function(x) x@identifier))
+## ------------------------------------------------------------------------
+library(datapack)
+library(uuid)
+d1c <- D1Client("STAGING", "urn:node:mnStageUCSB2")
+id <- paste("urn:uuid:", UUIDgenerate(), sep="")
+testdf <- data.frame(x=1:10,y=11:20)
+csvfile <- paste(tempfile(), ".csv", sep="")
+write.csv(testdf, csvfile, row.names=FALSE)
+# Build a DataObject containing the csv, and upload it to the Member Node
+d1Object <- new("DataObject", id, format="text/csv", filename=csvfile)
 
-## ----eval=F--------------------------------------------------------------
-#  cn@endpoint
-
-## ---- eval=F-------------------------------------------------------------
-#  cn <- CNode("STAGING2")
-#  unlist(lapply(listNodes(cn), function(x) x@identifier))
-
-## ---- eval=F-------------------------------------------------------------
-#  cn <- CNode("PROD")
-#  mn <- getMNode(cn, "urn:node:KNB")
-#  result <- query(mn, searchTerms=list(abstract="hydrocarbon", keywords="aquaculture"), as="data.frame")
+## ---- eval=FALSE---------------------------------------------------------
+#  uploadDataObject(d1c, d1Object, public=TRUE)
 

@@ -8,7 +8,8 @@
 \usage{
 updateObject(x, ...)
 
-\S4method{updateObject}{MNode}(x, pid, file, newpid, sysmeta)
+\S4method{updateObject}{MNode}(x, pid, file = as.character(NA), newpid,
+  sysmeta, dataobj = NULL)
 }
 \arguments{
 \item{x}{The MNode instance on which the object will be created}
@@ -22,6 +23,8 @@ updateObject(x, ...)
 \item{newpid}{The identifier of the new object to be created}
 
 \item{sysmeta}{a SystemMetadata instance describing properties of the object}
+
+\item{dataobj}{a \code{raw} object to use for the upload, instead of the contents of the \code{file} argument.}
 }
 \value{
 A \code{character} containing the identifier if successful.
@@ -47,4 +50,3 @@ Please see the vignette *upload-data* for an example: \code{vignette("upload-dat
 \seealso{
 \url{https://purl.dataone.org/architecture/apis/MN_APIs.html#MNStorage.update}
 }
-

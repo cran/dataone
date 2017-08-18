@@ -40,8 +40,6 @@ library(dataone)
 
 The *dataone* R package should be available for use at this point.
 
-Note: if you wish to build the required *redland* package from source before installing *dataone*, please see the redland [installation instructions]( https://github.com/ropensci/redland-bindings/tree/master/R/redland).
-
 ### Installing on Ubuntu
 
 For ubuntu, install the required Redland C libraries by entering the following commands 
@@ -75,40 +73,51 @@ library(dataone)
 
 The *dataone* R package should be available for use at this point.
 
-Note: if you wish to build the required *redland* package from source before installing *dataone*, please see the redland [installation instructions]( https://github.com/ropensci/redland-bindings/tree/master/R/redland).
-
-
 ## Quick Start
 
-See the full manual for documentation, but once installed, the package can be run in R using:
-```
-library(dataone)
-help("dataone")
-```
+See the full manual (`help dataone`) for documentation.
 
 To search the DataONE Federation Member Node *Knowledge Network for Biocomplexity (KNB)* for a dataset:
 
 ```
+library(dataone)
 cn <- CNode("PROD")
 mn <- getMNode(cn, "urn:node:KNB")
-mySearchTerms <- list(id="doi*hstuar*", abstract="Zostera", keywords="Benthic")
-result <- query(mn, searchTerms=mySearchTerms, as="data.frame")
-pid <- result[1,'id']
+mySearchTerms <- list(q="abstract:salmon+AND+keywords:spawn+AND+keywords:chinook",
+                      fl="id,title,dateUploaded,abstract,size",
+                      fq="dateUploaded:[2017-06-01T00:00:00.000Z TO 2017-07-01T00:00:00.000Z]",
+                      sort="dateUploaded+desc")
+result <- query(mn, solrQuery=mySearchTerms, as="data.frame")
+result[1,c("id", "title")]
+id <- result[1,'id']
 ```
 
-A CSV data object can be downloaded from KNB with the commands:
+The metadata file that describes the located research can be downloaed and viewed in an XML viewer, text 
+editor after being written to disk, or in R via the commands below:
+```
+library(XML)
+metadata <- rawToChar(getObject(mn, id))
+doc = xmlRoot(xmlTreeParse(metadata, asText=TRUE, trim = TRUE, ignoreBlanks = TRUE))
+tf <- tempfile()
+saveXML(doc, tf)
+file.show(tf)
+```
+
+This metadata file describes a data file (CSV) in this data collection (package) that can be obtained using 
+the listed identifier, using the commands:
 
 ```
-cn <- CNode("PROD")
-mn <- getMNode(cn, "urn:node:KNB")
-dataRaw <- getObject(mn, "df35d.443.1")
+dataRaw <- getObject(mn, "urn:uuid:49d7a4bc-e4c9-4609-b9a7-9033faf575e0")
 dataChar <- rawToChar(dataRaw)
 theData <- textConnection(dataChar)
 df <- read.csv(theData, stringsAsFactors=FALSE)
+df[1,]
 ```
 
-Uploading a CSV file to a DataONE Member Node requires authentication via CILogon, but is similarly simple::
+Uploading a CSV file to a DataONE Member Node requires user authentication. DataONE user
+authentication is described in the vignette `dataone-federation`.
 
+Once the authentication steps have been followed, uploading is done with:
 ```
 library(datapack)
 library(uuid)
@@ -122,15 +131,26 @@ d1Object <- new("DataObject", id, format="text/csv", filename=csvfile)
 uploadDataObject(d1c, d1Object, public=TRUE)
 ```
 
-Note that this example uploads a data file to the DataONE test environment "STAGING" and not the production environment ("PROD"), in order to avoid inserting a bunch of test data into the production
-network. Users should use "STAGING" for testing, and "PROD" for real data submissions.
+In addition, a collection of science metadata and data can be downloaded with one
+command, for example:
+
+```
+d1c <- D1Client("PROD", "urn:node:KNB")
+pkg <- getDataPackage(d1c, id="urn:uuid:04cd34fd-25d4-447f-ab6e-73a572c5d383", quiet=FALSE)
+```
+See the R vignette [dataone R Package ](https://github.com/DataONEorg/rdataone/blob/master/vignettes/dataone-overview.Rmd) for
+more information.
 
 ## Acknowledgements
 Work on this package was supported by:
 
-- NSF-ABI grant #1262458 to C. Gries, M. Jones, and S. Collins.
-- NSF-DATANET grants #0830944 and #1430508 to W. Michener, M. Jones, D. Vieglais, S. Allard and P. Cruse
+- NSF-ABI grant #1262458 to C. Gries, M. B. Jones, and S. Collins.
+- NSF-DATANET grants #0830944 and #1430508 to W. Michener, M. B. Jones, D. Vieglais, S. Allard and P. Cruse
+- NSF DIBBS grant #1443062 to T. Habermann and M. B. Jones
+- NSF-PLR grant #1546024 to M. B. Jones, S. Baker-Yeboah, J. Dozier, M. Schildhauer, and A. Budden
 
 Additional support was provided for working group collaboration by the National Center for Ecological Analysis and Synthesis, a Center funded by the University of California, Santa Barbara, and the State of California.
 
 [![nceas_footer](https://www.nceas.ucsb.edu/files/newLogo_0.png)](http://www.nceas.ucsb.edu)
+
+[![ropensci_footer](http://ropensci.org/public_images/github_footer.png)](http://ropensci.org)
