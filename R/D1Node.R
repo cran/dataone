@@ -140,7 +140,7 @@ setMethod("D1Node", signature("XMLInternalElementNode"), function(xml) {
 #' @aliases archive
 #' @seealso \code{\link[=D1Node-class]{D1Node}}{ class description.}
 #' @export
-#' @examples
+#' @examples \dontrun{
 #' library(dataone)
 #' library(uuid)
 #' library(digest)
@@ -169,6 +169,7 @@ setMethod("D1Node", signature("XMLInternalElementNode"), function(xml) {
 #' # Archive the object (requires authentication)
 #' archivedId <- archive(mn, newid)
 #' }
+#' }
 setGeneric("archive", function(x, ...) {
   standardGeneric("archive")
 })
@@ -177,7 +178,7 @@ setGeneric("archive", function(x, ...) {
 setMethod("archive", signature("D1Node"), function(x, pid) {
     url <- paste(x@endpoint, "archive", URLencode(pid, reserved=TRUE), sep="/")
     response <- auth_put(url, node=x)
-    if(response$status != "200") {
+    if(response$status_code != "200") {
         warning(sprintf("Error archiving %s\n", pid))
         return(NULL)
     } else {
@@ -228,12 +229,13 @@ setGeneric("getObject", function(x, ...) {
 #' @return character the checksum value, with the checksum algorithm as the attribute "algorithm"
 #' @seealso \code{\link{D1Node-class}{D1Node}}{ class description.}
 #' @export
-#' @examples 
+#' @examples \dontrun{ 
 #' library(dataone)
 #' cn <- CNode()
 #' mn <- getMNode(cn, "urn:node:KNB")
 #' pid <- "doi:10.5063/F1QN64NZ"
 #' chksum <- getChecksum(mn, pid)
+#' }
 setGeneric("getChecksum", function(x, ...) {
   standardGeneric("getChecksum")
 })
@@ -265,7 +267,7 @@ setMethod("getQueryEngineDescription", signature("D1Node"), function(x, queryEng
   url <- paste(x@endpoint, "query", queryEngineName, sep="/")
   # Send the request
   response<-GET(url)
-  if(response$status != "200") {
+  if(response$status_code != "200") {
     warning(sprintf("Error getting query engine description %s\n", getErrorDescription(response)))
     return(list())
   }
@@ -320,12 +322,13 @@ setMethod("getQueryEngineDescription", signature("D1Node"), function(x, queryEng
 #' @return SystemMetadata for the object
 #' @import datapack
 #' @export
-#' @examples 
+#' @examples \dontrun{ 
 #' library(dataone)
 #' cn <- CNode()
 #' mn <- getMNode(cn, "urn:node:KNB")
 #' pid <- "doi:10.5063/F1QN64NZ"
 #' sysmeta <- getSystemMetadata(mn, pid)
+#' }
 setGeneric("getSystemMetadata", function(x, ...) {
   standardGeneric("getSystemMetadata")
 })
@@ -342,13 +345,14 @@ setGeneric("getSystemMetadata", function(x, ...) {
 #' @aliases describeObject
 #' @return A list of header elements
 #' @seealso \url{https://purl.dataone.org/architecture/apis/MN_APIs.html#MNRead.describe}
-#' @examples
+#' @examples \dontrun{
 #' library(dataone)
 #' mn_uri <- "https://knb.ecoinformatics.org/knb/d1/mn/v1"
 #' mn <- MNode(mn_uri)
 #' pid <- "knb.473.1"
 #' describeObject(mn, pid)
 #' describeObject(mn, "adfadf") # warning message when wrong pid
+#' }
 #' @export
 setGeneric("describeObject", function(x, ...) {
   standardGeneric("describeObject")
@@ -360,7 +364,7 @@ setMethod("describeObject", signature("D1Node"), function(x, pid) {
   stopifnot(is.character(pid))
   url <- file.path(x@endpoint, "object", URLencode(pid, reserved=T))
   response <- auth_get(url, node=x)
-  if(response$status != "200") {
+  if(response$status_code != "200") {
     d1_errors(response)
   } else { 
     return(unclass(response$headers))
@@ -560,10 +564,11 @@ setMethod("parseCapabilities", signature("D1Node"), function(x, xml) {
 #' @aliases ping
 #' @return logical A logical value set to TRUE if the node is up and FALSE if it is not
 #' @export
-#' @examples 
+#' @examples \dontrun{
 #' cn <- CNode()
 #' mn <- getMNode(cn, "urn:node:KNB")
 #' isAlive <- ping(mn)
+#' }
 setGeneric("ping", function(x, ...) {
   standardGeneric("ping")
 })
@@ -576,7 +581,7 @@ setMethod("ping", signature("D1Node"), function(x) {
   # Send the request
   response<-GET(url)
 
-  if (response$status == 200) {
+  if (response$status_code == 200) {
     return(TRUE)
   } else {
     return(FALSE)
@@ -812,7 +817,7 @@ setMethod("query", signature("D1Node"), function(x, solrQuery=as.character(NA), 
   
   if(is.null(response)) return(NULL)
   
-  if(response$status != "200") {
+  if(response$status_code != "200") {
     message(sprintf("Error accessing %s: %s\n", queryUrl, getErrorDescription(response)))
     return(NULL)
   }
@@ -986,9 +991,9 @@ setMethod("isAuthorized", signature("D1Node"), function(x, id, action) {
     response <- auth_get(url, node=x)
     # Status = 200 means that the action is authorized for the id.
     # Status = 401 means that the subject is not authorized for the action, not an error.
-    if(response$status == "401") {
+    if(response$status_code == "401") {
         return(FALSE)
-    } else if (response$status != "200") {
+    } else if (response$status_code != "200") {
         warning(sprintf("Error checking authorized for action \"%s\" on id:\" %s\": %s", action, id, getErrorDescription(response)))
         return(FALSE)
     } else {

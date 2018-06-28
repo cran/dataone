@@ -11,7 +11,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 
-<meta name="date" content="2017-08-18" />
+<meta name="date" content="2018-06-27" />
 
 <title>Updating Packages on DataONE</title>
 
@@ -19,46 +19,256 @@
 
 <style type="text/css">code{white-space: pre;}</style>
 <style type="text/css">
-div.sourceCode { overflow-x: auto; }
-table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
-  margin: 0; padding: 0; vertical-align: baseline; border: none; }
-table.sourceCode { width: 100%; line-height: 100%; }
-td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
-td.sourceCode { padding-left: 5px; }
-code > span.kw { color: #007020; font-weight: bold; } /* Keyword */
-code > span.dt { color: #902000; } /* DataType */
-code > span.dv { color: #40a070; } /* DecVal */
-code > span.bn { color: #40a070; } /* BaseN */
-code > span.fl { color: #40a070; } /* Float */
-code > span.ch { color: #4070a0; } /* Char */
-code > span.st { color: #4070a0; } /* String */
-code > span.co { color: #60a0b0; font-style: italic; } /* Comment */
-code > span.ot { color: #007020; } /* Other */
-code > span.al { color: #ff0000; font-weight: bold; } /* Alert */
-code > span.fu { color: #06287e; } /* Function */
-code > span.er { color: #ff0000; font-weight: bold; } /* Error */
-code > span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
-code > span.cn { color: #880000; } /* Constant */
-code > span.sc { color: #4070a0; } /* SpecialChar */
-code > span.vs { color: #4070a0; } /* VerbatimString */
-code > span.ss { color: #bb6688; } /* SpecialString */
-code > span.im { } /* Import */
-code > span.va { color: #19177c; } /* Variable */
-code > span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
-code > span.op { color: #666666; } /* Operator */
-code > span.bu { } /* BuiltIn */
-code > span.ex { } /* Extension */
-code > span.pp { color: #bc7a00; } /* Preprocessor */
-code > span.at { color: #7d9029; } /* Attribute */
-code > span.do { color: #ba2121; font-style: italic; } /* Documentation */
-code > span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
-code > span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
-code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+a.sourceLine { display: inline-block; line-height: 1.25; }
+a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
+a.sourceLine:empty { height: 1.2em; position: absolute; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+a.sourceLine { text-indent: -1em; padding-left: 1em; }
+}
+pre.numberSource a.sourceLine
+  { position: relative; }
+pre.numberSource a.sourceLine:empty
+  { position: absolute; }
+pre.numberSource a.sourceLine::before
+  { content: attr(data-line-number);
+    position: absolute; left: -5em; text-align: right; vertical-align: baseline;
+    border: none; pointer-events: all;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {  }
+@media screen {
+a.sourceLine::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
 </style>
 
 
 
-<link href="data:text/css;charset=utf-8,body%20%7B%0Abackground%2Dcolor%3A%20%23fff%3B%0Amargin%3A%201em%20auto%3B%0Amax%2Dwidth%3A%20700px%3B%0Aoverflow%3A%20visible%3B%0Apadding%2Dleft%3A%202em%3B%0Apadding%2Dright%3A%202em%3B%0Afont%2Dfamily%3A%20%22Open%20Sans%22%2C%20%22Helvetica%20Neue%22%2C%20Helvetica%2C%20Arial%2C%20sans%2Dserif%3B%0Afont%2Dsize%3A%2014px%3B%0Aline%2Dheight%3A%201%2E35%3B%0A%7D%0A%23header%20%7B%0Atext%2Dalign%3A%20center%3B%0A%7D%0A%23TOC%20%7B%0Aclear%3A%20both%3B%0Amargin%3A%200%200%2010px%2010px%3B%0Apadding%3A%204px%3B%0Awidth%3A%20400px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Aborder%2Dradius%3A%205px%3B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Afont%2Dsize%3A%2013px%3B%0Aline%2Dheight%3A%201%2E3%3B%0A%7D%0A%23TOC%20%2Etoctitle%20%7B%0Afont%2Dweight%3A%20bold%3B%0Afont%2Dsize%3A%2015px%3B%0Amargin%2Dleft%3A%205px%3B%0A%7D%0A%23TOC%20ul%20%7B%0Apadding%2Dleft%3A%2040px%3B%0Amargin%2Dleft%3A%20%2D1%2E5em%3B%0Amargin%2Dtop%3A%205px%3B%0Amargin%2Dbottom%3A%205px%3B%0A%7D%0A%23TOC%20ul%20ul%20%7B%0Amargin%2Dleft%3A%20%2D2em%3B%0A%7D%0A%23TOC%20li%20%7B%0Aline%2Dheight%3A%2016px%3B%0A%7D%0Atable%20%7B%0Amargin%3A%201em%20auto%3B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dcolor%3A%20%23DDDDDD%3B%0Aborder%2Dstyle%3A%20outset%3B%0Aborder%2Dcollapse%3A%20collapse%3B%0A%7D%0Atable%20th%20%7B%0Aborder%2Dwidth%3A%202px%3B%0Apadding%3A%205px%3B%0Aborder%2Dstyle%3A%20inset%3B%0A%7D%0Atable%20td%20%7B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dstyle%3A%20inset%3B%0Aline%2Dheight%3A%2018px%3B%0Apadding%3A%205px%205px%3B%0A%7D%0Atable%2C%20table%20th%2C%20table%20td%20%7B%0Aborder%2Dleft%2Dstyle%3A%20none%3B%0Aborder%2Dright%2Dstyle%3A%20none%3B%0A%7D%0Atable%20thead%2C%20table%20tr%2Eeven%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Ap%20%7B%0Amargin%3A%200%2E5em%200%3B%0A%7D%0Ablockquote%20%7B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Apadding%3A%200%2E25em%200%2E75em%3B%0A%7D%0Ahr%20%7B%0Aborder%2Dstyle%3A%20solid%3B%0Aborder%3A%20none%3B%0Aborder%2Dtop%3A%201px%20solid%20%23777%3B%0Amargin%3A%2028px%200%3B%0A%7D%0Adl%20%7B%0Amargin%2Dleft%3A%200%3B%0A%7D%0Adl%20dd%20%7B%0Amargin%2Dbottom%3A%2013px%3B%0Amargin%2Dleft%3A%2013px%3B%0A%7D%0Adl%20dt%20%7B%0Afont%2Dweight%3A%20bold%3B%0A%7D%0Aul%20%7B%0Amargin%2Dtop%3A%200%3B%0A%7D%0Aul%20li%20%7B%0Alist%2Dstyle%3A%20circle%20outside%3B%0A%7D%0Aul%20ul%20%7B%0Amargin%2Dbottom%3A%200%3B%0A%7D%0Apre%2C%20code%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0Aborder%2Dradius%3A%203px%3B%0Acolor%3A%20%23333%3B%0Awhite%2Dspace%3A%20pre%2Dwrap%3B%20%0A%7D%0Apre%20%7B%0Aborder%2Dradius%3A%203px%3B%0Amargin%3A%205px%200px%2010px%200px%3B%0Apadding%3A%2010px%3B%0A%7D%0Apre%3Anot%28%5Bclass%5D%29%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Acode%20%7B%0Afont%2Dfamily%3A%20Consolas%2C%20Monaco%2C%20%27Courier%20New%27%2C%20monospace%3B%0Afont%2Dsize%3A%2085%25%3B%0A%7D%0Ap%20%3E%20code%2C%20li%20%3E%20code%20%7B%0Apadding%3A%202px%200px%3B%0A%7D%0Adiv%2Efigure%20%7B%0Atext%2Dalign%3A%20center%3B%0A%7D%0Aimg%20%7B%0Abackground%2Dcolor%3A%20%23FFFFFF%3B%0Apadding%3A%202px%3B%0Aborder%3A%201px%20solid%20%23DDDDDD%3B%0Aborder%2Dradius%3A%203px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Amargin%3A%200%205px%3B%0A%7D%0Ah1%20%7B%0Amargin%2Dtop%3A%200%3B%0Afont%2Dsize%3A%2035px%3B%0Aline%2Dheight%3A%2040px%3B%0A%7D%0Ah2%20%7B%0Aborder%2Dbottom%3A%204px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Apadding%2Dbottom%3A%202px%3B%0Afont%2Dsize%3A%20145%25%3B%0A%7D%0Ah3%20%7B%0Aborder%2Dbottom%3A%202px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Afont%2Dsize%3A%20120%25%3B%0A%7D%0Ah4%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23f7f7f7%3B%0Amargin%2Dleft%3A%208px%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Ah5%2C%20h6%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23ccc%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Aa%20%7B%0Acolor%3A%20%230033dd%3B%0Atext%2Ddecoration%3A%20none%3B%0A%7D%0Aa%3Ahover%20%7B%0Acolor%3A%20%236666ff%3B%20%7D%0Aa%3Avisited%20%7B%0Acolor%3A%20%23800080%3B%20%7D%0Aa%3Avisited%3Ahover%20%7B%0Acolor%3A%20%23BB00BB%3B%20%7D%0Aa%5Bhref%5E%3D%22http%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0Aa%5Bhref%5E%3D%22https%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0A%0Acode%20%3E%20span%2Ekw%20%7B%20color%3A%20%23555%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Edt%20%7B%20color%3A%20%23902000%3B%20%7D%20%0Acode%20%3E%20span%2Edv%20%7B%20color%3A%20%2340a070%3B%20%7D%20%0Acode%20%3E%20span%2Ebn%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Efl%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Ech%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Est%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Eco%20%7B%20color%3A%20%23888888%3B%20font%2Dstyle%3A%20italic%3B%20%7D%20%0Acode%20%3E%20span%2Eot%20%7B%20color%3A%20%23007020%3B%20%7D%20%0Acode%20%3E%20span%2Eal%20%7B%20color%3A%20%23ff0000%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Efu%20%7B%20color%3A%20%23900%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%20code%20%3E%20span%2Eer%20%7B%20color%3A%20%23a61717%3B%20background%2Dcolor%3A%20%23e3d2d2%3B%20%7D%20%0A" rel="stylesheet" type="text/css" />
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#header {
+text-align: center;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
 
 </head>
 
@@ -68,7 +278,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 
 <h1 class="title toc-ignore">Updating Packages on DataONE</h1>
-<h4 class="date"><em>2017-08-18</em></h4>
+<h4 class="date"><em>2018-06-27</em></h4>
 
 
 
@@ -79,30 +289,30 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <p>After a package has been uploaded to a DataONE Member Node, it may be determined by the package submitter or other interested parties that the package needs to be updated, for example to add a missing file, replace one file with another, or remove a package member from the package.</p>
 <p>These types of modifications can be accomplished by downloading the package from DataONE using the <code>getDataPackage</code> method to create a local copy of the package in R, modifying the package contents locally, then uploading the modified package to DataONE.</p>
 <p>The complete example script used to perform a package update is shown below:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(datapack)
-<span class="kw">library</span>(dataone)</code></pre></div>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">d1c &lt;-<span class="st"> </span><span class="kw">D1Client</span>(<span class="st">&quot;STAGING&quot;</span>, <span class="st">&quot;urn:node:mnStageUCSB2&quot;</span>)
-packageId &lt;-<span class="st"> &quot;resource_map_urn:uuid:a9aeefcf-228c-4534-b4ad-b480a937be7d&quot;</span></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="kw">library</span>(datapack)</a>
+<a class="sourceLine" id="cb1-2" data-line-number="2"><span class="kw">library</span>(dataone)</a></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1">d1c &lt;-<span class="st"> </span><span class="kw">D1Client</span>(<span class="st">&quot;STAGING&quot;</span>, <span class="st">&quot;urn:node:mnStageUCSB2&quot;</span>)</a>
+<a class="sourceLine" id="cb2-2" data-line-number="2">packageId &lt;-<span class="st"> &quot;resource_map_urn:uuid:a9aeefcf-228c-4534-b4ad-b480a937be7d&quot;</span></a></code></pre></div>
 <!-- The user sees the 'd1c' init above, but read the saved object so we don't incure a network access. -->
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">pkg &lt;-<span class="st"> </span><span class="kw">getDataPackage</span>(d1c, <span class="dt">identifier=</span>packageId, <span class="dt">lazyLoad=</span><span class="ot">TRUE</span>, <span class="dt">limit=</span><span class="st">&quot;0MB&quot;</span>, <span class="dt">quiet=</span><span class="ot">FALSE</span>)</code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1">pkg &lt;-<span class="st"> </span><span class="kw">getDataPackage</span>(d1c, <span class="dt">identifier=</span>packageId, <span class="dt">lazyLoad=</span><span class="ot">TRUE</span>, <span class="dt">limit=</span><span class="st">&quot;0MB&quot;</span>, <span class="dt">quiet=</span><span class="ot">FALSE</span>)</a></code></pre></div>
 <!-- Read a saved object so we don't incure a network access. -->
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">metadataId &lt;-<span class="st"> </span><span class="kw">selectMember</span>(pkg, <span class="dt">name=</span><span class="st">&quot;sysmeta@formatId&quot;</span>, <span class="dt">value=</span><span class="st">&quot;eml://ecoinformatics.org/eml-2.1.1&quot;</span>)
-objId &lt;-<span class="st"> </span><span class="kw">selectMember</span>(pkg, <span class="dt">name=</span><span class="st">&quot;sysmeta@fileName&quot;</span>, <span class="dt">value=</span><span class="st">'Strix-occidentalis-obs.csv'</span>)
-zipfile &lt;-<span class="st"> </span><span class="kw">system.file</span>(<span class="st">&quot;extdata/Strix-occidentalis-obs.csv.zip&quot;</span>, <span class="dt">package=</span><span class="st">&quot;dataone&quot;</span>)
-pkg &lt;-<span class="st"> </span><span class="kw">replaceMember</span>(pkg, objId, <span class="dt">replacement=</span>zipfile, <span class="dt">formatId=</span><span class="st">&quot;application/octet-stream&quot;</span>)
-auxFile &lt;-<span class="st"> </span><span class="kw">system.file</span>(<span class="st">&quot;extdata/WeatherInf.txt&quot;</span>, <span class="dt">package=</span><span class="st">&quot;dataone&quot;</span>)
-auxObj &lt;-<span class="st"> </span><span class="kw">new</span>(<span class="st">&quot;DataObject&quot;</span>, <span class="dt">format=</span><span class="st">&quot;text/plain&quot;</span>, <span class="dt">filename=</span>auxFile) 
-pkg &lt;-<span class="st"> </span><span class="kw">addMember</span>(pkg, auxObj, metadataId)</code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1">metadataId &lt;-<span class="st"> </span><span class="kw">selectMember</span>(pkg, <span class="dt">name=</span><span class="st">&quot;sysmeta@formatId&quot;</span>, <span class="dt">value=</span><span class="st">&quot;eml://ecoinformatics.org/eml-2.1.1&quot;</span>)</a>
+<a class="sourceLine" id="cb4-2" data-line-number="2">objId &lt;-<span class="st"> </span><span class="kw">selectMember</span>(pkg, <span class="dt">name=</span><span class="st">&quot;sysmeta@fileName&quot;</span>, <span class="dt">value=</span><span class="st">'Strix-occidentalis-obs.csv'</span>)</a>
+<a class="sourceLine" id="cb4-3" data-line-number="3">zipfile &lt;-<span class="st"> </span><span class="kw">system.file</span>(<span class="st">&quot;extdata/Strix-occidentalis-obs.csv.zip&quot;</span>, <span class="dt">package=</span><span class="st">&quot;dataone&quot;</span>)</a>
+<a class="sourceLine" id="cb4-4" data-line-number="4">pkg &lt;-<span class="st"> </span><span class="kw">replaceMember</span>(pkg, objId, <span class="dt">replacement=</span>zipfile, <span class="dt">formatId=</span><span class="st">&quot;application/octet-stream&quot;</span>)</a>
+<a class="sourceLine" id="cb4-5" data-line-number="5">auxFile &lt;-<span class="st"> </span><span class="kw">system.file</span>(<span class="st">&quot;extdata/WeatherInf.txt&quot;</span>, <span class="dt">package=</span><span class="st">&quot;dataone&quot;</span>)</a>
+<a class="sourceLine" id="cb4-6" data-line-number="6">auxObj &lt;-<span class="st"> </span><span class="kw">new</span>(<span class="st">&quot;DataObject&quot;</span>, <span class="dt">format=</span><span class="st">&quot;text/plain&quot;</span>, <span class="dt">filename=</span>auxFile) </a>
+<a class="sourceLine" id="cb4-7" data-line-number="7">pkg &lt;-<span class="st"> </span><span class="kw">addMember</span>(pkg, auxObj, metadataId)</a></code></pre></div>
 <!-- Need authentication, so can't upload from a vignette. -->
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">newPackageId &lt;-<span class="st"> </span><span class="kw">uploadDataPackage</span>(d1c, pkg, <span class="dt">public=</span><span class="ot">TRUE</span>, <span class="dt">quiet=</span><span class="ot">FALSE</span>)</code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1">newPackageId &lt;-<span class="st"> </span><span class="kw">uploadDataPackage</span>(d1c, pkg, <span class="dt">public=</span><span class="ot">TRUE</span>, <span class="dt">quiet=</span><span class="ot">FALSE</span>)</a></code></pre></div>
 <p>This example script downloads the example package that was created and uploaded to DataONE in the vignette <code>upload-data</code>.</p>
 <p>Each line of this script will be described in the following sections.</p>
 <div id="download-the-package-from-dataone" class="section level3">
 <h3>1. Download the package from DataONE</h3>
 <p>The first step in updating a package is to download the package from DataONE into R, so that it can be modified locally using methods in the <code>dataone</code> package. Modifications can be made to the package such as adding or removing members from the package, or changing the contents of a package member, as would be the case if the wrong file was initially uploaded.</p>
 <p>The <code>getDataPackage</code> method downloads all files belonging to the package specified by the <code>identifier</code> parameter.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">d1c &lt;-<span class="st"> </span><span class="kw">D1Client</span>(<span class="st">&quot;STAGING&quot;</span>, <span class="st">&quot;urn:node:mnStageUCSB2&quot;</span>)</code></pre></div>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">pkg &lt;-<span class="st"> </span><span class="kw">getDataPackage</span>(d1c, <span class="dt">identifier=</span>packageId, <span class="dt">lazyLoad=</span><span class="ot">TRUE</span>, <span class="dt">limit=</span><span class="st">&quot;0MB&quot;</span>, <span class="dt">quiet=</span><span class="ot">FALSE</span>)</code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" data-line-number="1">d1c &lt;-<span class="st"> </span><span class="kw">D1Client</span>(<span class="st">&quot;STAGING&quot;</span>, <span class="st">&quot;urn:node:mnStageUCSB2&quot;</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" data-line-number="1">pkg &lt;-<span class="st"> </span><span class="kw">getDataPackage</span>(d1c, <span class="dt">identifier=</span>packageId, <span class="dt">lazyLoad=</span><span class="ot">TRUE</span>, <span class="dt">limit=</span><span class="st">&quot;0MB&quot;</span>, <span class="dt">quiet=</span><span class="ot">FALSE</span>)</a></code></pre></div>
 <!-- Get a fresh copy of the saved package. -->
 <p>Because packages might contain large files or a large number of files, it is possible to <code>lazyLoad</code> the package. This means that the metadata describing the files is downloaded downloaded, but the file contents, the data bytes, are not. An upper size limit can be specified when using <code>lazyLoad</code> by also specifying the <code>limit</code> parameter. Files that are larger than the <code>limit</code> value are not downloaded, only system metadata.</p>
 <p>For the package update that will be shown, it is not necessary to download the data bytes of each package member, so <code>lazyLoading</code> is acceptable. An example when lazyloading would not be appropriate is when the files in a package will be used for local computational processing.</p>
@@ -111,7 +321,7 @@ pkg &lt;-<span class="st"> </span><span class="kw">addMember</span>(pkg, auxObj,
 <div id="review-package-contents." class="section level3">
 <h3>2. Review package contents.</h3>
 <p>The downloaded package can be viewed by typing the DataPackage object name at the console, which invokes the R <code>show</code> method for the object:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">pkg</code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" data-line-number="1">pkg</a></code></pre></div>
 <pre><code>## Members:
 ## 
 ## filename               format     mediaType  size     identifier                     modified local 
@@ -138,25 +348,25 @@ pkg &lt;-<span class="st"> </span><span class="kw">addMember</span>(pkg, auxObj,
 <h3>3. Modify DataObjects in the package</h3>
 <p>The original uploaded package included the file <code>Strix-occidentalis-obs.csv</code>. This file can be substituted for a different file, as would be necessary if it was determined that the zipped form of the file should have been used instead.</p>
 <p>First, determine which DataObject in the DataPackage <code>pkg</code> contains the file to be replaced:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">objId &lt;-<span class="st"> </span><span class="kw">selectMember</span>(pkg, <span class="dt">name=</span><span class="st">&quot;sysmeta@fileName&quot;</span>, <span class="dt">value=</span><span class="st">'Strix-occidentalis-obs.csv'</span>)</code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" data-line-number="1">objId &lt;-<span class="st"> </span><span class="kw">selectMember</span>(pkg, <span class="dt">name=</span><span class="st">&quot;sysmeta@fileName&quot;</span>, <span class="dt">value=</span><span class="st">'Strix-occidentalis-obs.csv'</span>)</a></code></pre></div>
 <p>The <code>selectMember</code> method inspects every DataObject in the package <code>pkg</code> and checks for a match in the R S4 slot specified by the <code>name</code> argument for the value specified with the <code>value</code> argument. The identifer for any matching DataObject is returned.</p>
 <p>The documentation for the DataObject R slots available can be viewed with the command <code>help(&quot;DataObject-class&quot;)</code>. As a <em>SystemMetadata</em> object is contained in each DataObject, the slots for SystemMetadata are available, with documentation viewable with <code>help(&quot;SystemMetadata-class&quot;)</code></p>
 <p>Next, update the DataObject in <code>pkg</code> to replace the file <code>Strix-occidentalis-obs.csv</code> with <code>Strix-occidentalis-obs.csv.zip</code> using the <code>replaceMember</code> method:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">objId &lt;-<span class="st"> </span><span class="kw">selectMember</span>(pkg, <span class="dt">name=</span><span class="st">&quot;sysmeta@fileName&quot;</span>, <span class="dt">value=</span><span class="st">'Strix-occidentalis-obs.csv'</span>)
-zipfile &lt;-<span class="st"> </span><span class="kw">system.file</span>(<span class="st">&quot;extdata/Strix-occidentalis-obs.csv.zip&quot;</span>, <span class="dt">package=</span><span class="st">&quot;dataone&quot;</span>)
-pkg &lt;-<span class="st"> </span><span class="kw">replaceMember</span>(pkg, objId, <span class="dt">replacement=</span>zipfile, <span class="dt">formatId=</span><span class="st">&quot;application/octet-stream&quot;</span>)</code></pre></div>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb11-1" data-line-number="1">objId &lt;-<span class="st"> </span><span class="kw">selectMember</span>(pkg, <span class="dt">name=</span><span class="st">&quot;sysmeta@fileName&quot;</span>, <span class="dt">value=</span><span class="st">'Strix-occidentalis-obs.csv'</span>)</a>
+<a class="sourceLine" id="cb11-2" data-line-number="2">zipfile &lt;-<span class="st"> </span><span class="kw">system.file</span>(<span class="st">&quot;extdata/Strix-occidentalis-obs.csv.zip&quot;</span>, <span class="dt">package=</span><span class="st">&quot;dataone&quot;</span>)</a>
+<a class="sourceLine" id="cb11-3" data-line-number="3">pkg &lt;-<span class="st"> </span><span class="kw">replaceMember</span>(pkg, objId, <span class="dt">replacement=</span>zipfile, <span class="dt">formatId=</span><span class="st">&quot;application/octet-stream&quot;</span>)</a></code></pre></div>
 <p>The <code>replaceMember</code> method updates the DataPackage <code>pkg</code>, replacing the data content of the DataObject with identifier <code>objId</code>, and updating the relevant system metadata slots such as <code>size</code> and <code>checksum</code>, to reflect the new contents of the DataObject.</p>
 <p>In this example, the file <code>WeatherInf.txt</code> was mistakenly omitted from the original package upload, so add it now:</p>
 <p>First, the identifier for the metadata DataObject that describes the package members will be retrieved from the DataPackage:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">metadataId &lt;-<span class="st"> </span><span class="kw">selectMember</span>(pkg, <span class="dt">name=</span><span class="st">&quot;sysmeta@formatId&quot;</span>, <span class="dt">value=</span><span class="st">&quot;eml://ecoinformatics.org/eml-2.1.1&quot;</span>)</code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb12-1" data-line-number="1">metadataId &lt;-<span class="st"> </span><span class="kw">selectMember</span>(pkg, <span class="dt">name=</span><span class="st">&quot;sysmeta@formatId&quot;</span>, <span class="dt">value=</span><span class="st">&quot;eml://ecoinformatics.org/eml-2.1.1&quot;</span>)</a></code></pre></div>
 <p>The <code>selectMember</code> method returns the identifier of any DataObject in the package with an R slot name specified in the parameter <code>name</code> that matches the value specified in the argument <code>value</code>. In this particular package, there is only one DataPackage that has <code>formatId</code> of <code>eml://ecoinformatics.org/eml-2.1.1</code>, so only that identifier is returned.</p>
 <p>Note that the <code>getValue</code> method can be used to retrieve the values for DataObject slots, for example:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">getValue</span>(pkg, <span class="dt">name=</span><span class="st">&quot;sysmeta@formatId&quot;</span>)</code></pre></div>
-<pre><code>## $`urn:uuid:0fa8ea06-90b2-43a7-bc2d-2e75cd141e31`
-## [1] &quot;application/octet-stream&quot;
-## 
-## $`urn:uuid:47a0e2f2-9e5d-4374-af6c-a84125a8b5aa`
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb13-1" data-line-number="1"><span class="kw">getValue</span>(pkg, <span class="dt">name=</span><span class="st">&quot;sysmeta@formatId&quot;</span>)</a></code></pre></div>
+<pre><code>## $`urn:uuid:47a0e2f2-9e5d-4374-af6c-a84125a8b5aa`
 ## [1] &quot;application/R&quot;
+## 
+## $`urn:uuid:96f7b32c-d116-4efe-ba08-996d581be680`
+## [1] &quot;application/octet-stream&quot;
 ## 
 ## $`urn:uuid:a9aeefcf-228c-4534-b4ad-b480a937be7d`
 ## [1] &quot;eml://ecoinformatics.org/eml-2.1.1&quot;
@@ -165,19 +375,19 @@ pkg &lt;-<span class="st"> </span><span class="kw">replaceMember</span>(pkg, obj
 ## [1] &quot;text/csv&quot;</code></pre>
 <p>An R named list is returned, with the names being the identifiers of each DataPackage in the DataPackage and the values being the slot value.</p>
 <p>Next, add a new package member that was omitted from the original package:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">auxFile &lt;-<span class="st"> </span><span class="kw">system.file</span>(<span class="st">&quot;extdata/WeatherInf.txt&quot;</span>, <span class="dt">package=</span><span class="st">&quot;dataone&quot;</span>)
-auxObj &lt;-<span class="st"> </span><span class="kw">new</span>(<span class="st">&quot;DataObject&quot;</span>, <span class="dt">format=</span><span class="st">&quot;text/csv&quot;</span>, <span class="dt">filename=</span>auxFile)
-pkg &lt;-<span class="st"> </span><span class="kw">addMember</span>(pkg, auxObj, metadataId)</code></pre></div>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb15-1" data-line-number="1">auxFile &lt;-<span class="st"> </span><span class="kw">system.file</span>(<span class="st">&quot;extdata/WeatherInf.txt&quot;</span>, <span class="dt">package=</span><span class="st">&quot;dataone&quot;</span>)</a>
+<a class="sourceLine" id="cb15-2" data-line-number="2">auxObj &lt;-<span class="st"> </span><span class="kw">new</span>(<span class="st">&quot;DataObject&quot;</span>, <span class="dt">format=</span><span class="st">&quot;text/csv&quot;</span>, <span class="dt">filename=</span>auxFile)</a>
+<a class="sourceLine" id="cb15-3" data-line-number="3">pkg &lt;-<span class="st"> </span><span class="kw">addMember</span>(pkg, auxObj, metadataId)</a></code></pre></div>
 <p>The modified package can be reviewed before updating to DataONE:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">pkg</code></pre></div>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb16-1" data-line-number="1">pkg</a></code></pre></div>
 <pre><code>## Members:
 ## 
 ## filename               format     mediaType  size     identifier                     modified local 
-## Strix-occ...bs.csv.zip app...ream NA         477      urn:uuid:0fa8...d-2e75cd141e31 y        y     
 ## filterObs.R            app...on/R tex...rsrc 554      urn:uuid:47a0...c-a84125a8b5aa n        y     
-## WeatherInf.txt         text/csv   NA         1933     urn:uuid:733e...6-2dffaff53e95 n        y     
+## Strix-occ...bs.csv.zip app...ream NA         477      urn:uuid:96f7...8-996d581be680 y        y     
 ## strix-pac...thwest.xml eml....1.1 NA         22840    urn:uuid:a9ae...d-b480a937be7d n        y     
 ## OwlNightj.csv          text/csv   NA         3048733  urn:uuid:e1e2...9-b1b3a8b81afe n        y     
+## WeatherInf.txt         text/csv   NA         1933     urn:uuid:f6d4...9-25b70f22006e n        y     
 ## 
 ## Package identifier: resource_map_urn:uuid:a9aeefcf-228c-4534-b4ad-b480a937be7d
 ## RightsHolder: http://orcid.org/0000-0002-2192-403X,NA
@@ -190,25 +400,25 @@ pkg &lt;-<span class="st"> </span><span class="kw">addMember</span>(pkg, auxObj,
 ## 2 Strix-occidentalis-obs.csv.zip cito:isDocumentedBy    strix-pacific-northwest.xml
 ## 8                 WeatherInf.txt cito:isDocumentedBy    strix-pacific-northwest.xml
 ## 1                    filterObs.R cito:isDocumentedBy    strix-pacific-northwest.xml
-## 4    strix-pacific-northwest.xml      cito:documents Strix-occidentalis-obs.csv.zip
 ## 3    strix-pacific-northwest.xml      cito:documents                    filterObs.R
-## 7    strix-pacific-northwest.xml      cito:documents                 WeatherInf.txt
-## 5    strix-pacific-northwest.xml      cito:documents                  OwlNightj.csv</code></pre>
+## 4    strix-pacific-northwest.xml      cito:documents Strix-occidentalis-obs.csv.zip
+## 5    strix-pacific-northwest.xml      cito:documents                  OwlNightj.csv
+## 7    strix-pacific-northwest.xml      cito:documents                 WeatherInf.txt</code></pre>
 </div>
 <div id="upload-the-modified-datapackage" class="section level3">
 <h3>4. Upload the modified DataPackage</h3>
 <p>Now upload the modified package to DataONE. Each DataObject in the DataPackage will be inspected by <code>uploadDataPackage</code> and DataObjects that have been modified will be updated and DataObjects that have been added to the DataPackage will be uploaded.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">newPackageId &lt;-<span class="st"> </span><span class="kw">uploadDataPackage</span>(d1c, pkg, <span class="dt">public=</span><span class="ot">TRUE</span>, <span class="dt">quiet=</span><span class="ot">FALSE</span>)</code></pre></div>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb18-1" data-line-number="1">newPackageId &lt;-<span class="st"> </span><span class="kw">uploadDataPackage</span>(d1c, pkg, <span class="dt">public=</span><span class="ot">TRUE</span>, <span class="dt">quiet=</span><span class="ot">FALSE</span>)</a></code></pre></div>
 </div>
 </div>
 <div id="updating-metadata-for-a-datapackage" class="section level2">
 <h2>Updating Metadata For A DataPackage</h2>
 <p>As DataPackage members are modified, the DataObject that holds the metadata that describes the package members may become outdated.</p>
 <p>For example, it was shown above that a package member was updated to contain the file <code>Strix-occidentalis-obs.csv.zip</code> instead of <code>Strix-occidentalis-obs.csv</code>. After this change, the DataObject holding the EML metadata should be updated so that the EML elemnt <code>objectName</code> for this dataset matched the new filename:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">metadataId &lt;-<span class="st"> </span><span class="kw">selectMember</span>(pkg, <span class="dt">name=</span><span class="st">&quot;sysmeta@formatId&quot;</span>, <span class="dt">value=</span><span class="st">&quot;eml://ecoinformatics.org/eml-2.1.1&quot;</span>)
-nameXpath &lt;-<span class="st"> '//dataTable/physical/objectName[text()=&quot;Strix-occidentalis-obs.csv&quot;]'</span>
-newName &lt;-<span class="st"> </span><span class="kw">basename</span>(zipfile)
-pkg &lt;-<span class="st"> </span><span class="kw">updateMetadata</span>(pkg, metadataId, <span class="dt">xpath=</span>nameXpath, <span class="dt">replacement=</span>newName)</code></pre></div>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb19-1" data-line-number="1">metadataId &lt;-<span class="st"> </span><span class="kw">selectMember</span>(pkg, <span class="dt">name=</span><span class="st">&quot;sysmeta@formatId&quot;</span>, <span class="dt">value=</span><span class="st">&quot;eml://ecoinformatics.org/eml-2.1.1&quot;</span>)</a>
+<a class="sourceLine" id="cb19-2" data-line-number="2">nameXpath &lt;-<span class="st"> '//dataTable/physical/objectName[text()=&quot;Strix-occidentalis-obs.csv&quot;]'</span></a>
+<a class="sourceLine" id="cb19-3" data-line-number="3">newName &lt;-<span class="st"> </span><span class="kw">basename</span>(zipfile)</a>
+<a class="sourceLine" id="cb19-4" data-line-number="4">pkg &lt;-<span class="st"> </span><span class="kw">updateMetadata</span>(pkg, metadataId, <span class="dt">xpath=</span>nameXpath, <span class="dt">replacement=</span>newName)</a></code></pre></div>
 <p>The <code>updateMetadata</code> method updates a DataObject containing XML, substituting the value located in the document specified with the <code>xpath</code> argument with the value provided in the <code>replacement</code> argument. In this example, the XML contained in the DataObject with identifier <code>metadataId</code> is an EML metadata document. The EML elewent <code>objectName</code> is updated with the value <code>Strix-occidentalis-obs.csv.zip</code>.</p>
 <p>Note the the <code>xpath</code> argument uses the XPath query language, which is used to locate elements within an XML document.</p>
 <p>For EML metadata, another element that may need to be updated, if it is present in the origianl EML file, is the distribution url. This element contains the link that can be used to download the file from DataONE, which includes the DataONE identifier for the object. Because the identifier value is set when the DataObject is created, the EML metadata is out of date and needs to be updated with the new identifier value.</p>
@@ -234,15 +444,15 @@ pkg &lt;-<span class="st"> </span><span class="kw">updateMetadata</span>(pkg, me
       &lt;entityType&gt;Other&lt;/entityType&gt;
     &lt;/dataTable&gt;</code></pre>
 <p>The following lines get the current identifier for the DataObject that contains the correct file, and uses this identifier value to construct a standard DataONE access URL, using the base URL of the DataONE coordinating node.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">objId &lt;-<span class="st"> </span><span class="kw">selectMember</span>(pkg, <span class="dt">name=</span><span class="st">&quot;sysmeta@fileName&quot;</span>, <span class="dt">value=</span><span class="st">'Strix-occidentalis-obs.csv.zip'</span>)
-newURL &lt;-<span class="st"> </span><span class="kw">sprintf</span>(<span class="st">&quot;%s/%s/resolve/%s&quot;</span>, d1c@cn@baseURL, d1c@cn@APIversion, objId)
-newURL</code></pre></div>
-<pre><code>## [1] &quot;https://cn-stage.test.dataone.org/cn/v2/resolve/urn:uuid:0fa8ea06-90b2-43a7-bc2d-2e75cd141e31&quot;</code></pre>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb21-1" data-line-number="1">objId &lt;-<span class="st"> </span><span class="kw">selectMember</span>(pkg, <span class="dt">name=</span><span class="st">&quot;sysmeta@fileName&quot;</span>, <span class="dt">value=</span><span class="st">'Strix-occidentalis-obs.csv.zip'</span>)</a>
+<a class="sourceLine" id="cb21-2" data-line-number="2">newURL &lt;-<span class="st"> </span><span class="kw">sprintf</span>(<span class="st">&quot;%s/%s/resolve/%s&quot;</span>, d1c<span class="op">@</span>cn<span class="op">@</span>baseURL, d1c<span class="op">@</span>cn<span class="op">@</span>APIversion, objId)</a>
+<a class="sourceLine" id="cb21-3" data-line-number="3">newURL</a></code></pre></div>
+<pre><code>## [1] &quot;https://cn-stage.test.dataone.org/cn/v2/resolve/urn:uuid:96f7b32c-d116-4efe-ba08-996d581be680&quot;</code></pre>
 <p>The <code>selectMember</code> method checks slot specified in <code>name</code> argument, in this case <code>sysmeta@fileName</code>, of each <em>DataObject</em> in the <em>DataPackage</em> <code>pkg</code> and returns the identifier of any member that matches the specified value. This package has only one <em>DataObject</em> with the name <code>Strix-occidentalis-obs.csv.zip</code> so only one identifier is returned in <code>objId</code>.</p>
 <p>Next, the metadata element for the distribution url will be updated in the <em>DataObject</em> that contains the EML metadata in the package <code>pkg</code></p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">metadataId &lt;-<span class="st"> </span><span class="kw">selectMember</span>(pkg, <span class="dt">name=</span><span class="st">&quot;sysmeta@formatId&quot;</span>, <span class="dt">value=</span><span class="st">&quot;eml://ecoinformatics.org/eml-2.1.1&quot;</span>)
-xpathToURL &lt;-<span class="st"> &quot;//dataTable/physical/distribution[../objectName/text()=</span><span class="ch">\&quot;</span><span class="st">OwlNightj.csv</span><span class="ch">\&quot;</span><span class="st">]/online/url&quot;</span>
-pkg &lt;-<span class="st"> </span><span class="kw">updateMetadata</span>(pkg, <span class="dt">do=</span>metadataId, <span class="dt">xpath=</span>xpathToURL, <span class="dt">replacement=</span>newURL)</code></pre></div>
+<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb23-1" data-line-number="1">metadataId &lt;-<span class="st"> </span><span class="kw">selectMember</span>(pkg, <span class="dt">name=</span><span class="st">&quot;sysmeta@formatId&quot;</span>, <span class="dt">value=</span><span class="st">&quot;eml://ecoinformatics.org/eml-2.1.1&quot;</span>)</a>
+<a class="sourceLine" id="cb23-2" data-line-number="2">xpathToURL &lt;-<span class="st"> &quot;//dataTable/physical/distribution[../objectName/text()=</span><span class="ch">\&quot;</span><span class="st">OwlNightj.csv</span><span class="ch">\&quot;</span><span class="st">]/online/url&quot;</span></a>
+<a class="sourceLine" id="cb23-3" data-line-number="3">pkg &lt;-<span class="st"> </span><span class="kw">updateMetadata</span>(pkg, <span class="dt">do=</span>metadataId, <span class="dt">xpath=</span>xpathToURL, <span class="dt">replacement=</span>newURL)</a></code></pre></div>
 <p>When the modified metadata file is updated to DataONE, a new identifier is required, as the modified metadata will replace the old one by created a new object in DataONE, and marking the old one as <code>obsoleted</code> by the new one. For this reason, the call to <code>updateMetadata</code> will assign a new identifier to the metadata <em>DataObject</em> in the DataPackage <code>pkg</code>, if necessary.</p>
 </div>
 

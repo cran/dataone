@@ -67,12 +67,12 @@ setClass("D1Client", slots = c(cn = "CNode", mn="MNode"))
 #' @return the D1Client object representing the DataONE environment
 #' @seealso \code{\link[=D1Client-class]{D1Client}}{ class description.}
 #' @export
-#' @examples 
+#' @examples \dontrun{
 #' cli <- D1Client("PROD", "urn:node:KNB")
-#' 
 #' cn <- CNode('STAGING2')
 #' mn <- getMNode(cn,'urn:node:mnTestKNB')
 #' cli <- D1Client(cn,mn)
+#' }
 setGeneric("D1Client", function(x, y, ...) {
     standardGeneric("D1Client")
 })
@@ -115,9 +115,10 @@ setMethod("D1Client", signature("CNode", "MNode"), function(x, y, ...) {
 #' @rdname D1Client-initialize
 #' @aliases D1Client-initialize
 #' @export
-#' @examples 
+#' @examples \dontrun{
 #' library(dataone)
 #' d1c <- D1Client("PROD", "urn:node:KNB")
+#' }
 #' @seealso \code{\link[=D1Client-class]{dataone}}{ class description.}
 setMethod("initialize", signature = "D1Client", definition = function(.Object, cn=NA, mn=NA, env=as.character(NA), mNodeid=as.character(NA)) {
     # defaults here
@@ -1003,11 +1004,14 @@ setMethod("uploadDataPackage", signature("D1Client"), function(x, dp, replicate=
             }
             # Get the pid of the metadata object, if one is available.
             # Remove ':' from filename if on windows (only the pid might have these.)
-            if(.Platform$OS.type == "windows") {
-                tf <- tempfile(pattern=sprintf("%s.rdf", gsub(':', '_', newPid)))
-            } else {
-                tf <- tempfile(pattern=sprintf("%s.rdf", newPid))
-            }
+            # Just use a random id for the filename
+            #if(.Platform$OS.type == "windows") {
+            #    tf <- tempfile(pattern=sprintf("%s.rdf", gsub(':', '_', newPid)))
+            #} else {
+            #    tf <- tempfile(pattern=sprintf("%s.rdf", newPid))
+            #}
+            # Just use a random id for the filename
+            tf <- tempfile(pattern=sprintf("%s.rdf", UUIDgenerate()))
             status <- serializePackage(dp, file=tf, id=newPid, resolveURI=resolveURI, creator=creator)
             # Recreate the old resource map, so that it can be updated with a new pid
             resMapObj <- new("DataObject", id=newPid, format="http://www.openarchives.org/ore/terms", filename=tf)
@@ -1067,9 +1071,12 @@ setMethod("uploadDataPackage", signature("D1Client"), function(x, dp, replicate=
             }
             # Remove ':' from filename if on windows (only the pid might have these.)
             if(.Platform$OS.type == "windows") {
-                tf <- tempfile(pattern=sprintf("%s.rdf", gsub(':', '_', newPid)))
+                cleanedPid <- gsub(':', '_', newPid)
+                cleanedPid <- gsub('/', '_', cleanedPid)
+                tf <- sprintf("%s/%s.rdf", tempdir(), cleanedPid)
             } else {
-                tf <- tempfile(pattern=sprintf("%s.rdf", newPid))
+                cleanedPid <- gsub('/', '_', newPid)
+                tf <- sprintf("%s/%s.rdf", tempdir(), cleanedPid)
             }
             status <- serializePackage(dp, file=tf, id=newPid, resolveURI=resolveURI, creator=creator)
             
@@ -1118,7 +1125,7 @@ setMethod("uploadDataPackage", signature("D1Client"), function(x, dp, replicate=
 #' @seealso \code{\link[=D1Client-class]{D1Client}}{ class description.}
 #' @import datapack
 #' @export
-#' @examples
+#' @examples \dontrun{
 #' library(dataone)
 #' library(datapack)
 #' testdf <- data.frame(x=1:10,y=11:20)
@@ -1127,7 +1134,6 @@ setMethod("uploadDataPackage", signature("D1Client"), function(x, dp, replicate=
 #' d1c <- D1Client("STAGING", "urn:node:mnStageUCSB2")
 #' do <- new("DataObject", format="text/csv", mnNodeId=getMNodeId(d1c), filename=csvfile)
 #' # Upload a single DataObject to DataONE (requires authentication)
-#' \dontrun{
 #' newId <- uploadDataObject(d1c, do, replicate=FALSE, preferredNodes=NA ,  public=TRUE)
 #' }
 setGeneric("uploadDataObject", function(x, ...) {
@@ -1228,8 +1234,6 @@ setMethod("uploadDataObject", signature("D1Client"),  function(x, do, replicate=
         # set these values on upload/update.
         do@sysmeta@obsoletes <- as.character(NA)
         do@sysmeta@obsoletedBy <- as.character(NA)
-        do@sysmeta@dateUploaded <- as.character(NA)
-        do@sysmeta@dateSysMetadataModified <- as.character(NA)
         do@sysmeta@archived <- as.logical(NA)
         # Set sysmeta values if passed in and not already set in sysmeta for each data object
         if (!is.na(replicate)) {
@@ -1309,7 +1313,7 @@ setMethod("uploadDataObject", signature("D1Client"),  function(x, do, replicate=
 #' @aliases listMemberNodes
 #' @seealso \code{\link[=D1Client-class]{D1Client}}{ class description.}
 #' @export
-#' @examples {
+#' @examples \dontrun{
 #' d1c <- D1Client("PROD")
 #' nodelist <- listMemberNodes(d1c)
 #' }
@@ -1515,3 +1519,116 @@ setMethod("getMetadataMember", signature("D1Client", "DataPackage"), function(x,
     # Didn't find the metadata format
     return(as.character(NA))
 })
+
+#' Download an object from the DataONE Federation to Disk.
+#' @description A convenience method to download an object to disk.
+#' @details This method performs multiple underlying calls to the DataONE repository network. 
+#' CN.resolve() is called to locate the object on one or more repositories, and then each of these
+#' is accessed until success at downloading the associated SystemMetadata for the object. 
+#' The SystemMetadata is used to assign a name to the file that is output to disk. If a fileName is specified in
+#' the SystemMetadata, then the file output to disk will be named according to the SystemMetadata fileName. 
+#' If there is not a specified SystemMetadata fileName, the identifier will be used as the file name output to disk.
+#' If the indentifier is used as the file name, a file name extesion will be determined using the SystemMetadata
+#' formatID along with information from CNCore.listFormats(). If the SystemMetadata formatID is
+#' "application/octet-stream" no extension will be written.
+#' @param x A D1Client object.
+#' @param identifier The identifier of the object to get.
+#' @param path (optional) Path to a directory to write object to. The name of the file will be determined from the
+#' SystemMetada of the object (see details for more information).
+#' The function will fail if a file with the same name already exists in the directory.
+#' @param check (optional) A logical value, if TRUE check if this object has been obsoleted by another object in DataONE.
+#' @param ... (Not yet used.)
+#' @rdname downloadObject
+#' @aliases downloadObject
+#' @return A path where the ouput file is written to.
+#' @seealso \code{\link[=D1Client-class]{D1Client}}{ class description.}
+#' @export
+#' @examples \dontrun{
+#' library(dataone)
+#' d1c <- D1Client("PROD", "urn:node:KNB")
+#' pid <- "solson.5.1"
+#' path <- downloadObject(d1c, pid)
+#' }
+setGeneric("downloadObject", function(x, identifier, ...) { 
+  standardGeneric("downloadObject")
+})
+
+#' @rdname downloadObject
+#' @export
+setMethod("downloadObject", "D1Client", function(x, identifier, path = getwd(), check = as.logical(TRUE)) {
+  
+  stopifnot(is.character(identifier))
+  stopifnot(is.character(path))
+  if(!dir.exists(path)) {
+    stop("path is not a valid directory path")
+  }
+  
+  suppressMessages(result <- resolve(x@cn, identifier))
+  if(is.null(result)) {
+    # If the object isn't resolved from the CN, then try the member node directly. Fill out the
+    # mntable as if the member node had returned the object.
+    mntable <- data.frame(nodeIdentifier=x@mn@identifier, 
+                          baseURL=x@mn@baseURL,
+                          url=sprintf("%s/%s/object/%s", x@mn@baseURL, x@mn@APIversion, 
+                                      URLencode(identifier, reserved=TRUE)), 
+                          row.names=NULL, stringsAsFactors=FALSE)
+  } else {
+    mntable <- result$data
+  }
+  
+  # Get the SystemMetadata and dataURL from one of the MNs
+  # Process them in order, until we get non-NULL responses from a node
+  sysmeta <- NA
+  success <- FALSE
+  dataURL <- as.character(NA)
+  for (i in seq_along(mntable)) { 
+    suppressWarnings(currentMN <- getMNode(x@cn, mntable[i,]$nodeIdentifier))
+    # If cn couldn't return the member node, then fallback to the D1Client@mn
+    if(is.null(currentMN)) currentMN <- x@mn
+    if (!is.null(currentMN)) {
+      sysmeta <- getSystemMetadata(currentMN, identifier)
+      success <- TRUE
+      dataURL <- mntable[i,]$url
+      break
+    }
+  }
+  
+  if(!success) {
+    message(sprintf("Unable to download object with identifier: %s\n", identifier))
+    return(NULL)
+  }
+  
+  # Check if the requested identifier has been obsoleted by a newer version
+  # and print a warning
+  if (check) {
+    if (!is.na(sysmeta@obsoletedBy)) {
+      message(sprintf('Warning: identifier "%s" is obsoleted by identifier "%s"', identifier, sysmeta@obsoletedBy))
+    }
+  }
+  
+  # Get filename if it exists in sysmeta
+  if (!is.na(sysmeta@fileName)) {
+    fileName <- sysmeta@fileName
+    
+    # If filename is not in sysmeta use the identifier with an extension determined by the formatID
+  } else {
+    fileName <- gsub("[^a-zA-Z0-9\\.\\-]+", "_", identifier)
+    
+    if (sysmeta@formatId != "application/octet-stream") {
+      formatIDs <- listFormats(x@cn)
+      Extension <- formatIDs$Extension[which(formatIDs$ID == sysmeta@formatId)]
+      fileName <- paste0(fileName, ".", Extension)
+    }
+    
+  }
+  
+  path <- file.path(path, fileName)
+  response <- auth_get(dataURL, node = currentMN, path = path)
+  
+  if (response$status_code != "200") {
+    stop(sprintf("get() error: %s\n", getErrorDescription(response)))
+  }
+  
+  return(response$content)
+})
+

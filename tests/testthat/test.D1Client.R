@@ -18,8 +18,7 @@ test_that("D1Client constructors", {
         # Skip the remainder of the tests because these test environments are 
         # often down due to upgrades, reconfiguring, testing new features.
         skip_on_cran()
-        cn <- CNode("STAGING2")
-        cli <- new("D1Client", cn=cn, mn=getMNode(cn, "urn:node:mnTestKNB"))
+        cli <- new("D1Client", cn=cnStaging2, mn=getMNode(cnStaging2, "urn:node:mnTestKNB"))
         expect_false(is.null(cli))
         expect_match(class(cli), "D1Client")
         expect_match(cli@cn@baseURL, "https://cn.stage-2.test.dataone.org/cn")
@@ -528,6 +527,28 @@ test_that("D1Client updateDataPackage works for a metadata only DataPackage", {
     } else {
         skip("This test requires valid authentication.")
     }
+})
+
+test_that("D1Client downloadObject", {
+  library(dataone)
+  #cli <- D1Client("PROD", "urn:node:KNB")
+  expect_false(is.null(d1cKNB))
+  expect_match(class(d1cKNB), "D1Client")
+  expect_match(d1cKNB@cn@baseURL, "https://cn.dataone.org/cn")
+  am <- AuthenticationManager()
+  suppressMessages(authValid <- dataone:::isAuthValid(am, d1cKNB@mn))
+  if(authValid) {
+    # Skip if Mac OS and X.509 Certificate
+    if(dataone:::getAuthMethod(am, d1cKNB@mn) == "cert" && grepl("apple-darwin", sessionInfo()$platform)) skip("Skip authentication w/cert on Mac OS X")
+  }
+  
+  # Try downloading a known object from the PROD environment
+  pid <- "solson.5.1"
+  path <- tempdir()
+  file <- downloadObject(d1cKNB, pid, path)
+  expect_match(class(file), "path")
+  expect_true(file.exists(file))
+  unlink(file)
 })
 
 

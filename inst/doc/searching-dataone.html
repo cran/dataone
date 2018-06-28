@@ -11,7 +11,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 
-<meta name="date" content="2017-08-18" />
+<meta name="date" content="2018-06-27" />
 
 <title>Searching DataONE Data Holdings</title>
 
@@ -19,46 +19,256 @@
 
 <style type="text/css">code{white-space: pre;}</style>
 <style type="text/css">
-div.sourceCode { overflow-x: auto; }
-table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
-  margin: 0; padding: 0; vertical-align: baseline; border: none; }
-table.sourceCode { width: 100%; line-height: 100%; }
-td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
-td.sourceCode { padding-left: 5px; }
-code > span.kw { color: #007020; font-weight: bold; } /* Keyword */
-code > span.dt { color: #902000; } /* DataType */
-code > span.dv { color: #40a070; } /* DecVal */
-code > span.bn { color: #40a070; } /* BaseN */
-code > span.fl { color: #40a070; } /* Float */
-code > span.ch { color: #4070a0; } /* Char */
-code > span.st { color: #4070a0; } /* String */
-code > span.co { color: #60a0b0; font-style: italic; } /* Comment */
-code > span.ot { color: #007020; } /* Other */
-code > span.al { color: #ff0000; font-weight: bold; } /* Alert */
-code > span.fu { color: #06287e; } /* Function */
-code > span.er { color: #ff0000; font-weight: bold; } /* Error */
-code > span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
-code > span.cn { color: #880000; } /* Constant */
-code > span.sc { color: #4070a0; } /* SpecialChar */
-code > span.vs { color: #4070a0; } /* VerbatimString */
-code > span.ss { color: #bb6688; } /* SpecialString */
-code > span.im { } /* Import */
-code > span.va { color: #19177c; } /* Variable */
-code > span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
-code > span.op { color: #666666; } /* Operator */
-code > span.bu { } /* BuiltIn */
-code > span.ex { } /* Extension */
-code > span.pp { color: #bc7a00; } /* Preprocessor */
-code > span.at { color: #7d9029; } /* Attribute */
-code > span.do { color: #ba2121; font-style: italic; } /* Documentation */
-code > span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
-code > span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
-code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+a.sourceLine { display: inline-block; line-height: 1.25; }
+a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
+a.sourceLine:empty { height: 1.2em; position: absolute; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+a.sourceLine { text-indent: -1em; padding-left: 1em; }
+}
+pre.numberSource a.sourceLine
+  { position: relative; }
+pre.numberSource a.sourceLine:empty
+  { position: absolute; }
+pre.numberSource a.sourceLine::before
+  { content: attr(data-line-number);
+    position: absolute; left: -5em; text-align: right; vertical-align: baseline;
+    border: none; pointer-events: all;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {  }
+@media screen {
+a.sourceLine::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
 </style>
 
 
 
-<link href="data:text/css;charset=utf-8,body%20%7B%0Abackground%2Dcolor%3A%20%23fff%3B%0Amargin%3A%201em%20auto%3B%0Amax%2Dwidth%3A%20700px%3B%0Aoverflow%3A%20visible%3B%0Apadding%2Dleft%3A%202em%3B%0Apadding%2Dright%3A%202em%3B%0Afont%2Dfamily%3A%20%22Open%20Sans%22%2C%20%22Helvetica%20Neue%22%2C%20Helvetica%2C%20Arial%2C%20sans%2Dserif%3B%0Afont%2Dsize%3A%2014px%3B%0Aline%2Dheight%3A%201%2E35%3B%0A%7D%0A%23header%20%7B%0Atext%2Dalign%3A%20center%3B%0A%7D%0A%23TOC%20%7B%0Aclear%3A%20both%3B%0Amargin%3A%200%200%2010px%2010px%3B%0Apadding%3A%204px%3B%0Awidth%3A%20400px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Aborder%2Dradius%3A%205px%3B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Afont%2Dsize%3A%2013px%3B%0Aline%2Dheight%3A%201%2E3%3B%0A%7D%0A%23TOC%20%2Etoctitle%20%7B%0Afont%2Dweight%3A%20bold%3B%0Afont%2Dsize%3A%2015px%3B%0Amargin%2Dleft%3A%205px%3B%0A%7D%0A%23TOC%20ul%20%7B%0Apadding%2Dleft%3A%2040px%3B%0Amargin%2Dleft%3A%20%2D1%2E5em%3B%0Amargin%2Dtop%3A%205px%3B%0Amargin%2Dbottom%3A%205px%3B%0A%7D%0A%23TOC%20ul%20ul%20%7B%0Amargin%2Dleft%3A%20%2D2em%3B%0A%7D%0A%23TOC%20li%20%7B%0Aline%2Dheight%3A%2016px%3B%0A%7D%0Atable%20%7B%0Amargin%3A%201em%20auto%3B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dcolor%3A%20%23DDDDDD%3B%0Aborder%2Dstyle%3A%20outset%3B%0Aborder%2Dcollapse%3A%20collapse%3B%0A%7D%0Atable%20th%20%7B%0Aborder%2Dwidth%3A%202px%3B%0Apadding%3A%205px%3B%0Aborder%2Dstyle%3A%20inset%3B%0A%7D%0Atable%20td%20%7B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dstyle%3A%20inset%3B%0Aline%2Dheight%3A%2018px%3B%0Apadding%3A%205px%205px%3B%0A%7D%0Atable%2C%20table%20th%2C%20table%20td%20%7B%0Aborder%2Dleft%2Dstyle%3A%20none%3B%0Aborder%2Dright%2Dstyle%3A%20none%3B%0A%7D%0Atable%20thead%2C%20table%20tr%2Eeven%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Ap%20%7B%0Amargin%3A%200%2E5em%200%3B%0A%7D%0Ablockquote%20%7B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Apadding%3A%200%2E25em%200%2E75em%3B%0A%7D%0Ahr%20%7B%0Aborder%2Dstyle%3A%20solid%3B%0Aborder%3A%20none%3B%0Aborder%2Dtop%3A%201px%20solid%20%23777%3B%0Amargin%3A%2028px%200%3B%0A%7D%0Adl%20%7B%0Amargin%2Dleft%3A%200%3B%0A%7D%0Adl%20dd%20%7B%0Amargin%2Dbottom%3A%2013px%3B%0Amargin%2Dleft%3A%2013px%3B%0A%7D%0Adl%20dt%20%7B%0Afont%2Dweight%3A%20bold%3B%0A%7D%0Aul%20%7B%0Amargin%2Dtop%3A%200%3B%0A%7D%0Aul%20li%20%7B%0Alist%2Dstyle%3A%20circle%20outside%3B%0A%7D%0Aul%20ul%20%7B%0Amargin%2Dbottom%3A%200%3B%0A%7D%0Apre%2C%20code%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0Aborder%2Dradius%3A%203px%3B%0Acolor%3A%20%23333%3B%0Awhite%2Dspace%3A%20pre%2Dwrap%3B%20%0A%7D%0Apre%20%7B%0Aborder%2Dradius%3A%203px%3B%0Amargin%3A%205px%200px%2010px%200px%3B%0Apadding%3A%2010px%3B%0A%7D%0Apre%3Anot%28%5Bclass%5D%29%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Acode%20%7B%0Afont%2Dfamily%3A%20Consolas%2C%20Monaco%2C%20%27Courier%20New%27%2C%20monospace%3B%0Afont%2Dsize%3A%2085%25%3B%0A%7D%0Ap%20%3E%20code%2C%20li%20%3E%20code%20%7B%0Apadding%3A%202px%200px%3B%0A%7D%0Adiv%2Efigure%20%7B%0Atext%2Dalign%3A%20center%3B%0A%7D%0Aimg%20%7B%0Abackground%2Dcolor%3A%20%23FFFFFF%3B%0Apadding%3A%202px%3B%0Aborder%3A%201px%20solid%20%23DDDDDD%3B%0Aborder%2Dradius%3A%203px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Amargin%3A%200%205px%3B%0A%7D%0Ah1%20%7B%0Amargin%2Dtop%3A%200%3B%0Afont%2Dsize%3A%2035px%3B%0Aline%2Dheight%3A%2040px%3B%0A%7D%0Ah2%20%7B%0Aborder%2Dbottom%3A%204px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Apadding%2Dbottom%3A%202px%3B%0Afont%2Dsize%3A%20145%25%3B%0A%7D%0Ah3%20%7B%0Aborder%2Dbottom%3A%202px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Afont%2Dsize%3A%20120%25%3B%0A%7D%0Ah4%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23f7f7f7%3B%0Amargin%2Dleft%3A%208px%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Ah5%2C%20h6%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23ccc%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Aa%20%7B%0Acolor%3A%20%230033dd%3B%0Atext%2Ddecoration%3A%20none%3B%0A%7D%0Aa%3Ahover%20%7B%0Acolor%3A%20%236666ff%3B%20%7D%0Aa%3Avisited%20%7B%0Acolor%3A%20%23800080%3B%20%7D%0Aa%3Avisited%3Ahover%20%7B%0Acolor%3A%20%23BB00BB%3B%20%7D%0Aa%5Bhref%5E%3D%22http%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0Aa%5Bhref%5E%3D%22https%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0A%0Acode%20%3E%20span%2Ekw%20%7B%20color%3A%20%23555%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Edt%20%7B%20color%3A%20%23902000%3B%20%7D%20%0Acode%20%3E%20span%2Edv%20%7B%20color%3A%20%2340a070%3B%20%7D%20%0Acode%20%3E%20span%2Ebn%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Efl%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Ech%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Est%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Eco%20%7B%20color%3A%20%23888888%3B%20font%2Dstyle%3A%20italic%3B%20%7D%20%0Acode%20%3E%20span%2Eot%20%7B%20color%3A%20%23007020%3B%20%7D%20%0Acode%20%3E%20span%2Eal%20%7B%20color%3A%20%23ff0000%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Efu%20%7B%20color%3A%20%23900%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%20code%20%3E%20span%2Eer%20%7B%20color%3A%20%23a61717%3B%20background%2Dcolor%3A%20%23e3d2d2%3B%20%7D%20%0A" rel="stylesheet" type="text/css" />
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#header {
+text-align: center;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
 
 </head>
 
@@ -68,7 +278,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 
 <h1 class="title toc-ignore">Searching DataONE Data Holdings</h1>
-<h4 class="date"><em>2017-08-18</em></h4>
+<h4 class="date"><em>2018-06-27</em></h4>
 
 
 
@@ -79,15 +289,15 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <p>Additional information about searching DataONE can be viewed at <a href="https://purl.dataone.org/architecture/design/SearchMetadata.html">Content Discovery</a>.</p>
 <div id="using-the-query-method" class="section level2">
 <h2>Using The <code>query</code> Method</h2>
-<p>Some familiarity with Solr is helpful when using the <code>query</code> method effectively, however basic queries can be very powerful and the examples in this document can provide a starting point. As an alternative to composing queries using Solr syntax, a simplier search mechanism is available with the <code>query</code> method that uses name, value pairs (See the section: *A Simplied Search“).</p>
+<p>Some familiarity with Solr is helpful when using the <code>query</code> method effectively, however basic queries can be very powerful and the examples in this document can provide a starting point. As an alternative to composing queries using Solr syntax, a simplier search mechanism is available with the <code>query</code> method that uses name, value pairs (See the section: *A Simplied Search&quot;).</p>
 <p>Additional information about the <code>query</code> method can be obtained from the R help facility, e.g. <code>?query</code> from the R command line.</p>
 <div id="query-and-return-an-r-list" class="section level3">
 <h3>Query and return an R list</h3>
 <p>The following example queries DataONE and returns values in an R list, with each value converted from the Solr result to the appropriate R data type:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(dataone)
-cn &lt;-<span class="st"> </span><span class="kw">CNode</span>(<span class="st">&quot;PROD&quot;</span>)
-queryParamList &lt;-<span class="st"> </span><span class="kw">list</span>(<span class="dt">q=</span><span class="st">&quot;id:doi*&quot;</span>, <span class="dt">rows=</span><span class="st">&quot;5&quot;</span>, <span class="dt">fq=</span><span class="st">&quot;abstract:carbon&quot;</span>, <span class="dt">fl=</span><span class="st">&quot;id,title,dateUploaded,abstract,datasource,size&quot;</span>)
-result &lt;-<span class="st"> </span><span class="kw">query</span>(cn, <span class="dt">solrQuery=</span>queryParamList, <span class="dt">as=</span><span class="st">&quot;list&quot;</span>)</code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="kw">library</span>(dataone)</a>
+<a class="sourceLine" id="cb1-2" data-line-number="2">cn &lt;-<span class="st"> </span><span class="kw">CNode</span>(<span class="st">&quot;PROD&quot;</span>)</a>
+<a class="sourceLine" id="cb1-3" data-line-number="3">queryParamList &lt;-<span class="st"> </span><span class="kw">list</span>(<span class="dt">q=</span><span class="st">&quot;id:doi*&quot;</span>, <span class="dt">rows=</span><span class="st">&quot;5&quot;</span>, <span class="dt">fq=</span><span class="st">&quot;abstract:carbon&quot;</span>, <span class="dt">fl=</span><span class="st">&quot;id,title,dateUploaded,abstract,datasource,size&quot;</span>)</a>
+<a class="sourceLine" id="cb1-4" data-line-number="4">result &lt;-<span class="st"> </span><span class="kw">query</span>(cn, <span class="dt">solrQuery=</span>queryParamList, <span class="dt">as=</span><span class="st">&quot;list&quot;</span>)</a></code></pre></div>
 <p>The ‘solrQuery’ argument takes a list of query parameters that are sent to the DataONE Solr search engine and control how the search is performed. The name of each list element is a Solr keyword which is combined with the list element value to create each Solr query term. All these terms are combined to create the complete Solr query. The <code>queryParamlist</code> in the example above will be used to construct this Solr query:</p>
 <pre><code>?q=id:doi*&amp;rows=5,&amp;fq=abstract:carbon&amp;fl=id,title,dateUploaded,abstract,datasource,size</code></pre>
 <p>The <code>q=id:doi*</code> is the main query term and specifies that all DataONE objects that have an <code>id</code> field value beginning with <code>doi*</code> should be returned.</p>
@@ -95,54 +305,54 @@ result &lt;-<span class="st"> </span><span class="kw">query</span>(cn, <span cla
 <p>The <code>&amp;fl=id,title,dateUploaded,abstract,datasource,size</code> term is a <code>field</code> specifier, so only those fields in the list will be included in the result set.</p>
 <p>The <code>&amp;rows=5</code> term specifies that a maximum of five results will be returned.</p>
 <p>The <code>result</code> object contains all the data values found and returned from the query. Each element of the returned list contains information for one dataset. Each returned attribute for a dataset can be accessed with the appropriate element name, for example, to access the title information of the first dataset returned, use the R statement:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">result[[<span class="dv">1</span>]]$title</code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1">result[[<span class="dv">1</span>]]<span class="op">$</span>title</a></code></pre></div>
 <p>To print out selected information for all returned values, use:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">ids &lt;-<span class="st"> </span><span class="kw">lapply</span>(result, function(x) {
-  <span class="kw">message</span>(<span class="kw">sprintf</span>(<span class="st">&quot;id: %s&quot;</span>, x$id))
-  <span class="kw">message</span>(<span class="kw">sprintf</span>(<span class="st">&quot;origin member node: %s&quot;</span>, x$datasource))
-  <span class="kw">message</span>(<span class="kw">sprintf</span>(<span class="st">&quot;title: %s&quot;</span>, x$title))
-  <span class="kw">message</span>(<span class="kw">sprintf</span>(<span class="st">&quot;date uploaded: %s&quot;</span>, x$dateUploaded))
-  x$id
-})</code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1">ids &lt;-<span class="st"> </span><span class="kw">lapply</span>(result, <span class="cf">function</span>(x) {</a>
+<a class="sourceLine" id="cb4-2" data-line-number="2">  <span class="kw">message</span>(<span class="kw">sprintf</span>(<span class="st">&quot;id: %s&quot;</span>, x<span class="op">$</span>id))</a>
+<a class="sourceLine" id="cb4-3" data-line-number="3">  <span class="kw">message</span>(<span class="kw">sprintf</span>(<span class="st">&quot;origin member node: %s&quot;</span>, x<span class="op">$</span>datasource))</a>
+<a class="sourceLine" id="cb4-4" data-line-number="4">  <span class="kw">message</span>(<span class="kw">sprintf</span>(<span class="st">&quot;title: %s&quot;</span>, x<span class="op">$</span>title))</a>
+<a class="sourceLine" id="cb4-5" data-line-number="5">  <span class="kw">message</span>(<span class="kw">sprintf</span>(<span class="st">&quot;date uploaded: %s&quot;</span>, x<span class="op">$</span>dateUploaded))</a>
+<a class="sourceLine" id="cb4-6" data-line-number="6">  x<span class="op">$</span>id</a>
+<a class="sourceLine" id="cb4-7" data-line-number="7">})</a></code></pre></div>
 <p>The complete list of possible searchable values stored for a dataset can be viewed at <a href="https://cn.dataone.org/cn/v2/query/solr">DataONE Solr Engine Description</a>. However, the values available for a particular dataset may be a subset of these, depending on the metadata provided when the dataset is uploaded to DataONE.</p>
 <p>The DataONE Coordinating Node (CN) contains metadata about datasets from all Member Nodes (MN) in the network. As the above example shows, sending a query to the CN may find matching datasets located on potentially any Member Node in the network.</p>
 </div>
 <div id="return-values-as-a-data-frame" class="section level3">
 <h3>Return values as a data frame</h3>
 <p>To return results as a data frame, use the <code>as</code> parameter as shown below. In addition all values will be stored as <code>character</code>, because <code>parse=FALSE</code> is specified:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">cn &lt;-<span class="st"> </span><span class="kw">CNode</span>(<span class="st">&quot;PROD&quot;</span>)
-result &lt;-<span class="st"> </span><span class="kw">query</span>(cn, queryParamList, <span class="dt">as=</span><span class="st">&quot;data.frame&quot;</span>, <span class="dt">parse=</span><span class="ot">FALSE</span>)</code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1">cn &lt;-<span class="st"> </span><span class="kw">CNode</span>(<span class="st">&quot;PROD&quot;</span>)</a>
+<a class="sourceLine" id="cb5-2" data-line-number="2">result &lt;-<span class="st"> </span><span class="kw">query</span>(cn, queryParamList, <span class="dt">as=</span><span class="st">&quot;data.frame&quot;</span>, <span class="dt">parse=</span><span class="ot">FALSE</span>)</a></code></pre></div>
 <p>The <code>result</code> is a data frame with each row containing information for one dataset. To print all returned DataONE identifiers from the result:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">result[,<span class="st">'id'</span>]</code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" data-line-number="1">result[,<span class="st">'id'</span>]</a></code></pre></div>
 </div>
 <div id="using-a-simplified-search." class="section level3">
 <h3>Using a Simplified Search.</h3>
 <p>A search may be performed by just specifying query fields and values using the <em>searchTerms</em> parameter. For example, to search for datasets that mention ‘kelp’ in the abstract and have an attribute discription that contains the word ‘biomass’, the following query could be used:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">cn &lt;-<span class="st"> </span><span class="kw">CNode</span>(<span class="st">&quot;PROD&quot;</span>)
-mn &lt;-<span class="st"> </span><span class="kw">getMNode</span>(cn, <span class="st">&quot;urn:node:KNB&quot;</span>)
-mySearchTerms &lt;-<span class="st"> </span><span class="kw">list</span>(<span class="dt">abstract=</span><span class="st">&quot;kelp&quot;</span>, <span class="dt">attribute=</span><span class="st">&quot;biomass&quot;</span>)
-result &lt;-<span class="st"> </span><span class="kw">query</span>(cn, <span class="dt">searchTerms=</span>mySearchTerms, <span class="dt">as=</span><span class="st">&quot;data.frame&quot;</span>)</code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" data-line-number="1">cn &lt;-<span class="st"> </span><span class="kw">CNode</span>(<span class="st">&quot;PROD&quot;</span>)</a>
+<a class="sourceLine" id="cb7-2" data-line-number="2">mn &lt;-<span class="st"> </span><span class="kw">getMNode</span>(cn, <span class="st">&quot;urn:node:KNB&quot;</span>)</a>
+<a class="sourceLine" id="cb7-3" data-line-number="3">mySearchTerms &lt;-<span class="st"> </span><span class="kw">list</span>(<span class="dt">abstract=</span><span class="st">&quot;kelp&quot;</span>, <span class="dt">attribute=</span><span class="st">&quot;biomass&quot;</span>)</a>
+<a class="sourceLine" id="cb7-4" data-line-number="4">result &lt;-<span class="st"> </span><span class="kw">query</span>(cn, <span class="dt">searchTerms=</span>mySearchTerms, <span class="dt">as=</span><span class="st">&quot;data.frame&quot;</span>)</a></code></pre></div>
 <p>Using the <em>searchTerms</em> parameter causes the <em>query</em> method to construct a Solr query based on the list, that is passed on to the DataONE node specified.</p>
 <p>The names in the <em>searchTerm</em> list are the query field names available from the Solr query engine being used. These names can be determined using the <em>queryEngineDescription</em> method, or simply using a web browser to view <a href="https://cn.dataone.org/cn/v2/query/solr" class="uri">https://cn.dataone.org/cn/v2/query/solr</a>.</p>
 </div>
 <div id="search-just-a-member-node" class="section level3">
 <h3>Search just a member node</h3>
 <p>If it is known which Member Node holds the data of interest, then a search can be limited to just that MN by sending the search directly to that MN instead of the CN. For example, if the dataset of interest is on The Knowledge Network for Biocomplexity (KNB) Member Node, then the search is performed with the statments:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Query the data holdings on a member node</span>
-cn &lt;-<span class="st"> </span><span class="kw">CNode</span>(<span class="st">&quot;PROD&quot;</span>)
-mn &lt;-<span class="st"> </span><span class="kw">getMNode</span>(cn, <span class="st">&quot;urn:node:KNB&quot;</span>)
-queryParams &lt;-<span class="st"> </span><span class="kw">list</span>(<span class="dt">q=</span><span class="st">&quot;abstract:habitat&quot;</span>, <span class="dt">fl=</span><span class="st">&quot;id,title,abstract&quot;</span>) 
-result &lt;-<span class="st"> </span><span class="kw">query</span>(mn, queryParams, <span class="dt">as=</span><span class="st">&quot;data.frame&quot;</span>, <span class="dt">parse=</span><span class="ot">FALSE</span>)
-<span class="co"># Choose the first matchin PID</span>
-pid &lt;-<span class="st"> </span>result[<span class="dv">1</span>,<span class="st">'id'</span>]</code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" data-line-number="1"><span class="co"># Query the data holdings on a member node</span></a>
+<a class="sourceLine" id="cb8-2" data-line-number="2">cn &lt;-<span class="st"> </span><span class="kw">CNode</span>(<span class="st">&quot;PROD&quot;</span>)</a>
+<a class="sourceLine" id="cb8-3" data-line-number="3">mn &lt;-<span class="st"> </span><span class="kw">getMNode</span>(cn, <span class="st">&quot;urn:node:KNB&quot;</span>)</a>
+<a class="sourceLine" id="cb8-4" data-line-number="4">queryParams &lt;-<span class="st"> </span><span class="kw">list</span>(<span class="dt">q=</span><span class="st">&quot;abstract:habitat&quot;</span>, <span class="dt">fl=</span><span class="st">&quot;id,title,abstract&quot;</span>) </a>
+<a class="sourceLine" id="cb8-5" data-line-number="5">result &lt;-<span class="st"> </span><span class="kw">query</span>(mn, queryParams, <span class="dt">as=</span><span class="st">&quot;data.frame&quot;</span>, <span class="dt">parse=</span><span class="ot">FALSE</span>)</a>
+<a class="sourceLine" id="cb8-6" data-line-number="6"><span class="co"># Choose the first matchin PID</span></a>
+<a class="sourceLine" id="cb8-7" data-line-number="7">pid &lt;-<span class="st"> </span>result[<span class="dv">1</span>,<span class="st">'id'</span>]</a></code></pre></div>
 </div>
 <div id="filter-query-results-for-a-specific-member-node" class="section level3">
 <h3>Filter query results for a specific member node</h3>
 <p>An alternative way to locate datasets on a particular node is to send the query to the CN but limit the returned results to data holdings that originated from the specific member node by using Solr filter query parameter (<code>&amp;fq</code>) can be used for the <code>datasource</code> field:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">cn &lt;-<span class="st"> </span><span class="kw">CNode</span>(<span class="st">&quot;PROD&quot;</span>)
-queryParams &lt;-<span class="st"> 'q=id:*&amp;fl=id,title&amp;fq=datasource:&quot;urn:node:KNB&quot;&amp;rows=5'</span>
-result &lt;-<span class="st"> </span><span class="kw">query</span>(cn, queryParams, <span class="dt">as=</span><span class="st">&quot;data.frame&quot;</span>, <span class="dt">parse=</span><span class="ot">FALSE</span>)
-result[,<span class="st">'id'</span>]</code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" data-line-number="1">cn &lt;-<span class="st"> </span><span class="kw">CNode</span>(<span class="st">&quot;PROD&quot;</span>)</a>
+<a class="sourceLine" id="cb9-2" data-line-number="2">queryParams &lt;-<span class="st"> 'q=id:*&amp;fl=id,title&amp;fq=datasource:&quot;urn:node:KNB&quot;&amp;rows=5'</span></a>
+<a class="sourceLine" id="cb9-3" data-line-number="3">result &lt;-<span class="st"> </span><span class="kw">query</span>(cn, queryParams, <span class="dt">as=</span><span class="st">&quot;data.frame&quot;</span>, <span class="dt">parse=</span><span class="ot">FALSE</span>)</a>
+<a class="sourceLine" id="cb9-4" data-line-number="4">result[,<span class="st">'id'</span>]</a></code></pre></div>
 </div>
 </div>
 
