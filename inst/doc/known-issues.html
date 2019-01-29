@@ -11,14 +11,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 
-<meta name="date" content="2018-06-27" />
+<meta name="date" content="2019-01-29" />
 
 <title>Known Issues</title>
 
 
 
 <style type="text/css">code{white-space: pre;}</style>
-<style type="text/css">
+<style type="text/css" data-origin="pandoc">
 a.sourceLine { display: inline-block; line-height: 1.25; }
 a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
 a.sourceLine:empty { height: 1.2em; position: absolute; }
@@ -82,7 +82,29 @@ code span.st { color: #4070a0; } /* String */
 code span.va { color: #19177c; } /* Variable */
 code span.vs { color: #4070a0; } /* VerbatimString */
 code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+
 </style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    for (var j = 0; j < rules.length; j++) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' || rule.style.backgroundColor === '') continue;
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
 
 
 
@@ -278,7 +300,7 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 
 
 <h1 class="title toc-ignore">Known Issues</h1>
-<h4 class="date"><em>2018-06-27</em></h4>
+<h4 class="date"><em>2019-01-29</em></h4>
 
 
 
@@ -286,7 +308,7 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 <h2>Known Issues With dataone R Package Version 2.0</h2>
 <div id="error-using-x.509-certificates" class="section level3">
 <h3>Error Using X.509 Certificates</h3>
-<p>Using an X.509 certificate for DataONE authenticatin on certain versions of Mac OS X can cause the following error:</p>
+<p>Using an X.509 certificate for DataONE authentication on certain versions of Mac OS X can cause the following error:</p>
 <pre><code>Error in curl::curl_fetch_memory(url, handle = handle) : 
 Problem with the local SSL certificate </code></pre>
 <p>Changes in the Mac OS X system libraries in OS X Mavericks have taken away support of these X.509 certificates. A workaround to make these certificates usable on Mac OS X with R is to install a version of the <em>curl</em> R package that supports these certificates.</p>

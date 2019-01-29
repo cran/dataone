@@ -11,14 +11,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 
-<meta name="date" content="2018-06-27" />
+<meta name="date" content="2019-01-29" />
 
 <title>Uploading Data to DataONE</title>
 
 
 
 <style type="text/css">code{white-space: pre;}</style>
-<style type="text/css">
+<style type="text/css" data-origin="pandoc">
 a.sourceLine { display: inline-block; line-height: 1.25; }
 a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
 a.sourceLine:empty { height: 1.2em; position: absolute; }
@@ -82,7 +82,29 @@ code span.st { color: #4070a0; } /* String */
 code span.va { color: #19177c; } /* Variable */
 code span.vs { color: #4070a0; } /* VerbatimString */
 code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+
 </style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    for (var j = 0; j < rules.length; j++) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' || rule.style.backgroundColor === '') continue;
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
 
 
 
@@ -278,7 +300,7 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 
 
 <h1 class="title toc-ignore">Uploading Data to DataONE</h1>
-<h4 class="date"><em>2018-06-27</em></h4>
+<h4 class="date"><em>2019-01-29</em></h4>
 
 
 
@@ -333,7 +355,7 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 </div>
 <div id="prepare-a-metadata-file-that-will-describe-the-files-in-the-package" class="section level3">
 <h3>2. Prepare a metadata file that will describe the files in the package</h3>
-<p>The next step is to prepare a metadata file that will describe the science datasets and other files in the package. The most common metadata format used in the DataONE network is the <a href="https://knb.ecoinformatics.org/#external//emlparser/docs/index.html">Ecological Metadata Langauage</a> (EML). Other supported formats include FGDC, ISO 19115 and others. Additional information about EML is available at <a href="https://knb.ecoinformatics.org/#external//emlparser/docs/index.html" class="uri">https://knb.ecoinformatics.org/#external//emlparser/docs/index.html</a>.</p>
+<p>The next step is to prepare a metadata file that will describe the science datasets and other files in the package. The most common metadata format used in the DataONE network is the <a href="https://knb.ecoinformatics.org/#external//emlparser/docs/index.html">Ecological Metadata Langauge</a> (EML). Other supported formats include FGDC, ISO 19115 and others. Additional information about EML is available at <a href="https://knb.ecoinformatics.org/#external//emlparser/docs/index.html" class="uri">https://knb.ecoinformatics.org/#external//emlparser/docs/index.html</a>.</p>
 <p>Detailed directions regarding authoring metadata documents are outside the scope of this document.</p>
 <p>DataONE requires that any file uploaded to a member node have a unique identifier associated with it.</p>
 <p>When a DataObject is created, a unique identifier is generated for the DataObject if one is not specified using the <code>id</code> parameter. This automatically generated identifier has the format “<a href="urn:uuid" class="uri">urn:uuid</a>:<a unique string>”, for example “<a href="urn:uuid:c3443142-6260-4ea5-aaa1-1114981e04ad" class="uri">urn:uuid:c3443142-6260-4ea5-aaa1-1114981e04ad</a>”.</p>
@@ -343,16 +365,16 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 <p>Now add the metadata object to the DataPackage:</p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1">dp &lt;-<span class="st"> </span><span class="kw">addMember</span>(dp, metadataObj)</a></code></pre></div>
 <p>Files are considered members of a package when they are enumerated and described by a metadata file, and a relationship between the metadata and data object is explicitly stated.</p>
-<p>DataONE (and the <code>dataone</code> R package) has adopted the package guidelines detailed by the <a href="https://purl.dataone.org/architecture/design/DataPackage.html">DataONE package</a> implementation. In this specification, the relationship that links a metadata object and a science object is <a href="http://vocab.ox.ac.uk/cito">CITO</a> <em>documents</em>.</p>
+<p>DataONE (and the <code>dataone</code> R package) has adopted the package guidelines detailed by the <a href="https://purl.dataone.org/architecture/design/DataPackage.html">DataONE package</a> implementation. In this specification, the relationship that links a metadata object and a science object is CiTO (Citation Typing Ontology) <em>documents</em>.</p>
 <p>This relationship between the science metadata and data objects will be added to the DataPackage automatically for each data object as it is added to the DataPackage, if the metadata object is first added, then referenced as the DataObjects are added.</p>
-<p>As the metadata object has already been added, it can be refernced as each DataObject is added.</p>
+<p>As the metadata object has already been added, it can be referenced as each DataObject is added.</p>
 <div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" data-line-number="1">dp &lt;-<span class="st"> </span><span class="kw">addMember</span>(dp, sourceObj, metadataObj)</a></code></pre></div>
-<p>Since <code>metadataObj</code> is included as the third argument here, the <a href="http://vocab.ox.ac.uk/cito">CITO</a> <em>documents</em> relationship will automatically be added between <code>metadataObj</code> and <code>sourceObj</code>.</p>
-<p>Alternatively, this relationship between the metadata and science objects can be made explictly using the <code>insertRelationship()</code> method:</p>
+<p>Since <code>metadataObj</code> is included as the third argument here, the CiTO <em>documents</em> relationship will automatically be added between <code>metadataObj</code> and <code>sourceObj</code>.</p>
+<p>Alternatively, this relationship between the metadata and science objects can be made explicitly using the <code>insertRelationship()</code> method:</p>
 <div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" data-line-number="1">dp &lt;-<span class="st"> </span><span class="kw">addMember</span>(dp, metadataObj)</a>
 <a class="sourceLine" id="cb7-2" data-line-number="2">dp &lt;-<span class="st"> </span><span class="kw">addMember</span>(dp, sourceObj)</a>
 <a class="sourceLine" id="cb7-3" data-line-number="3">dp &lt;-<span class="st"> </span><span class="kw">insertRelationship</span>(dp, <span class="kw">getIdentifier</span>(metadataObj), <span class="kw">getIdentifier</span>(sourceObj))</a></code></pre></div>
-<p>Note that the relationship type, using the <code>insertRelationship()</code> <code>predicate</code> argument does not have to be specified in this case, as the <a href="http://vocab.ox.ac.uk/cito">CITO</a> <em>documents</em> relationship is the default value for <code>insertRelationship</code>.</p>
+<p>Note that the relationship type, using the <code>insertRelationship()</code> <code>predicate</code> argument does not have to be specified in this case, as the CiTO <em>documents</em> relationship is the default value for <code>insertRelationship</code>.</p>
 </div>
 <div id="create-and-add-a-dataobject-for-each-data-file" class="section level3">
 <h3>3. Create and add a DataObject for each data file</h3>
@@ -376,11 +398,11 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 <div id="determine-what-access-your-data-and-metadata-should-have" class="section level3">
 <h3>4. Determine what access your data and metadata should have</h3>
 <p>DataONE provides a mechanism that allows data submitters to control access to their data.</p>
-<p>The levels of access available to objects in DataOne are “read”, “write”, and “changePermission”.</p>
+<p>The levels of access available to objects in DataONE are “read”, “write”, and “changePermission”.</p>
 <p>The “read” permission allows a user the ability to view the content of a DataONE object. The “write” permission allows a user the ability to change the content of an object via update services. The “changePermission” permission allows the ability to change the access policy for an object and includes both read and write permissions.</p>
-<p>The access rules that are added to DataObjects in a DataPackage will determine the acces that is granted to users accessing the package after it is uploaded to DataONE.</p>
+<p>The access rules that are added to DataObjects in a DataPackage will determine the access that is granted to users accessing the package after it is uploaded to DataONE.</p>
 <p>Each of these permissions can be granted to a single user, a group of users, or the special <em>public</em> user which means all users.</p>
-<p>Each object in DataONE can have one or more access rules that control the access of that object. The complete set of access rules for an object is refered to as its <em>access policy</em>.</p>
+<p>Each object in DataONE can have one or more access rules that control the access of that object. The complete set of access rules for an object is referred to as its <em>access policy</em>.</p>
 <p>Access rules can be added to each <em>DataObject</em> individually after it has been created.</p>
 <p>Alternatively, access rules can be specified for all package members when a package is uploaded using <code>uploadDataPackage</code>. This method is shown at the end of this section.</p>
 <p>To grant read permission to all users:</p>
@@ -404,7 +426,7 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 </div>
 <div id="using-a-digital-object-identifier-with-a-package." class="section level2">
 <h2>Using a Digital Object Identifier with a package.</h2>
-<p>A Digital Object Identfier (DOI) may be assigned to the metadata <em>DataObject</em>, using the <em>generateIdentifier</em> method:</p>
+<p>A Digital Object Identifier (DOI) may be assigned to the metadata <em>DataObject</em>, using the <em>generateIdentifier</em> method:</p>
 <div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb13-1" data-line-number="1">cn &lt;-<span class="st"> </span><span class="kw">CNode</span>(<span class="st">&quot;STAGING&quot;</span>)</a>
 <a class="sourceLine" id="cb13-2" data-line-number="2">mn &lt;-<span class="st"> </span><span class="kw">getMNode</span>(cn, <span class="st">&quot;urn:node:mnStageUCSB2&quot;</span>)</a>
 <a class="sourceLine" id="cb13-3" data-line-number="3">doi &lt;-<span class="st"> </span><span class="kw">generateIdentifier</span>(mn, <span class="st">&quot;DOI&quot;</span>)</a>
@@ -454,7 +476,7 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 <div id="update-the-dataone-system-metadata-for-an-object-mnode-updatesystemmetadata" class="section level3">
 <h3>Update the DataONE system metadata for an object (MNode: updateSystemMetadata)</h3>
 <p>The system metadata can be updated for an object in DataONE without updating the data bytes of the object itself. For example, if an object was only readable by the data submitter, the access policy for an object can be updated to enable public access. System metadata is updated for an object using the <em>updateSystemMetadata</em> method:</p>
-<p>The following exmaple first downloads the current system metadata for the pid from the previous example, then updates the access policy that will be applied to the object and uploads the new system metadata to DataONE so that the changes will be applied:</p>
+<p>The following example first downloads the current system metadata for the pid from the previous example, then updates the access policy that will be applied to the object and uploads the new system metadata to DataONE so that the changes will be applied:</p>
 <div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb17-1" data-line-number="1">cn &lt;-<span class="st"> </span><span class="kw">CNode</span>(<span class="st">&quot;STAGING&quot;</span>)</a>
 <a class="sourceLine" id="cb17-2" data-line-number="2">mn &lt;-<span class="st"> </span><span class="kw">getMNode</span>(cn, <span class="st">&quot;urn:node:mnStageUCSB2&quot;</span>)</a>
 <a class="sourceLine" id="cb17-3" data-line-number="3">sysmeta &lt;-<span class="st"> </span><span class="kw">getSystemMetadata</span>(mn, pid)</a>

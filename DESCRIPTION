@@ -1,6 +1,6 @@
 Package: dataone
-Version: 2.1.1
-Date: 2018-06-22
+Version: 2.1.2
+Date: 2019-01-29
 Title: R Interface to the DataONE REST API
 Authors@R: c( person("Matthew B.", "Jones", role = c("aut", "cre"), email = "jones@nceas.ucsb.edu"), 
   person("Peter", "Slaughter", role = "aut", email = "slaughter@nceas.ucsb.edu"),
@@ -32,9 +32,10 @@ Collate: 'AbstractTableDescriber.R' 'auth_request.R' 'D1Node.R'
         'AuthenticationManager.R' 'CNode.R' 'CertificateManager.R'
         'D1Object.R' 'MNode.R' 'D1Client.R' 'EMLParser.R'
         'dataone-package.R' 'yyy.R' 'zzz.R'
-RoxygenNote: 6.0.1
+Encoding: UTF-8
+RoxygenNote: 6.1.1
 NeedsCompilation: no
-Packaged: 2018-06-28 05:21:34 UTC; jones
+Packaged: 2019-01-29 20:57:14 UTC; slaughter
 Author: Matthew B. Jones [aut, cre],
   Peter Slaughter [aut],
   Rob Nahf [aut],
@@ -47,4 +48,4 @@ Author: Matthew B. Jones [aut, cre],
   Regents of the University of California [cph]
 Maintainer: Matthew B. Jones <jones@nceas.ucsb.edu>
 Repository: CRAN
-Date/Publication: 2018-06-28 05:47:53 UTC
+Date/Publication: 2019-01-29 21:40:03 UTC

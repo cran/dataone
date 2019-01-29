@@ -11,14 +11,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 
-<meta name="date" content="2018-06-27" />
+<meta name="date" content="2019-01-29" />
 
 <title>Searching DataONE Data Holdings</title>
 
 
 
 <style type="text/css">code{white-space: pre;}</style>
-<style type="text/css">
+<style type="text/css" data-origin="pandoc">
 a.sourceLine { display: inline-block; line-height: 1.25; }
 a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
 a.sourceLine:empty { height: 1.2em; position: absolute; }
@@ -82,7 +82,29 @@ code span.st { color: #4070a0; } /* String */
 code span.va { color: #19177c; } /* Variable */
 code span.vs { color: #4070a0; } /* VerbatimString */
 code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+
 </style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    for (var j = 0; j < rules.length; j++) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' || rule.style.backgroundColor === '') continue;
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
 
 
 
@@ -278,18 +300,18 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 
 
 <h1 class="title toc-ignore">Searching DataONE Data Holdings</h1>
-<h4 class="date"><em>2018-06-27</em></h4>
+<h4 class="date"><em>2019-01-29</em></h4>
 
 
 
 <p>The primary method to locate data in the DataONE network is to use the web based search tool located at <a href="https://search.dataone.org" class="uri">https://search.dataone.org</a>.</p>
-<p>Data can also be discovered programatically from R using the <em>dataone</em> R package method <code>query</code>. Both the web page and the R method access the same underlying search mechanism, the Apache Foundation Solr search engine that runs on the <a href="https://www.dataone.org/coordinating-nodes">DataONE Coordinating Node</a>. The DataONE Solr index, similar to a catalog or database, contains information for every dataset that is available from the DataONE network.</p>
+<p>Data can also be discovered programmatically from R using the <em>dataone</em> R package method <code>query</code>. Both the web page and the R method access the same underlying search mechanism, the Apache Foundation Solr search engine that runs on the <a href="https://www.dataone.org/coordinating-nodes">DataONE Coordinating Node</a>. The DataONE Solr index, similar to a catalog or database, contains information for every dataset that is available from the DataONE network.</p>
 <p>The same search mechanism is available on <a href="https://www.dataone.org/current-member-nodes">DataONE Member Nodes</a>. However, the search index on a member node only contains dataset information for datasets that are contained on that member node.</p>
 <p>Information about the Solr search engine can be obtained at <a href="http://lucene.apache.org/solr/resources.html">Solr Resources</a>.</p>
 <p>Additional information about searching DataONE can be viewed at <a href="https://purl.dataone.org/architecture/design/SearchMetadata.html">Content Discovery</a>.</p>
 <div id="using-the-query-method" class="section level2">
 <h2>Using The <code>query</code> Method</h2>
-<p>Some familiarity with Solr is helpful when using the <code>query</code> method effectively, however basic queries can be very powerful and the examples in this document can provide a starting point. As an alternative to composing queries using Solr syntax, a simplier search mechanism is available with the <code>query</code> method that uses name, value pairs (See the section: *A Simplied Search&quot;).</p>
+<p>Some familiarity with Solr is helpful when using the <code>query</code> method effectively, however basic queries can be very powerful and the examples in this document can provide a starting point. As an alternative to composing queries using Solr syntax, a simpler search mechanism is available with the <code>query</code> method that uses name, value pairs (See the section: *A Simplified Search&quot;).</p>
 <p>Additional information about the <code>query</code> method can be obtained from the R help facility, e.g. <code>?query</code> from the R command line.</p>
 <div id="query-and-return-an-r-list" class="section level3">
 <h3>Query and return an R list</h3>
@@ -327,7 +349,7 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 </div>
 <div id="using-a-simplified-search." class="section level3">
 <h3>Using a Simplified Search.</h3>
-<p>A search may be performed by just specifying query fields and values using the <em>searchTerms</em> parameter. For example, to search for datasets that mention ‘kelp’ in the abstract and have an attribute discription that contains the word ‘biomass’, the following query could be used:</p>
+<p>A search may be performed by just specifying query fields and values using the <em>searchTerms</em> parameter. For example, to search for datasets that mention ‘kelp’ in the abstract and have an attribute description that contains the word ‘biomass’, the following query could be used:</p>
 <div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" data-line-number="1">cn &lt;-<span class="st"> </span><span class="kw">CNode</span>(<span class="st">&quot;PROD&quot;</span>)</a>
 <a class="sourceLine" id="cb7-2" data-line-number="2">mn &lt;-<span class="st"> </span><span class="kw">getMNode</span>(cn, <span class="st">&quot;urn:node:KNB&quot;</span>)</a>
 <a class="sourceLine" id="cb7-3" data-line-number="3">mySearchTerms &lt;-<span class="st"> </span><span class="kw">list</span>(<span class="dt">abstract=</span><span class="st">&quot;kelp&quot;</span>, <span class="dt">attribute=</span><span class="st">&quot;biomass&quot;</span>)</a>
@@ -337,7 +359,7 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 </div>
 <div id="search-just-a-member-node" class="section level3">
 <h3>Search just a member node</h3>
-<p>If it is known which Member Node holds the data of interest, then a search can be limited to just that MN by sending the search directly to that MN instead of the CN. For example, if the dataset of interest is on The Knowledge Network for Biocomplexity (KNB) Member Node, then the search is performed with the statments:</p>
+<p>If it is known which Member Node holds the data of interest, then a search can be limited to just that MN by sending the search directly to that MN instead of the CN. For example, if the dataset of interest is on The Knowledge Network for Biocomplexity (KNB) Member Node, then the search is performed with the statements:</p>
 <div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" data-line-number="1"><span class="co"># Query the data holdings on a member node</span></a>
 <a class="sourceLine" id="cb8-2" data-line-number="2">cn &lt;-<span class="st"> </span><span class="kw">CNode</span>(<span class="st">&quot;PROD&quot;</span>)</a>
 <a class="sourceLine" id="cb8-3" data-line-number="3">mn &lt;-<span class="st"> </span><span class="kw">getMNode</span>(cn, <span class="st">&quot;urn:node:KNB&quot;</span>)</a>

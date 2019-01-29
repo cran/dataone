@@ -9,10 +9,10 @@
 uploadDataPackage(x, ...)
 
 \S4method{uploadDataPackage}{D1Client}(x, dp, replicate = NA,
-  numberReplicas = NA, preferredNodes = NA, public = as.logical(FALSE),
-  accessRules = NA, quiet = as.logical(TRUE),
-  resolveURI = as.character(NA), packageId = as.character(NA),
-  as = "character", ...)
+  numberReplicas = NA, preferredNodes = NA,
+  public = as.logical(FALSE), accessRules = NA,
+  quiet = as.logical(TRUE), resolveURI = as.character(NA),
+  packageId = as.character(NA), as = "character", ...)
 }
 \arguments{
 \item{x}{A D1Client instance.}
@@ -51,7 +51,7 @@ recorded relationships between DataObjects, and this is uploaded as well.
 The DataPackage describes the collection of data object and their associated 
 metadata object, with the relationships and members serialized into a document
 stored under, and retrievable with, the packageId as it's own distinct object.
-Any objects in the data map that have a dataUploaded value are assumed to be 
+Any objects in the data map that have a dateUploaded value are assumed to be 
 pre-existing in the system, and skipped.
 }
 \note{

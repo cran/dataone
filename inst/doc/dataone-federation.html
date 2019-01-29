@@ -11,14 +11,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 
-<meta name="date" content="2018-06-27" />
+<meta name="date" content="2019-01-29" />
 
 <title>DataONE Federation</title>
 
 
 
 <style type="text/css">code{white-space: pre;}</style>
-<style type="text/css">
+<style type="text/css" data-origin="pandoc">
 a.sourceLine { display: inline-block; line-height: 1.25; }
 a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
 a.sourceLine:empty { height: 1.2em; position: absolute; }
@@ -82,7 +82,29 @@ code span.st { color: #4070a0; } /* String */
 code span.va { color: #19177c; } /* Variable */
 code span.vs { color: #4070a0; } /* VerbatimString */
 code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+
 </style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    for (var j = 0; j < rules.length; j++) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' || rule.style.backgroundColor === '') continue;
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
 
 
 
@@ -278,7 +300,7 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 
 
 <h1 class="title toc-ignore">DataONE Federation</h1>
-<h4 class="date"><em>2018-06-27</em></h4>
+<h4 class="date"><em>2019-01-29</em></h4>
 
 
 
@@ -301,7 +323,7 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 <p>The following features are available via the <code>dataone</code> package, for member nodes that have implemented the DataONE version 2.0 API.</p>
 <div id="series-identifiers" class="section level3">
 <h3>1. Series Identifiers</h3>
-<p>Each data, metadata, and resource map object in DataONE has a unique identifier, refered to in DataONE documentation as a Persistent Identifier (PID). A PID is associated with one object in DataONE and always refers to the same object, the same set of bytes that are stored on the DataONE network.</p>
+<p>Each data, metadata, and resource map object in DataONE has a unique identifier, referred to in DataONE documentation as a Persistent Identifier (PID). A PID is associated with one object in DataONE and always refers to the same object, the same set of bytes that are stored on the DataONE network.</p>
 <p>A data or metadata object can be updated on a DataONE Member Node by using the R method dataone::updateObject(), so that a new version of the object becomes the active version that is discoverable in searches of DataONE. The older version is still available if the PID is known, but this version will not show up in DataONE searches. In order to download the new version, the new PID must be discovered and specified when the object is downloaded.</p>
 <p>With <em>dataone</em> Version 2.0, an additional, optional identifier can be associated with an object, the Series Identifier (SID). Using SIDs the most current version of an object can be obtained, without the need to determine the PID of the latest version. For example, if the SID is specified when the object is downloaded, the most recent version of that object will be downloaded.</p>
 </div>
@@ -309,7 +331,7 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 <h3>2. DataONE User Authentication Using Tokens</h3>
 <p>Uploading data to DataONE requires that a DataONE user identity be provided. In DataONE Version 1.x, the identity of a user was provided by an X.509 client certificate. DataONE Version 2.0 adds an additional method to provide identity information - an <em>authentication token</em>. An authentication token is an encrypted text string that is provided by DataONE that can be sent to DataONE services to prove a user’s identity.</p>
 <p>Authentication tokens can be used with Member Nodes that have been upgraded to the DataONE Version 2.0 Member Node API</p>
-<p>The process of providing user identity information either via an X.509 certificate or via an authentication token is refered to as <em>authentication</em>.</p>
+<p>The process of providing user identity information either via an X.509 certificate or via an authentication token is referred to as <em>authentication</em>.</p>
 <p>Authentication tokens can be obtained from a user’s DataONE account settings web page. To create an authentication token:</p>
 <ul>
 <li>Navigate to <a href="https://search.dataone.org" class="uri">https://search.dataone.org</a></li>
@@ -321,7 +343,7 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 <li>Click “Renew authentication token” if the token you have been using has expired.</li>
 <li>Click on the “Copy” button below the text window to copy the authentication string to the paste buffer.</li>
 <li>Note the identity string and expiration date of the token.</li>
-<li>In the R console, paste the string which is similiar to this example:</li>
+<li>In the R console, paste the string which is similar to this example:</li>
 </ul>
 <pre><code>  options(dataone_token = &quot;eyJhbGciOiJSUzI1NiJ9...&quot;)</code></pre>
 <p>(For this example, the typically very long token value has been truncated for brevity, however the entire string must be used for the token to be valid.)</p>
@@ -399,12 +421,12 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 </tr>
 </tbody>
 </table>
-<p>Each DataONE environment has a CN that maintains a registry of all MNs in that network. The CN can be queried for a list of all MNs in a network, for example, to see the MNs that are currently in the production environmemt:</p>
+<p>Each DataONE environment has a CN that maintains a registry of all MNs in that network. The CN can be queried for a list of all MNs in a network, for example, to see the MNs that are currently in the production environment:</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1">cn &lt;-<span class="st"> </span><span class="kw">CNode</span>(<span class="st">&quot;PROD&quot;</span>)</a>
 <a class="sourceLine" id="cb4-2" data-line-number="2"><span class="kw">unlist</span>(<span class="kw">lapply</span>(<span class="kw">listNodes</span>(cn), <span class="cf">function</span>(x) x<span class="op">@</span>name))</a></code></pre></div>
 <p>To see the URL service endpoint for a CN, you can view the <code>endpoint</code> slot:</p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1">cn<span class="op">@</span>endpoint</a></code></pre></div>
-<p>To see the member nodes that are currenly in the STAGE2 environment:</p>
+<p>To see the member nodes that are currently in the STAGE2 environment:</p>
 <div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" data-line-number="1">cn &lt;-<span class="st"> </span><span class="kw">CNode</span>(<span class="st">&quot;STAGING2&quot;</span>)</a>
 <a class="sourceLine" id="cb6-2" data-line-number="2"><span class="kw">unlist</span>(<span class="kw">lapply</span>(<span class="kw">listNodes</span>(cn), <span class="cf">function</span>(x) x<span class="op">@</span>name))</a></code></pre></div>
 </div>

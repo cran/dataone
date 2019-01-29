@@ -3,7 +3,7 @@ title: "Known Issues"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Known Issues With dataone R Packge v2.0}
+  %\VignetteIndexEntry{Known Issues}
   %\VignetteEngine{knitr::rmarkdown}
   %\usepackage[utf8]{inputenc}
 ---
@@ -11,7 +11,7 @@ vignette: >
 ## Known Issues With dataone R Package Version 2.0
 ### Error Using X.509 Certificates 
 
-Using an X.509 certificate for DataONE authenticatin on certain versions of Mac OS X can cause the following error:
+Using an X.509 certificate for DataONE authentication on certain versions of Mac OS X can cause the following error:
 
 ```
 Error in curl::curl_fetch_memory(url, handle = handle) : 

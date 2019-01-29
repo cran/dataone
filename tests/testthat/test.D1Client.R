@@ -64,23 +64,24 @@ test_that("D1Client methods", {
   cli <- D1Client("STAGING2", "urn:node:mnTestKNB")
   expect_match(getMNodeId(cli), "urn:node:mnTestKNB")
   # Test setMNodeId
-  cli <- new("D1Client", env="SANDBOX2")
-  cli <- setMNodeId(cli, "urn:node:mnDemo2")
-  expect_match(cli@mn@identifier, "urn:node:mnDemo2")
+  cli <- new("D1Client", env="STAGING2")
+  cli <- setMNodeId(cli, "urn:node:mnTestKNB")
+  expect_match(cli@mn@identifier, "urn:node:mnTestKNB")
   
   # Test getMN (deprecated)
   suppressWarnings(testMN <- getMN(cli))
-  expect_match(testMN@identifier, "urn:node:mnDemo2")
-  suppressWarnings(testMN <- getMN(cli, nodeid="urn:node:mnDemo2"))
-  expect_match(testMN@identifier, "urn:node:mnDemo2")
+  expect_match(testMN@identifier, "urn:node:mnTestKNB")
+  suppressWarnings(testMN <- getMN(cli, nodeid="urn:node:mnTestKNB"))
+  expect_match(testMN@identifier, "urn:node:mnTestKNB")
   
   # Test getCN (deprecated)
   suppressWarnings(testCN <- getCN(cli))
-  expect_match(testCN@baseURL, "test.dataone")
+  expect_match(testCN@baseURL, "cn-stage-2.test.dataone.org")
   
 })
 
 test_that("D1Client getDataObject", {
+    skip_on_cran()
     library(dataone)
     library(digest)
     #cli <- D1Client("PROD", "urn:node:KNB")
@@ -271,7 +272,7 @@ test_that("D1Client updateDataPackage works", {
         # Associate the metadata object with each data object using the 'insertRelationships' method.
         # Since a relationship type (the predicate argument) is not specified, the default relationship
         # of 'cito:documents' is used, to indicate the the metadata object documents each data object.
-        # See "http://vocab.ox.ac.uk/cito", for further information about the "Citation Type Ontology".
+        # See "http://purl.org/spar/cito", for further information about the "Citation Type Ontology".
         dp <- addMember(dp, metadataObj)
         
         sourceData <- system.file("extdata/sample.csv", package="dataone")
@@ -518,7 +519,7 @@ test_that("D1Client updateDataPackage works for a metadata only DataPackage", {
         # Associate the metadata object with each data object using the 'insertRelationships' method.
         # Since a relationship type (the predicate argument) is not specified, the default relationship
         # of 'cito:documents' is used, to indicate the the metadata object documents each data object.
-        # See "http://vocab.ox.ac.uk/cito", for further information about the "Citation Type Ontology".
+        # See "http://purl.org/spar/cito", for further information about the "Citation Type Ontology".
         dp <- addMember(dp, metadataObj)
         
         pkgId <- uploadDataPackage(d1cTest, dp, public=TRUE, quiet=TRUE)
@@ -530,6 +531,7 @@ test_that("D1Client updateDataPackage works for a metadata only DataPackage", {
 })
 
 test_that("D1Client downloadObject", {
+  skip_on_cran()
   library(dataone)
   #cli <- D1Client("PROD", "urn:node:KNB")
   expect_false(is.null(d1cKNB))

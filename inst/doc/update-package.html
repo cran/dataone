@@ -11,14 +11,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 
-<meta name="date" content="2018-06-27" />
+<meta name="date" content="2019-01-29" />
 
 <title>Updating Packages on DataONE</title>
 
 
 
 <style type="text/css">code{white-space: pre;}</style>
-<style type="text/css">
+<style type="text/css" data-origin="pandoc">
 a.sourceLine { display: inline-block; line-height: 1.25; }
 a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
 a.sourceLine:empty { height: 1.2em; position: absolute; }
@@ -82,7 +82,29 @@ code span.st { color: #4070a0; } /* String */
 code span.va { color: #19177c; } /* Variable */
 code span.vs { color: #4070a0; } /* VerbatimString */
 code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+
 </style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    for (var j = 0; j < rules.length; j++) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' || rule.style.backgroundColor === '') continue;
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
 
 
 
@@ -278,7 +300,7 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 
 
 <h1 class="title toc-ignore">Updating Packages on DataONE</h1>
-<h4 class="date"><em>2018-06-27</em></h4>
+<h4 class="date"><em>2019-01-29</em></h4>
 
 
 
@@ -349,7 +371,7 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 <p>The original uploaded package included the file <code>Strix-occidentalis-obs.csv</code>. This file can be substituted for a different file, as would be necessary if it was determined that the zipped form of the file should have been used instead.</p>
 <p>First, determine which DataObject in the DataPackage <code>pkg</code> contains the file to be replaced:</p>
 <div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" data-line-number="1">objId &lt;-<span class="st"> </span><span class="kw">selectMember</span>(pkg, <span class="dt">name=</span><span class="st">&quot;sysmeta@fileName&quot;</span>, <span class="dt">value=</span><span class="st">'Strix-occidentalis-obs.csv'</span>)</a></code></pre></div>
-<p>The <code>selectMember</code> method inspects every DataObject in the package <code>pkg</code> and checks for a match in the R S4 slot specified by the <code>name</code> argument for the value specified with the <code>value</code> argument. The identifer for any matching DataObject is returned.</p>
+<p>The <code>selectMember</code> method inspects every DataObject in the package <code>pkg</code> and checks for a match in the R S4 slot specified by the <code>name</code> argument for the value specified with the <code>value</code> argument. The identifier for any matching DataObject is returned.</p>
 <p>The documentation for the DataObject R slots available can be viewed with the command <code>help(&quot;DataObject-class&quot;)</code>. As a <em>SystemMetadata</em> object is contained in each DataObject, the slots for SystemMetadata are available, with documentation viewable with <code>help(&quot;SystemMetadata-class&quot;)</code></p>
 <p>Next, update the DataObject in <code>pkg</code> to replace the file <code>Strix-occidentalis-obs.csv</code> with <code>Strix-occidentalis-obs.csv.zip</code> using the <code>replaceMember</code> method:</p>
 <div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb11-1" data-line-number="1">objId &lt;-<span class="st"> </span><span class="kw">selectMember</span>(pkg, <span class="dt">name=</span><span class="st">&quot;sysmeta@fileName&quot;</span>, <span class="dt">value=</span><span class="st">'Strix-occidentalis-obs.csv'</span>)</a>
@@ -362,11 +384,11 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 <p>The <code>selectMember</code> method returns the identifier of any DataObject in the package with an R slot name specified in the parameter <code>name</code> that matches the value specified in the argument <code>value</code>. In this particular package, there is only one DataPackage that has <code>formatId</code> of <code>eml://ecoinformatics.org/eml-2.1.1</code>, so only that identifier is returned.</p>
 <p>Note that the <code>getValue</code> method can be used to retrieve the values for DataObject slots, for example:</p>
 <div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb13-1" data-line-number="1"><span class="kw">getValue</span>(pkg, <span class="dt">name=</span><span class="st">&quot;sysmeta@formatId&quot;</span>)</a></code></pre></div>
-<pre><code>## $`urn:uuid:47a0e2f2-9e5d-4374-af6c-a84125a8b5aa`
-## [1] &quot;application/R&quot;
-## 
-## $`urn:uuid:96f7b32c-d116-4efe-ba08-996d581be680`
+<pre><code>## $`urn:uuid:3b38b8b5-5acc-471c-9cd0-804631f27925`
 ## [1] &quot;application/octet-stream&quot;
+## 
+## $`urn:uuid:47a0e2f2-9e5d-4374-af6c-a84125a8b5aa`
+## [1] &quot;application/R&quot;
 ## 
 ## $`urn:uuid:a9aeefcf-228c-4534-b4ad-b480a937be7d`
 ## [1] &quot;eml://ecoinformatics.org/eml-2.1.1&quot;
@@ -383,14 +405,14 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 <pre><code>## Members:
 ## 
 ## filename               format     mediaType  size     identifier                     modified local 
+## WeatherInf.txt         text/csv   NA         1933     urn:uuid:24c1...b-73041bce3f46 n        y     
+## Strix-occ...bs.csv.zip app...ream NA         477      urn:uuid:3b38...0-804631f27925 y        y     
 ## filterObs.R            app...on/R tex...rsrc 554      urn:uuid:47a0...c-a84125a8b5aa n        y     
-## Strix-occ...bs.csv.zip app...ream NA         477      urn:uuid:96f7...8-996d581be680 y        y     
 ## strix-pac...thwest.xml eml....1.1 NA         22840    urn:uuid:a9ae...d-b480a937be7d n        y     
 ## OwlNightj.csv          text/csv   NA         3048733  urn:uuid:e1e2...9-b1b3a8b81afe n        y     
-## WeatherInf.txt         text/csv   NA         1933     urn:uuid:f6d4...9-25b70f22006e n        y     
 ## 
 ## Package identifier: resource_map_urn:uuid:a9aeefcf-228c-4534-b4ad-b480a937be7d
-## RightsHolder: http://orcid.org/0000-0002-2192-403X,NA
+## RightsHolder: NA,http://orcid.org/0000-0002-2192-403X
 ## 
 ## 
 ## Relationships (updated):
@@ -400,10 +422,10 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 ## 2 Strix-occidentalis-obs.csv.zip cito:isDocumentedBy    strix-pacific-northwest.xml
 ## 8                 WeatherInf.txt cito:isDocumentedBy    strix-pacific-northwest.xml
 ## 1                    filterObs.R cito:isDocumentedBy    strix-pacific-northwest.xml
-## 3    strix-pacific-northwest.xml      cito:documents                    filterObs.R
+## 7    strix-pacific-northwest.xml      cito:documents                 WeatherInf.txt
 ## 4    strix-pacific-northwest.xml      cito:documents Strix-occidentalis-obs.csv.zip
-## 5    strix-pacific-northwest.xml      cito:documents                  OwlNightj.csv
-## 7    strix-pacific-northwest.xml      cito:documents                 WeatherInf.txt</code></pre>
+## 3    strix-pacific-northwest.xml      cito:documents                    filterObs.R
+## 5    strix-pacific-northwest.xml      cito:documents                  OwlNightj.csv</code></pre>
 </div>
 <div id="upload-the-modified-datapackage" class="section level3">
 <h3>4. Upload the modified DataPackage</h3>
@@ -414,16 +436,16 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 <div id="updating-metadata-for-a-datapackage" class="section level2">
 <h2>Updating Metadata For A DataPackage</h2>
 <p>As DataPackage members are modified, the DataObject that holds the metadata that describes the package members may become outdated.</p>
-<p>For example, it was shown above that a package member was updated to contain the file <code>Strix-occidentalis-obs.csv.zip</code> instead of <code>Strix-occidentalis-obs.csv</code>. After this change, the DataObject holding the EML metadata should be updated so that the EML elemnt <code>objectName</code> for this dataset matched the new filename:</p>
+<p>For example, it was shown above that a package member was updated to contain the file <code>Strix-occidentalis-obs.csv.zip</code> instead of <code>Strix-occidentalis-obs.csv</code>. After this change, the DataObject holding the EML metadata should be updated so that the EML element <code>objectName</code> for this dataset matched the new filename:</p>
 <div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb19-1" data-line-number="1">metadataId &lt;-<span class="st"> </span><span class="kw">selectMember</span>(pkg, <span class="dt">name=</span><span class="st">&quot;sysmeta@formatId&quot;</span>, <span class="dt">value=</span><span class="st">&quot;eml://ecoinformatics.org/eml-2.1.1&quot;</span>)</a>
 <a class="sourceLine" id="cb19-2" data-line-number="2">nameXpath &lt;-<span class="st"> '//dataTable/physical/objectName[text()=&quot;Strix-occidentalis-obs.csv&quot;]'</span></a>
 <a class="sourceLine" id="cb19-3" data-line-number="3">newName &lt;-<span class="st"> </span><span class="kw">basename</span>(zipfile)</a>
 <a class="sourceLine" id="cb19-4" data-line-number="4">pkg &lt;-<span class="st"> </span><span class="kw">updateMetadata</span>(pkg, metadataId, <span class="dt">xpath=</span>nameXpath, <span class="dt">replacement=</span>newName)</a></code></pre></div>
-<p>The <code>updateMetadata</code> method updates a DataObject containing XML, substituting the value located in the document specified with the <code>xpath</code> argument with the value provided in the <code>replacement</code> argument. In this example, the XML contained in the DataObject with identifier <code>metadataId</code> is an EML metadata document. The EML elewent <code>objectName</code> is updated with the value <code>Strix-occidentalis-obs.csv.zip</code>.</p>
+<p>The <code>updateMetadata</code> method updates a DataObject containing XML, substituting the value located in the document specified with the <code>xpath</code> argument with the value provided in the <code>replacement</code> argument. In this example, the XML contained in the DataObject with identifier <code>metadataId</code> is an EML metadata document. The EML element <code>objectName</code> is updated with the value <code>Strix-occidentalis-obs.csv.zip</code>.</p>
 <p>Note the the <code>xpath</code> argument uses the XPath query language, which is used to locate elements within an XML document.</p>
-<p>For EML metadata, another element that may need to be updated, if it is present in the origianl EML file, is the distribution url. This element contains the link that can be used to download the file from DataONE, which includes the DataONE identifier for the object. Because the identifier value is set when the DataObject is created, the EML metadata is out of date and needs to be updated with the new identifier value.</p>
+<p>For EML metadata, another element that may need to be updated, if it is present in the original EML file, is the distribution url. This element contains the link that can be used to download the file from DataONE, which includes the DataONE identifier for the object. Because the identifier value is set when the DataObject is created, the EML metadata is out of date and needs to be updated with the new identifier value.</p>
 <p>In this example, the section of the metadata that describes the dataset <code>Strix-occidentalis-obs.csv.zip</code> will be updated.</p>
-<p>A portion of the EML from our exmaple looks like this:</p>
+<p>A portion of the EML from our example looks like this:</p>
 <pre><code>    &lt;dataTable&gt;
       &lt;entityName&gt;Strix Occidentalis&lt;/entityName&gt;
       &lt;entityDescription&gt;A data file that contains only observations of Strix occidentalis&lt;/entityDescription&gt;
@@ -447,7 +469,7 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 <div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb21-1" data-line-number="1">objId &lt;-<span class="st"> </span><span class="kw">selectMember</span>(pkg, <span class="dt">name=</span><span class="st">&quot;sysmeta@fileName&quot;</span>, <span class="dt">value=</span><span class="st">'Strix-occidentalis-obs.csv.zip'</span>)</a>
 <a class="sourceLine" id="cb21-2" data-line-number="2">newURL &lt;-<span class="st"> </span><span class="kw">sprintf</span>(<span class="st">&quot;%s/%s/resolve/%s&quot;</span>, d1c<span class="op">@</span>cn<span class="op">@</span>baseURL, d1c<span class="op">@</span>cn<span class="op">@</span>APIversion, objId)</a>
 <a class="sourceLine" id="cb21-3" data-line-number="3">newURL</a></code></pre></div>
-<pre><code>## [1] &quot;https://cn-stage.test.dataone.org/cn/v2/resolve/urn:uuid:96f7b32c-d116-4efe-ba08-996d581be680&quot;</code></pre>
+<pre><code>## [1] &quot;https://cn-stage.test.dataone.org/cn/v2/resolve/urn:uuid:3b38b8b5-5acc-471c-9cd0-804631f27925&quot;</code></pre>
 <p>The <code>selectMember</code> method checks slot specified in <code>name</code> argument, in this case <code>sysmeta@fileName</code>, of each <em>DataObject</em> in the <em>DataPackage</em> <code>pkg</code> and returns the identifier of any member that matches the specified value. This package has only one <em>DataObject</em> with the name <code>Strix-occidentalis-obs.csv.zip</code> so only one identifier is returned in <code>objId</code>.</p>
 <p>Next, the metadata element for the distribution url will be updated in the <em>DataObject</em> that contains the EML metadata in the package <code>pkg</code></p>
 <div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb23-1" data-line-number="1">metadataId &lt;-<span class="st"> </span><span class="kw">selectMember</span>(pkg, <span class="dt">name=</span><span class="st">&quot;sysmeta@formatId&quot;</span>, <span class="dt">value=</span><span class="st">&quot;eml://ecoinformatics.org/eml-2.1.1&quot;</span>)</a>
