@@ -7,11 +7,12 @@
 <meta charset="utf-8" />
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 
-<meta name="date" content="2019-01-29" />
+<meta name="date" content="2020-01-15" />
 
 <title>Updating Packages on DataONE</title>
 
@@ -97,7 +98,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
       if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
       var style = rule.style.cssText;
       // check if color or background-color is set
-      if (rule.style.color === '' || rule.style.backgroundColor === '') continue;
+      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
       // replace div.sourceCode by a pre.sourceCode rule
       sheets[i].deleteRule(j);
       sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
@@ -292,6 +293,9 @@ code > span.al { color: #ff0000; font-weight: bold; }
 code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61717; background-color: #e3d2d2; } 
 </style>
 
+
+
+
 </head>
 
 <body>
@@ -300,7 +304,7 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 
 
 <h1 class="title toc-ignore">Updating Packages on DataONE</h1>
-<h4 class="date"><em>2019-01-29</em></h4>
+<h4 class="date">2020-01-15</h4>
 
 
 
@@ -384,11 +388,11 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 <p>The <code>selectMember</code> method returns the identifier of any DataObject in the package with an R slot name specified in the parameter <code>name</code> that matches the value specified in the argument <code>value</code>. In this particular package, there is only one DataPackage that has <code>formatId</code> of <code>eml://ecoinformatics.org/eml-2.1.1</code>, so only that identifier is returned.</p>
 <p>Note that the <code>getValue</code> method can be used to retrieve the values for DataObject slots, for example:</p>
 <div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb13-1" data-line-number="1"><span class="kw">getValue</span>(pkg, <span class="dt">name=</span><span class="st">&quot;sysmeta@formatId&quot;</span>)</a></code></pre></div>
-<pre><code>## $`urn:uuid:3b38b8b5-5acc-471c-9cd0-804631f27925`
-## [1] &quot;application/octet-stream&quot;
-## 
-## $`urn:uuid:47a0e2f2-9e5d-4374-af6c-a84125a8b5aa`
+<pre><code>## $`urn:uuid:47a0e2f2-9e5d-4374-af6c-a84125a8b5aa`
 ## [1] &quot;application/R&quot;
+## 
+## $`urn:uuid:56a3d06f-fc88-49f3-ab69-6c9ba0e0b61e`
+## [1] &quot;application/octet-stream&quot;
 ## 
 ## $`urn:uuid:a9aeefcf-228c-4534-b4ad-b480a937be7d`
 ## [1] &quot;eml://ecoinformatics.org/eml-2.1.1&quot;
@@ -405,14 +409,14 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 <pre><code>## Members:
 ## 
 ## filename               format     mediaType  size     identifier                     modified local 
-## WeatherInf.txt         text/csv   NA         1933     urn:uuid:24c1...b-73041bce3f46 n        y     
-## Strix-occ...bs.csv.zip app...ream NA         477      urn:uuid:3b38...0-804631f27925 y        y     
 ## filterObs.R            app...on/R tex...rsrc 554      urn:uuid:47a0...c-a84125a8b5aa n        y     
+## Strix-occ...bs.csv.zip app...ream NA         477      urn:uuid:56a3...9-6c9ba0e0b61e y        y     
 ## strix-pac...thwest.xml eml....1.1 NA         22840    urn:uuid:a9ae...d-b480a937be7d n        y     
+## WeatherInf.txt         text/csv   NA         1933     urn:uuid:b97f...b-6eca71d92be4 n        y     
 ## OwlNightj.csv          text/csv   NA         3048733  urn:uuid:e1e2...9-b1b3a8b81afe n        y     
 ## 
 ## Package identifier: resource_map_urn:uuid:a9aeefcf-228c-4534-b4ad-b480a937be7d
-## RightsHolder: NA,http://orcid.org/0000-0002-2192-403X
+## RightsHolder: http://orcid.org/0000-0002-2192-403X,NA
 ## 
 ## 
 ## Relationships (updated):
@@ -422,9 +426,9 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 ## 2 Strix-occidentalis-obs.csv.zip cito:isDocumentedBy    strix-pacific-northwest.xml
 ## 8                 WeatherInf.txt cito:isDocumentedBy    strix-pacific-northwest.xml
 ## 1                    filterObs.R cito:isDocumentedBy    strix-pacific-northwest.xml
-## 7    strix-pacific-northwest.xml      cito:documents                 WeatherInf.txt
-## 4    strix-pacific-northwest.xml      cito:documents Strix-occidentalis-obs.csv.zip
 ## 3    strix-pacific-northwest.xml      cito:documents                    filterObs.R
+## 4    strix-pacific-northwest.xml      cito:documents Strix-occidentalis-obs.csv.zip
+## 7    strix-pacific-northwest.xml      cito:documents                 WeatherInf.txt
 ## 5    strix-pacific-northwest.xml      cito:documents                  OwlNightj.csv</code></pre>
 </div>
 <div id="upload-the-modified-datapackage" class="section level3">
@@ -469,7 +473,7 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 <div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb21-1" data-line-number="1">objId &lt;-<span class="st"> </span><span class="kw">selectMember</span>(pkg, <span class="dt">name=</span><span class="st">&quot;sysmeta@fileName&quot;</span>, <span class="dt">value=</span><span class="st">'Strix-occidentalis-obs.csv.zip'</span>)</a>
 <a class="sourceLine" id="cb21-2" data-line-number="2">newURL &lt;-<span class="st"> </span><span class="kw">sprintf</span>(<span class="st">&quot;%s/%s/resolve/%s&quot;</span>, d1c<span class="op">@</span>cn<span class="op">@</span>baseURL, d1c<span class="op">@</span>cn<span class="op">@</span>APIversion, objId)</a>
 <a class="sourceLine" id="cb21-3" data-line-number="3">newURL</a></code></pre></div>
-<pre><code>## [1] &quot;https://cn-stage.test.dataone.org/cn/v2/resolve/urn:uuid:3b38b8b5-5acc-471c-9cd0-804631f27925&quot;</code></pre>
+<pre><code>## [1] &quot;https://cn-stage.test.dataone.org/cn/v2/resolve/urn:uuid:56a3d06f-fc88-49f3-ab69-6c9ba0e0b61e&quot;</code></pre>
 <p>The <code>selectMember</code> method checks slot specified in <code>name</code> argument, in this case <code>sysmeta@fileName</code>, of each <em>DataObject</em> in the <em>DataPackage</em> <code>pkg</code> and returns the identifier of any member that matches the specified value. This package has only one <em>DataObject</em> with the name <code>Strix-occidentalis-obs.csv.zip</code> so only one identifier is returned in <code>objId</code>.</p>
 <p>Next, the metadata element for the distribution url will be updated in the <em>DataObject</em> that contains the EML metadata in the package <code>pkg</code></p>
 <div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb23-1" data-line-number="1">metadataId &lt;-<span class="st"> </span><span class="kw">selectMember</span>(pkg, <span class="dt">name=</span><span class="st">&quot;sysmeta@formatId&quot;</span>, <span class="dt">value=</span><span class="st">&quot;eml://ecoinformatics.org/eml-2.1.1&quot;</span>)</a>
@@ -478,6 +482,9 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 <p>When the modified metadata file is updated to DataONE, a new identifier is required, as the modified metadata will replace the old one by created a new object in DataONE, and marking the old one as <code>obsoleted</code> by the new one. For this reason, the call to <code>updateMetadata</code> will assign a new identifier to the metadata <em>DataObject</em> in the DataPackage <code>pkg</code>, if necessary.</p>
 </div>
 
+
+
+<!-- code folding -->
 
 
 <!-- dynamically load mathjax for compatibility with self-contained -->

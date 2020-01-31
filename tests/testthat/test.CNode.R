@@ -3,6 +3,7 @@ test_that("dataone library loads", {
 	expect_true(require(dataone))
 })
 test_that("CNode constructors", {
+  if(servicesDown) skip_on_cran()
 	library(dataone)
     # If not specified, "PROD" environment is used.
 	expect_match(cnProd@endpoint, "https://cn.dataone.org/cn")
@@ -14,9 +15,10 @@ test_that("CNode constructors", {
 	#expect_match(cn@endpoint, "https://cn-dev.test.dataone.org/cn")
 })
 test_that("CNode listNodes()", {
+  if(servicesDown) skip_on_cran()
   library(dataone)
   nodelist <- listNodes(cnProd)
-  expect_that(length(nodelist) > 0, is_true())
+  expect_true(length(nodelist) > 0)
   expect_match(class(nodelist[[1]]), "Node")
   expect_match(nodelist[[1]]@identifier, "urn:node:")
   expect_match(nodelist[[1]]@type, "cn|mn")
@@ -28,6 +30,7 @@ test_that("CNode listNodes()", {
 })
 
 test_that("CNode getObject()", {
+  if(servicesDown) skip_on_cran()
   library(dataone)
   library(XML)
   pid <- "aceasdata.3.2"
@@ -45,6 +48,7 @@ test_that("CNode getObject()", {
 })
 
 test_that("CNode getSystemMetadata()", {
+  if(servicesDown) skip_on_cran()
   library(dataone)
   pid <- "aceasdata.3.2"
   sysmeta <- getSystemMetadata(cnProd, pid)
@@ -52,6 +56,7 @@ test_that("CNode getSystemMetadata()", {
 })
 
 test_that("CNode describeObject()", {
+  if(servicesDown) skip_on_cran()
   library(dataone)
   pid <- "aceasdata.3.2"
   res <- dataone::describeObject(cnProd, pid)
@@ -75,6 +80,7 @@ test_that("CNode getMNode()", {
 })
 
 test_that("CNode resolve()",{
+  if(servicesDown) skip_on_cran()
   library(dataone) 
   id <- "0d7d8e0e-93f5-40ab-9916-501d7cf93e15"
   res <- resolve(cnProd,id)
@@ -118,7 +124,7 @@ test_that("CNode listFormats, getFormat",{
   library(dataone) 
   #cn <- CNode("PROD")
   fmts <- listFormats(cnProd)
-  expect_that(is.data.frame(fmts),is_true())
+  expect_true(is.data.frame(fmts))
   expect_gt(length(grep("eml", fmts$ID)), 0)
   # CHeck that the name returned by getFormat matches the name
   # requested, and in the data.frame from listFormats

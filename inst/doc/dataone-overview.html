@@ -7,11 +7,12 @@
 <meta charset="utf-8" />
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 
-<meta name="date" content="2019-01-29" />
+<meta name="date" content="2020-01-15" />
 
 <title>dataone R Package Overview</title>
 
@@ -97,7 +98,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
       if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
       var style = rule.style.cssText;
       // check if color or background-color is set
-      if (rule.style.color === '' || rule.style.backgroundColor === '') continue;
+      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
       // replace div.sourceCode by a pre.sourceCode rule
       sheets[i].deleteRule(j);
       sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
@@ -292,6 +293,9 @@ code > span.al { color: #ff0000; font-weight: bold; }
 code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61717; background-color: #e3d2d2; } 
 </style>
 
+
+
+
 </head>
 
 <body>
@@ -300,7 +304,7 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 
 
 <h1 class="title toc-ignore">dataone R Package Overview</h1>
-<h4 class="date"><em>2019-01-29</em></h4>
+<h4 class="date">2020-01-15</h4>
 
 
 
@@ -320,37 +324,29 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 <a class="sourceLine" id="cb1-6" data-line-number="6">                      <span class="dt">fq=</span><span class="st">&quot;dateUploaded:[2013-01-01T00:00:00.000Z TO 2014-01-01T00:00:00.000Z]&quot;</span>,</a>
 <a class="sourceLine" id="cb1-7" data-line-number="7">                      <span class="dt">sort=</span><span class="st">&quot;dateUploaded+desc&quot;</span>)</a>
 <a class="sourceLine" id="cb1-8" data-line-number="8">result &lt;-<span class="st"> </span><span class="kw">query</span>(mn, <span class="dt">solrQuery=</span>mySearchTerms, <span class="dt">as=</span><span class="st">&quot;data.frame&quot;</span>)</a>
-<a class="sourceLine" id="cb1-9" data-line-number="9">result[<span class="dv">1</span>,<span class="kw">c</span>(<span class="st">&quot;id&quot;</span>, <span class="st">&quot;title&quot;</span>)]</a></code></pre></div>
-<pre><code>##                     id
-## 1 doi:10.5063/F1F18WN4
-##                                                                                                                      title
-## 1 Improving Preseason Forecasts of Sockeye Salmon Runs through Salmon Smolt Monitoring in Kenai River, Alaska: 2005 - 2007</code></pre>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1">pid &lt;-<span class="st"> </span>result[<span class="dv">1</span>,<span class="st">'id'</span>]</a></code></pre></div>
+<a class="sourceLine" id="cb1-9" data-line-number="9">result[<span class="dv">1</span>,<span class="kw">c</span>(<span class="st">&quot;id&quot;</span>, <span class="st">&quot;title&quot;</span>)]</a>
+<a class="sourceLine" id="cb1-10" data-line-number="10">pid &lt;-<span class="st"> </span>result[<span class="dv">1</span>,<span class="st">'id'</span>]</a></code></pre></div>
 <p>The metadata file located in the above search can be downloaded with the commands:</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1"><span class="kw">library</span>(XML)</a>
-<a class="sourceLine" id="cb4-2" data-line-number="2">metadata &lt;-<span class="st"> </span><span class="kw">rawToChar</span>(<span class="kw">getObject</span>(mn, pid))</a></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="kw">library</span>(XML)</a>
+<a class="sourceLine" id="cb2-2" data-line-number="2">metadata &lt;-<span class="st"> </span><span class="kw">rawToChar</span>(<span class="kw">getObject</span>(mn, pid))</a></code></pre></div>
 <p>The metadata file that describes the located research can be viewed in an XML viewer or text editor, once it is written to a disk file. This file details a data file (CSV) that can be obtained using the listed identifier, using the commands:</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1">dataRaw &lt;-<span class="st"> </span><span class="kw">getObject</span>(mn, <span class="st">&quot;df35d.443.1&quot;</span>)</a>
-<a class="sourceLine" id="cb5-2" data-line-number="2">dataChar &lt;-<span class="st"> </span><span class="kw">rawToChar</span>(dataRaw)</a>
-<a class="sourceLine" id="cb5-3" data-line-number="3">theData &lt;-<span class="st"> </span><span class="kw">textConnection</span>(dataChar)</a>
-<a class="sourceLine" id="cb5-4" data-line-number="4">df &lt;-<span class="st"> </span><span class="kw">read.csv</span>(theData, <span class="dt">stringsAsFactors=</span><span class="ot">FALSE</span>)</a>
-<a class="sourceLine" id="cb5-5" data-line-number="5">df[<span class="dv">1</span>,]</a></code></pre></div>
-<pre><code>##      stno      date tmil tpno subw subn subf subc dyen awln mdnn enrg
-## 1 2005501 5/13/2005 2210    1 -999 -999 -999 -999    0    0    0    0
-##   comments
-## 1</code></pre>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1">dataRaw &lt;-<span class="st"> </span><span class="kw">getObject</span>(mn, <span class="st">&quot;df35d.443.1&quot;</span>)</a>
+<a class="sourceLine" id="cb3-2" data-line-number="2">dataChar &lt;-<span class="st"> </span><span class="kw">rawToChar</span>(dataRaw)</a>
+<a class="sourceLine" id="cb3-3" data-line-number="3">theData &lt;-<span class="st"> </span><span class="kw">textConnection</span>(dataChar)</a>
+<a class="sourceLine" id="cb3-4" data-line-number="4">df &lt;-<span class="st"> </span><span class="kw">read.csv</span>(theData, <span class="dt">stringsAsFactors=</span><span class="ot">FALSE</span>)</a>
+<a class="sourceLine" id="cb3-5" data-line-number="5">df[<span class="dv">1</span>,]</a></code></pre></div>
 <p>Uploading a CSV file to a DataONE Member Node requires user authentication. DataONE user authentication is described in the vignette <code>DataONE-Federation</code>.</p>
 <p>Once the authentication steps have been followed, uploading is done with:</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" data-line-number="1"><span class="kw">library</span>(datapack)</a>
-<a class="sourceLine" id="cb7-2" data-line-number="2"><span class="kw">library</span>(uuid)</a>
-<a class="sourceLine" id="cb7-3" data-line-number="3">d1c &lt;-<span class="st"> </span><span class="kw">D1Client</span>(<span class="st">&quot;STAGING&quot;</span>, <span class="st">&quot;urn:node:mnStageUCSB2&quot;</span>)</a>
-<a class="sourceLine" id="cb7-4" data-line-number="4">id &lt;-<span class="st"> </span><span class="kw">paste</span>(<span class="st">&quot;urn:uuid:&quot;</span>, <span class="kw">UUIDgenerate</span>(), <span class="dt">sep=</span><span class="st">&quot;&quot;</span>)</a>
-<a class="sourceLine" id="cb7-5" data-line-number="5">testdf &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">x=</span><span class="dv">1</span><span class="op">:</span><span class="dv">10</span>,<span class="dt">y=</span><span class="dv">11</span><span class="op">:</span><span class="dv">20</span>)</a>
-<a class="sourceLine" id="cb7-6" data-line-number="6">csvfile &lt;-<span class="st"> </span><span class="kw">paste</span>(<span class="kw">tempfile</span>(), <span class="st">&quot;.csv&quot;</span>, <span class="dt">sep=</span><span class="st">&quot;&quot;</span>)</a>
-<a class="sourceLine" id="cb7-7" data-line-number="7"><span class="kw">write.csv</span>(testdf, csvfile, <span class="dt">row.names=</span><span class="ot">FALSE</span>)</a>
-<a class="sourceLine" id="cb7-8" data-line-number="8"><span class="co"># Build a DataObject containing the csv, and upload it to the Member Node</span></a>
-<a class="sourceLine" id="cb7-9" data-line-number="9">d1Object &lt;-<span class="st"> </span><span class="kw">new</span>(<span class="st">&quot;DataObject&quot;</span>, id, <span class="dt">format=</span><span class="st">&quot;text/csv&quot;</span>, <span class="dt">filename=</span>csvfile)</a></code></pre></div>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" data-line-number="1"><span class="kw">uploadDataObject</span>(d1c, d1Object, <span class="dt">public=</span><span class="ot">TRUE</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1"><span class="kw">library</span>(datapack)</a>
+<a class="sourceLine" id="cb4-2" data-line-number="2"><span class="kw">library</span>(uuid)</a>
+<a class="sourceLine" id="cb4-3" data-line-number="3">d1c &lt;-<span class="st"> </span><span class="kw">D1Client</span>(<span class="st">&quot;STAGING&quot;</span>, <span class="st">&quot;urn:node:mnStageUCSB2&quot;</span>)</a>
+<a class="sourceLine" id="cb4-4" data-line-number="4">id &lt;-<span class="st"> </span><span class="kw">paste</span>(<span class="st">&quot;urn:uuid:&quot;</span>, <span class="kw">UUIDgenerate</span>(), <span class="dt">sep=</span><span class="st">&quot;&quot;</span>)</a>
+<a class="sourceLine" id="cb4-5" data-line-number="5">testdf &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">x=</span><span class="dv">1</span><span class="op">:</span><span class="dv">10</span>,<span class="dt">y=</span><span class="dv">11</span><span class="op">:</span><span class="dv">20</span>)</a>
+<a class="sourceLine" id="cb4-6" data-line-number="6">csvfile &lt;-<span class="st"> </span><span class="kw">paste</span>(<span class="kw">tempfile</span>(), <span class="st">&quot;.csv&quot;</span>, <span class="dt">sep=</span><span class="st">&quot;&quot;</span>)</a>
+<a class="sourceLine" id="cb4-7" data-line-number="7"><span class="kw">write.csv</span>(testdf, csvfile, <span class="dt">row.names=</span><span class="ot">FALSE</span>)</a>
+<a class="sourceLine" id="cb4-8" data-line-number="8"><span class="co"># Build a DataObject containing the csv, and upload it to the Member Node</span></a>
+<a class="sourceLine" id="cb4-9" data-line-number="9">d1Object &lt;-<span class="st"> </span><span class="kw">new</span>(<span class="st">&quot;DataObject&quot;</span>, id, <span class="dt">format=</span><span class="st">&quot;text/csv&quot;</span>, <span class="dt">filename=</span>csvfile)</a></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1"><span class="kw">uploadDataObject</span>(d1c, d1Object, <span class="dt">public=</span><span class="ot">TRUE</span>)</a></code></pre></div>
 </div>
 <div id="additional-resources" class="section level2">
 <h2>Additional Resources</h2>
@@ -373,6 +369,9 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 <p>Additional support was provided for working group collaboration by the National Center for Ecological Analysis and Synthesis, a Center funded by the University of California, Santa Barbara, and the State of California.</p>
 </div>
 
+
+
+<!-- code folding -->
 
 
 <!-- dynamically load mathjax for compatibility with self-contained -->

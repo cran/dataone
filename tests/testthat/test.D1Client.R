@@ -3,6 +3,7 @@ test_that("dataone library loads", {
 	expect_true(require(dataone))
 })
 test_that("D1Client constructors", {
+  if(servicesDown) skip_on_cran()
         library(dataone)
         #cli <- new("D1Client")
         expect_false(is.null(d1cProd))
@@ -48,6 +49,7 @@ test_that("D1Client constructors", {
 })
 
 test_that("D1Client methods", {  
+  if(servicesDown) skip_on_cran()
   # Test listMemberNodes
   #cli <- D1Client("PROD")
   nodes <- listMemberNodes(d1cProd)
@@ -361,6 +363,7 @@ test_that("D1Client createD1Object works", {
 })
 
 test_that("D1Client getD1Object works", {
+  if(servicesDown) skip_on_cran()
   library(dataone)
   library(digest)
   
@@ -389,7 +392,9 @@ test_that("D1Client getD1Object works", {
 
 
 test_that("D1Client d1SolrQuery works", {
+  if(servicesDown) skip_on_cran()
   library(dataone)
+  library(XML)
   #d1c <- D1Client("PROD")
   am <- AuthenticationManager()
   suppressMessages(authValid <- dataone:::isAuthValid(am, d1cProd@cn))
@@ -399,16 +404,19 @@ test_that("D1Client d1SolrQuery works", {
   }
   queryParams <- list(q="id:doi*", fq="abstract:hydrocarbon", rows="2", wt="xml")
   suppressWarnings(result <- d1SolrQuery(d1cProd, queryParams))
+  # Skip if null returned - this can happy if the CN is under heavy load.
+  if(is.null(result) || length(result) == 0) skip("DataONE CN is busy")
   expect_match(class(result)[1], "XMLInternalDocument")
   resList <- xmlToList(result)
   expect_true(length(resList) > 0)
 })
 
 test_that("D1Client listMemberNodes() works", {
+  if(servicesDown) skip_on_cran()
   library(dataone)
   #d1c <- D1Client("PROD")
   nodelist <- listMemberNodes(d1cProd)
-  expect_that(length(nodelist) > 0, is_true())
+  expect_true(length(nodelist) > 0)
   expect_match(class(nodelist[[1]]), "Node")
   expect_match(nodelist[[1]]@identifier, "urn:node:")
   expect_match(nodelist[[1]]@type, "cn|mn")
@@ -420,6 +428,7 @@ test_that("D1Client listMemberNodes() works", {
 })
 
 test_that("D1Client d1IdentifierSearch works", {
+  if(servicesDown) skip_on_cran()
   library(dataone)
   am <- AuthenticationManager()
   #d1c <- D1Client("PROD")
