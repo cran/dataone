@@ -1,4 +1,4 @@
-## ---- warning=FALSE, eval=FALSE------------------------------------------
+## ---- warning=FALSE, eval=FALSE-----------------------------------------------
 #  library(dataone)
 #  cn <- CNode("PROD")
 #  mn <- getMNode(cn, "urn:node:KNB")
@@ -10,18 +10,18 @@
 #  result[1,c("id", "title")]
 #  pid <- result[1,'id']
 
-## ----  warning=FALSE, eval=FALSE-----------------------------------------
+## ----  warning=FALSE, eval=FALSE----------------------------------------------
 #  library(XML)
 #  metadata <- rawToChar(getObject(mn, pid))
 
-## ---- warning=FALSE, eval=FALSE------------------------------------------
+## ---- warning=FALSE, eval=FALSE-----------------------------------------------
 #  dataRaw <- getObject(mn, "df35d.443.1")
 #  dataChar <- rawToChar(dataRaw)
 #  theData <- textConnection(dataChar)
 #  df <- read.csv(theData, stringsAsFactors=FALSE)
 #  df[1,]
 
-## ---- warning=FALSE,eval=FALSE-------------------------------------------
+## ---- warning=FALSE,eval=FALSE------------------------------------------------
 #  library(datapack)
 #  library(uuid)
 #  d1c <- D1Client("STAGING", "urn:node:mnStageUCSB2")
@@ -32,6 +32,6 @@
 #  # Build a DataObject containing the csv, and upload it to the Member Node
 #  d1Object <- new("DataObject", id, format="text/csv", filename=csvfile)
 
-## ---- warning=FALSE, eval=FALSE------------------------------------------
+## ---- warning=FALSE, eval=FALSE-----------------------------------------------
 #  uploadDataObject(d1c, d1Object, public=TRUE)
 

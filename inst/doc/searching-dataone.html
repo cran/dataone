@@ -1,18 +1,17 @@
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
 
 <head>
 
 <meta charset="utf-8" />
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="pandoc" />
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1" />
 
 
-<meta name="date" content="2020-01-15" />
+<meta name="date" content="2020-02-15" />
 
 <title>Searching DataONE Data Holdings</title>
 
@@ -119,9 +118,6 @@ padding-right: 2em;
 font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
 font-size: 14px;
 line-height: 1.35;
-}
-#header {
-text-align: center;
 }
 #TOC {
 clear: both;
@@ -290,7 +286,8 @@ code > span.st { color: #d14; }
 code > span.co { color: #888888; font-style: italic; } 
 code > span.ot { color: #007020; } 
 code > span.al { color: #ff0000; font-weight: bold; } 
-code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61717; background-color: #e3d2d2; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
 </style>
 
 
@@ -304,7 +301,7 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 
 
 <h1 class="title toc-ignore">Searching DataONE Data Holdings</h1>
-<h4 class="date">2020-01-15</h4>
+<h4 class="date">2020-02-15</h4>
 
 
 
@@ -340,45 +337,48 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 <a class="sourceLine" id="cb4-5" data-line-number="5">  <span class="kw">message</span>(<span class="kw">sprintf</span>(<span class="st">&quot;date uploaded: %s&quot;</span>, x<span class="op">$</span>dateUploaded))</a>
 <a class="sourceLine" id="cb4-6" data-line-number="6">  x<span class="op">$</span>id</a>
 <a class="sourceLine" id="cb4-7" data-line-number="7">})</a></code></pre></div>
-<p>The complete list of possible searchable values stored for a dataset can be viewed at <a href="https://cn.dataone.org/cn/v2/query/solr">DataONE Solr Engine Description</a>. However, the values available for a particular dataset may be a subset of these, depending on the metadata provided when the dataset is uploaded to DataONE.</p>
+<p>The complete list of possible searchable values stored for a dataset can be viewed using <em>getQueryEngineDescription()</em>:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1">cn &lt;-<span class="st"> </span><span class="kw">CNode</span>()</a>
+<a class="sourceLine" id="cb5-2" data-line-number="2"><span class="kw">getQueryEngineDescription</span>(cn, <span class="st">&quot;solr&quot;</span>)</a></code></pre></div>
+<p>However, the values available for a particular dataset may be a subset of these, depending on the metadata provided when the dataset is uploaded to DataONE.</p>
 <p>The DataONE Coordinating Node (CN) contains metadata about datasets from all Member Nodes (MN) in the network. As the above example shows, sending a query to the CN may find matching datasets located on potentially any Member Node in the network.</p>
 </div>
 <div id="return-values-as-a-data-frame" class="section level3">
 <h3>Return values as a data frame</h3>
 <p>To return results as a data frame, use the <code>as</code> parameter as shown below. In addition all values will be stored as <code>character</code>, because <code>parse=FALSE</code> is specified:</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1">cn &lt;-<span class="st"> </span><span class="kw">CNode</span>(<span class="st">&quot;PROD&quot;</span>)</a>
-<a class="sourceLine" id="cb5-2" data-line-number="2">result &lt;-<span class="st"> </span><span class="kw">query</span>(cn, queryParamList, <span class="dt">as=</span><span class="st">&quot;data.frame&quot;</span>, <span class="dt">parse=</span><span class="ot">FALSE</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" data-line-number="1">cn &lt;-<span class="st"> </span><span class="kw">CNode</span>(<span class="st">&quot;PROD&quot;</span>)</a>
+<a class="sourceLine" id="cb6-2" data-line-number="2">result &lt;-<span class="st"> </span><span class="kw">query</span>(cn, queryParamList, <span class="dt">as=</span><span class="st">&quot;data.frame&quot;</span>, <span class="dt">parse=</span><span class="ot">FALSE</span>)</a></code></pre></div>
 <p>The <code>result</code> is a data frame with each row containing information for one dataset. To print all returned DataONE identifiers from the result:</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" data-line-number="1">result[,<span class="st">'id'</span>]</a></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" data-line-number="1">result[,<span class="st">'id'</span>]</a></code></pre></div>
 </div>
 <div id="using-a-simplified-search." class="section level3">
 <h3>Using a Simplified Search.</h3>
 <p>A search may be performed by just specifying query fields and values using the <em>searchTerms</em> parameter. For example, to search for datasets that mention ‘kelp’ in the abstract and have an attribute description that contains the word ‘biomass’, the following query could be used:</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" data-line-number="1">cn &lt;-<span class="st"> </span><span class="kw">CNode</span>(<span class="st">&quot;PROD&quot;</span>)</a>
-<a class="sourceLine" id="cb7-2" data-line-number="2">mn &lt;-<span class="st"> </span><span class="kw">getMNode</span>(cn, <span class="st">&quot;urn:node:KNB&quot;</span>)</a>
-<a class="sourceLine" id="cb7-3" data-line-number="3">mySearchTerms &lt;-<span class="st"> </span><span class="kw">list</span>(<span class="dt">abstract=</span><span class="st">&quot;kelp&quot;</span>, <span class="dt">attribute=</span><span class="st">&quot;biomass&quot;</span>)</a>
-<a class="sourceLine" id="cb7-4" data-line-number="4">result &lt;-<span class="st"> </span><span class="kw">query</span>(cn, <span class="dt">searchTerms=</span>mySearchTerms, <span class="dt">as=</span><span class="st">&quot;data.frame&quot;</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" data-line-number="1">cn &lt;-<span class="st"> </span><span class="kw">CNode</span>(<span class="st">&quot;PROD&quot;</span>)</a>
+<a class="sourceLine" id="cb8-2" data-line-number="2">mn &lt;-<span class="st"> </span><span class="kw">getMNode</span>(cn, <span class="st">&quot;urn:node:KNB&quot;</span>)</a>
+<a class="sourceLine" id="cb8-3" data-line-number="3">mySearchTerms &lt;-<span class="st"> </span><span class="kw">list</span>(<span class="dt">abstract=</span><span class="st">&quot;kelp&quot;</span>, <span class="dt">attribute=</span><span class="st">&quot;biomass&quot;</span>)</a>
+<a class="sourceLine" id="cb8-4" data-line-number="4">result &lt;-<span class="st"> </span><span class="kw">query</span>(cn, <span class="dt">searchTerms=</span>mySearchTerms, <span class="dt">as=</span><span class="st">&quot;data.frame&quot;</span>)</a></code></pre></div>
 <p>Using the <em>searchTerms</em> parameter causes the <em>query</em> method to construct a Solr query based on the list, that is passed on to the DataONE node specified.</p>
-<p>The names in the <em>searchTerm</em> list are the query field names available from the Solr query engine being used. These names can be determined using the <em>queryEngineDescription</em> method, or simply using a web browser to view <a href="https://cn.dataone.org/cn/v2/query/solr" class="uri">https://cn.dataone.org/cn/v2/query/solr</a>.</p>
+<p>The names in the <em>searchTerm</em> list are the query field names available from the Solr query engine being used. These names can be determined using the <em>getQueryEngineDescription</em> function.</p>
 </div>
 <div id="search-just-a-member-node" class="section level3">
 <h3>Search just a member node</h3>
 <p>If it is known which Member Node holds the data of interest, then a search can be limited to just that MN by sending the search directly to that MN instead of the CN. For example, if the dataset of interest is on The Knowledge Network for Biocomplexity (KNB) Member Node, then the search is performed with the statements:</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" data-line-number="1"><span class="co"># Query the data holdings on a member node</span></a>
-<a class="sourceLine" id="cb8-2" data-line-number="2">cn &lt;-<span class="st"> </span><span class="kw">CNode</span>(<span class="st">&quot;PROD&quot;</span>)</a>
-<a class="sourceLine" id="cb8-3" data-line-number="3">mn &lt;-<span class="st"> </span><span class="kw">getMNode</span>(cn, <span class="st">&quot;urn:node:KNB&quot;</span>)</a>
-<a class="sourceLine" id="cb8-4" data-line-number="4">queryParams &lt;-<span class="st"> </span><span class="kw">list</span>(<span class="dt">q=</span><span class="st">&quot;abstract:habitat&quot;</span>, <span class="dt">fl=</span><span class="st">&quot;id,title,abstract&quot;</span>) </a>
-<a class="sourceLine" id="cb8-5" data-line-number="5">result &lt;-<span class="st"> </span><span class="kw">query</span>(mn, queryParams, <span class="dt">as=</span><span class="st">&quot;data.frame&quot;</span>, <span class="dt">parse=</span><span class="ot">FALSE</span>)</a>
-<a class="sourceLine" id="cb8-6" data-line-number="6"><span class="co"># Choose the first matchin PID</span></a>
-<a class="sourceLine" id="cb8-7" data-line-number="7">pid &lt;-<span class="st"> </span>result[<span class="dv">1</span>,<span class="st">'id'</span>]</a></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" data-line-number="1"><span class="co"># Query the data holdings on a member node</span></a>
+<a class="sourceLine" id="cb9-2" data-line-number="2">cn &lt;-<span class="st"> </span><span class="kw">CNode</span>(<span class="st">&quot;PROD&quot;</span>)</a>
+<a class="sourceLine" id="cb9-3" data-line-number="3">mn &lt;-<span class="st"> </span><span class="kw">getMNode</span>(cn, <span class="st">&quot;urn:node:KNB&quot;</span>)</a>
+<a class="sourceLine" id="cb9-4" data-line-number="4">queryParams &lt;-<span class="st"> </span><span class="kw">list</span>(<span class="dt">q=</span><span class="st">&quot;abstract:habitat&quot;</span>, <span class="dt">fl=</span><span class="st">&quot;id,title,abstract&quot;</span>) </a>
+<a class="sourceLine" id="cb9-5" data-line-number="5">result &lt;-<span class="st"> </span><span class="kw">query</span>(mn, queryParams, <span class="dt">as=</span><span class="st">&quot;data.frame&quot;</span>, <span class="dt">parse=</span><span class="ot">FALSE</span>)</a>
+<a class="sourceLine" id="cb9-6" data-line-number="6"><span class="co"># Choose the first matchin PID</span></a>
+<a class="sourceLine" id="cb9-7" data-line-number="7">pid &lt;-<span class="st"> </span>result[<span class="dv">1</span>,<span class="st">'id'</span>]</a></code></pre></div>
 </div>
 <div id="filter-query-results-for-a-specific-member-node" class="section level3">
 <h3>Filter query results for a specific member node</h3>
 <p>An alternative way to locate datasets on a particular node is to send the query to the CN but limit the returned results to data holdings that originated from the specific member node by using Solr filter query parameter (<code>&amp;fq</code>) can be used for the <code>datasource</code> field:</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" data-line-number="1">cn &lt;-<span class="st"> </span><span class="kw">CNode</span>(<span class="st">&quot;PROD&quot;</span>)</a>
-<a class="sourceLine" id="cb9-2" data-line-number="2">queryParams &lt;-<span class="st"> 'q=id:*&amp;fl=id,title&amp;fq=datasource:&quot;urn:node:KNB&quot;&amp;rows=5'</span></a>
-<a class="sourceLine" id="cb9-3" data-line-number="3">result &lt;-<span class="st"> </span><span class="kw">query</span>(cn, queryParams, <span class="dt">as=</span><span class="st">&quot;data.frame&quot;</span>, <span class="dt">parse=</span><span class="ot">FALSE</span>)</a>
-<a class="sourceLine" id="cb9-4" data-line-number="4">result[,<span class="st">'id'</span>]</a></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" data-line-number="1">cn &lt;-<span class="st"> </span><span class="kw">CNode</span>(<span class="st">&quot;PROD&quot;</span>)</a>
+<a class="sourceLine" id="cb10-2" data-line-number="2">queryParams &lt;-<span class="st"> 'q=id:*&amp;fl=id,title&amp;fq=datasource:&quot;urn:node:KNB&quot;&amp;rows=5'</span></a>
+<a class="sourceLine" id="cb10-3" data-line-number="3">result &lt;-<span class="st"> </span><span class="kw">query</span>(cn, queryParams, <span class="dt">as=</span><span class="st">&quot;data.frame&quot;</span>, <span class="dt">parse=</span><span class="ot">FALSE</span>)</a>
+<a class="sourceLine" id="cb10-4" data-line-number="4">result[,<span class="st">'id'</span>]</a></code></pre></div>
 </div>
 </div>
 

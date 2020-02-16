@@ -1,18 +1,17 @@
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
 
 <head>
 
 <meta charset="utf-8" />
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="pandoc" />
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1" />
 
 
-<meta name="date" content="2020-01-15" />
+<meta name="date" content="2020-02-15" />
 
 <title>Downloading Data From DataONE</title>
 
@@ -119,9 +118,6 @@ padding-right: 2em;
 font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
 font-size: 14px;
 line-height: 1.35;
-}
-#header {
-text-align: center;
 }
 #TOC {
 clear: both;
@@ -290,7 +286,8 @@ code > span.st { color: #d14; }
 code > span.co { color: #888888; font-style: italic; } 
 code > span.ot { color: #007020; } 
 code > span.al { color: #ff0000; font-weight: bold; } 
-code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61717; background-color: #e3d2d2; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
 </style>
 
 
@@ -304,7 +301,7 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 
 
 <h1 class="title toc-ignore">Downloading Data From DataONE</h1>
-<h4 class="date">2020-01-15</h4>
+<h4 class="date">2020-02-15</h4>
 
 
 
@@ -327,42 +324,38 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 <a class="sourceLine" id="cb1-5" data-line-number="5">                    <span class="dt">fq=</span><span class="st">&quot;formatType:METADATA&quot;</span>, <span class="dt">fl=</span><span class="st">&quot;id,title,abstract&quot;</span>) </a>
 <a class="sourceLine" id="cb1-6" data-line-number="6">result &lt;-<span class="st"> </span><span class="kw">query</span>(cn, <span class="dt">solrQuery=</span>queryParams, <span class="dt">as=</span><span class="st">&quot;data.frame&quot;</span>, <span class="dt">parse=</span><span class="ot">FALSE</span>)</a>
 <a class="sourceLine" id="cb1-7" data-line-number="7">result[<span class="dv">1</span>,<span class="kw">c</span>(<span class="st">&quot;id&quot;</span>, <span class="st">&quot;title&quot;</span>)]</a></code></pre></div>
-<pre><code>##                                 id
-## 1 doi:10.6073/AA/knb-lter-sbc.14.4
-##                                                                                                            title
-## 1 SBCLTER: Reef: Historical Kelp Database for giant kelp (Macrocystis pyrifera) biomass in California and Mexico</code></pre>
 <p>The <em>result</em> object, a data.frame, can be inspected to determine which matching dataset to download, as multiple matching dataset identifiers may be returned from the query. Each object in DataONE is uniquely identified by a Persistent Identifier (PID) that can be used to refer to the object and perform operations on it, such as downloading it to a local machine.</p>
 <p>(As an alternative to retrieving dataset information from a query, it is of course possible to use the DataONE web browser search interface located at <a href="http://search.dataone.org" class="uri">http://search.dataone.org</a> to find the identifiers of data to download.)</p>
 <p>In the R example, after inspecting the <em>result</em> data, we will use the first matching dataset:</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1"> pid &lt;-<span class="st"> </span>result[<span class="dv">1</span>,<span class="st">'id'</span>]</a></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1"> pid &lt;-<span class="st"> </span>result[<span class="dv">1</span>,<span class="st">'id'</span>]</a></code></pre></div>
 <p>Now that the PID is determined, the MN that holds the data must be located. For this, the <em>resolve</em> method is used to find an MN that holds the data and that is currently available:</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1">locations &lt;-<span class="st"> </span><span class="kw">resolve</span>(cn, pid)</a>
-<a class="sourceLine" id="cb4-2" data-line-number="2">mnId &lt;-<span class="st"> </span>locations<span class="op">$</span>data[<span class="dv">2</span>, <span class="st">&quot;nodeIdentifier&quot;</span>]</a>
-<a class="sourceLine" id="cb4-3" data-line-number="3">mn &lt;-<span class="st"> </span><span class="kw">getMNode</span>(cn, mnId)</a></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1">locations &lt;-<span class="st"> </span><span class="kw">resolve</span>(cn, pid)</a>
+<a class="sourceLine" id="cb3-2" data-line-number="2">mnId &lt;-<span class="st"> </span>locations<span class="op">$</span>data[<span class="dv">2</span>, <span class="st">&quot;nodeIdentifier&quot;</span>]</a>
+<a class="sourceLine" id="cb3-3" data-line-number="3">mn &lt;-<span class="st"> </span><span class="kw">getMNode</span>(cn, mnId)</a></code></pre></div>
 <p>Multiple MNs may hold the data, depending on the DataONE replication policy that is in effect for the dataset and which member nodes are currently available. (DataONE copies or ‘replicates’ datasets from one MN to other MNs, depending on what was requested by the user when a dataset was first uploaded to DataONE). In this example the second location from the resolve list will be downloaded. Now the call can be made that downloads the object itself:</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1">obj &lt;-<span class="st"> </span><span class="kw">getObject</span>(mn, pid)</a></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1">obj &lt;-<span class="st"> </span><span class="kw">getObject</span>(mn, pid)</a></code></pre></div>
 <p>If the search is limited to a particular MN, in this case the Knowledge Network for Biocomplexity (KNB), then the search and download are performed with the statements:</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" data-line-number="1"><span class="co"># Query the data holdings on a member node</span></a>
-<a class="sourceLine" id="cb6-2" data-line-number="2">cn &lt;-<span class="st"> </span><span class="kw">CNode</span>(<span class="st">&quot;PROD&quot;</span>)</a>
-<a class="sourceLine" id="cb6-3" data-line-number="3">mn &lt;-<span class="st"> </span><span class="kw">getMNode</span>(cn, <span class="st">&quot;urn:node:KNB&quot;</span>)</a>
-<a class="sourceLine" id="cb6-4" data-line-number="4">queryParams &lt;-<span class="st"> </span><span class="kw">list</span>(<span class="dt">q=</span><span class="st">&quot;abstract:habitat&quot;</span>, <span class="dt">fl=</span><span class="st">&quot;id,title,abstract&quot;</span>) </a>
-<a class="sourceLine" id="cb6-5" data-line-number="5">result &lt;-<span class="st"> </span><span class="kw">query</span>(mn, queryParams, <span class="dt">as=</span><span class="st">&quot;data.frame&quot;</span>, <span class="dt">parse=</span><span class="ot">FALSE</span>)</a>
-<a class="sourceLine" id="cb6-6" data-line-number="6"><span class="co"># Choose the first matchin PID</span></a>
-<a class="sourceLine" id="cb6-7" data-line-number="7">pid &lt;-<span class="st"> </span>result[<span class="dv">1</span>,<span class="st">'id'</span>]</a>
-<a class="sourceLine" id="cb6-8" data-line-number="8">obj &lt;-<span class="st"> </span><span class="kw">getObject</span>(mn, pid)</a></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1"><span class="co"># Query the data holdings on a member node</span></a>
+<a class="sourceLine" id="cb5-2" data-line-number="2">cn &lt;-<span class="st"> </span><span class="kw">CNode</span>(<span class="st">&quot;PROD&quot;</span>)</a>
+<a class="sourceLine" id="cb5-3" data-line-number="3">mn &lt;-<span class="st"> </span><span class="kw">getMNode</span>(cn, <span class="st">&quot;urn:node:KNB&quot;</span>)</a>
+<a class="sourceLine" id="cb5-4" data-line-number="4">queryParams &lt;-<span class="st"> </span><span class="kw">list</span>(<span class="dt">q=</span><span class="st">&quot;abstract:habitat&quot;</span>, <span class="dt">fl=</span><span class="st">&quot;id,title,abstract&quot;</span>) </a>
+<a class="sourceLine" id="cb5-5" data-line-number="5">result &lt;-<span class="st"> </span><span class="kw">query</span>(mn, queryParams, <span class="dt">as=</span><span class="st">&quot;data.frame&quot;</span>, <span class="dt">parse=</span><span class="ot">FALSE</span>)</a>
+<a class="sourceLine" id="cb5-6" data-line-number="6"><span class="co"># Choose the first matchin PID</span></a>
+<a class="sourceLine" id="cb5-7" data-line-number="7">pid &lt;-<span class="st"> </span>result[<span class="dv">1</span>,<span class="st">'id'</span>]</a>
+<a class="sourceLine" id="cb5-8" data-line-number="8">obj &lt;-<span class="st"> </span><span class="kw">getObject</span>(mn, pid)</a></code></pre></div>
 </div>
 <div id="alternate-approach-for-dataone-wide-search-and-download" class="section level3">
 <h3>Alternate Approach for DataONE-wide search and download</h3>
 <p>This approach uses the <em>getDataObject</em> method from the R package. The <em>getDataObject</em> method determines which member node in DataONE holds the data item and downloads it into a datapack::DataObject. The DataObject R object is a wrapper that contains the data bytes for the DataONE dataset requested as well as the DataONE system metadata for the object.</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" data-line-number="1">d1c &lt;-<span class="st"> </span><span class="kw">D1Client</span>(<span class="st">&quot;PROD&quot;</span>, <span class="st">&quot;urn:node:KNB&quot;</span>)</a>
-<a class="sourceLine" id="cb7-2" data-line-number="2"><span class="co"># Ask for the id, title and abstract</span></a>
-<a class="sourceLine" id="cb7-3" data-line-number="3">queryParams &lt;-<span class="st"> </span><span class="kw">list</span>(<span class="dt">q=</span><span class="st">&quot;abstract:</span><span class="ch">\&quot;</span><span class="st">biogenic hydrocarbon</span><span class="ch">\&quot;</span><span class="st">&quot;</span>, <span class="dt">fq=</span><span class="st">&quot;id:doi*&quot;</span>, </a>
-<a class="sourceLine" id="cb7-4" data-line-number="4">                    <span class="dt">fq=</span><span class="st">&quot;formatType:METADATA&quot;</span>, <span class="dt">fl=</span><span class="st">&quot;id,title&quot;</span>) </a>
-<a class="sourceLine" id="cb7-5" data-line-number="5">result &lt;-<span class="st"> </span><span class="kw">query</span>(d1c<span class="op">@</span>mn, <span class="dt">solrQuery=</span>queryParams, <span class="dt">as=</span><span class="st">&quot;data.frame&quot;</span>, <span class="dt">parse=</span><span class="ot">FALSE</span>)</a>
-<a class="sourceLine" id="cb7-6" data-line-number="6">pid &lt;-<span class="st"> </span>result[<span class="dv">1</span>,<span class="st">'id'</span>]</a>
-<a class="sourceLine" id="cb7-7" data-line-number="7">dataObj &lt;-<span class="st"> </span><span class="kw">getDataObject</span>(d1c, pid)</a>
-<a class="sourceLine" id="cb7-8" data-line-number="8">bytes &lt;-<span class="st"> </span><span class="kw">getData</span>(dataObj)</a>
-<a class="sourceLine" id="cb7-9" data-line-number="9">metadataXML &lt;-<span class="st"> </span><span class="kw">rawToChar</span>(bytes)</a></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" data-line-number="1">d1c &lt;-<span class="st"> </span><span class="kw">D1Client</span>(<span class="st">&quot;PROD&quot;</span>, <span class="st">&quot;urn:node:KNB&quot;</span>)</a>
+<a class="sourceLine" id="cb6-2" data-line-number="2"><span class="co"># Ask for the id, title and abstract</span></a>
+<a class="sourceLine" id="cb6-3" data-line-number="3">queryParams &lt;-<span class="st"> </span><span class="kw">list</span>(<span class="dt">q=</span><span class="st">&quot;abstract:</span><span class="ch">\&quot;</span><span class="st">biogenic hydrocarbon</span><span class="ch">\&quot;</span><span class="st">&quot;</span>, <span class="dt">fq=</span><span class="st">&quot;id:doi*&quot;</span>, </a>
+<a class="sourceLine" id="cb6-4" data-line-number="4">                    <span class="dt">fq=</span><span class="st">&quot;formatType:METADATA&quot;</span>, <span class="dt">fl=</span><span class="st">&quot;id,title&quot;</span>) </a>
+<a class="sourceLine" id="cb6-5" data-line-number="5">result &lt;-<span class="st"> </span><span class="kw">query</span>(d1c<span class="op">@</span>mn, <span class="dt">solrQuery=</span>queryParams, <span class="dt">as=</span><span class="st">&quot;data.frame&quot;</span>, <span class="dt">parse=</span><span class="ot">FALSE</span>)</a>
+<a class="sourceLine" id="cb6-6" data-line-number="6">pid &lt;-<span class="st"> </span>result[<span class="dv">1</span>,<span class="st">'id'</span>]</a>
+<a class="sourceLine" id="cb6-7" data-line-number="7">dataObj &lt;-<span class="st"> </span><span class="kw">getDataObject</span>(d1c, pid)</a>
+<a class="sourceLine" id="cb6-8" data-line-number="8">bytes &lt;-<span class="st"> </span><span class="kw">getData</span>(dataObj)</a>
+<a class="sourceLine" id="cb6-9" data-line-number="9">metadataXML &lt;-<span class="st"> </span><span class="kw">rawToChar</span>(bytes)</a></code></pre></div>
 <p>The following functions are available to extract information from the DataObject:</p>
 <ul>
 <li>getIdentifier(obj) : Get the identifier (PID) of a DataObject</li>
@@ -370,23 +363,23 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 <li>getData(obj) : Get the data contents of the DataObject</li>
 </ul>
 <p>For example, to extract the data byes from the DataObject:</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" data-line-number="1">dataBytes &lt;-<span class="st"> </span><span class="kw">getData</span>(dataObj)</a></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" data-line-number="1">dataBytes &lt;-<span class="st"> </span><span class="kw">getData</span>(dataObj)</a></code></pre></div>
 <p>In addition to the DataObject functions, the complete set of information from the DataONE system metadata is available from the object’s slot:</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" data-line-number="1"><span class="kw">str</span>(dataObj<span class="op">@</span>sysmeta)</a></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" data-line-number="1"><span class="kw">str</span>(dataObj<span class="op">@</span>sysmeta)</a></code></pre></div>
 </div>
 <div id="download-a-data-package" class="section level3">
 <h3>Download a data package</h3>
 <p>A DataONE data package is a collection of datasets that are documented by a metadata object that is also included in the package. For example, a data package might contain all source data, scripts and analysis products for an experiment or study. For example, the data package available from the Knowledge Network for Biocomplexity that is available <a href="https://knb.ecoinformatics.org/#view/corina_logan.20.3" class="uri">https://knb.ecoinformatics.org/#view/corina_logan.20.3</a> that contains data for an experiment related to Western scrub-jays food caching behaviors.</p>
 <p>Note: to use the <em>getPackage</em> method, the <em>id</em> parameter must be the package identifier associated with the ORE package description. If the pid of the metadata object or science data object is known, then the package identifier can be discovered using a query such as:</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" data-line-number="1">cn &lt;-<span class="st"> </span><span class="kw">CNode</span>()</a>
+<a class="sourceLine" id="cb9-2" data-line-number="2">mn &lt;-<span class="st"> </span><span class="kw">getMNode</span>(cn, <span class="st">&quot;urn:node:KNB&quot;</span>)</a>
+<a class="sourceLine" id="cb9-3" data-line-number="3">queryParamList &lt;-<span class="st"> </span><span class="kw">list</span>(<span class="dt">q=</span><span class="st">&quot;id:Blandy.77.1&quot;</span>, <span class="dt">fl=</span><span class="st">&quot;resourceMap&quot;</span>)</a>
+<a class="sourceLine" id="cb9-4" data-line-number="4">result &lt;-<span class="st"> </span><span class="kw">query</span>(cn, <span class="dt">solrQuery=</span>queryParamList, <span class="dt">as=</span><span class="st">&quot;data.frame&quot;</span>)</a>
+<a class="sourceLine" id="cb9-5" data-line-number="5">packagePid &lt;-<span class="st"> </span>result[<span class="dv">1</span>,<span class="dv">1</span>]</a></code></pre></div>
+<p>Once the package identifier is determined, the entire data package can be downloaded using the <em>getPackage</em> method:</p>
 <div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" data-line-number="1">cn &lt;-<span class="st"> </span><span class="kw">CNode</span>()</a>
 <a class="sourceLine" id="cb10-2" data-line-number="2">mn &lt;-<span class="st"> </span><span class="kw">getMNode</span>(cn, <span class="st">&quot;urn:node:KNB&quot;</span>)</a>
-<a class="sourceLine" id="cb10-3" data-line-number="3">queryParamList &lt;-<span class="st"> </span><span class="kw">list</span>(<span class="dt">q=</span><span class="st">&quot;id:Blandy.77.1&quot;</span>, <span class="dt">fl=</span><span class="st">&quot;resourceMap&quot;</span>)</a>
-<a class="sourceLine" id="cb10-4" data-line-number="4">result &lt;-<span class="st"> </span><span class="kw">query</span>(cn, <span class="dt">solrQuery=</span>queryParamList, <span class="dt">as=</span><span class="st">&quot;data.frame&quot;</span>)</a>
-<a class="sourceLine" id="cb10-5" data-line-number="5">packagePid &lt;-<span class="st"> </span>result[<span class="dv">1</span>,<span class="dv">1</span>]</a></code></pre></div>
-<p>Once the package identifier is determined, the entire data package can be downloaded using the <em>getPackage</em> method:</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb11-1" data-line-number="1">cn &lt;-<span class="st"> </span><span class="kw">CNode</span>()</a>
-<a class="sourceLine" id="cb11-2" data-line-number="2">mn &lt;-<span class="st"> </span><span class="kw">getMNode</span>(cn, <span class="st">&quot;urn:node:KNB&quot;</span>)</a>
-<a class="sourceLine" id="cb11-3" data-line-number="3">bagitFileName &lt;-<span class="st"> </span><span class="kw">getPackage</span>(mn, <span class="dt">id=</span>packagePid)</a></code></pre></div>
+<a class="sourceLine" id="cb10-3" data-line-number="3">bagitFileName &lt;-<span class="st"> </span><span class="kw">getPackage</span>(mn, <span class="dt">id=</span>packagePid)</a></code></pre></div>
 <p>Care must be taken, however, as these commands download the entire package.</p>
 <p>The package is downloaded to a single file that is structured according to the <a href="https://tools.ietf.org/html/draft-kunze-bagit-10">Bagit</a> packaging guidelines. The <em>getPackage</em> method returns the name this file that is created in a temporary directory.</p>
 <p>Because the <em>getPackage</em> method downloads the entire collection of files for a data package, the downloaded Bagit file can be quiet large and may take a significant amount of time to download, depending on the package contents.</p>
