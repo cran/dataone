@@ -7,7 +7,7 @@ library(dataone)
 #  packageId <- "resource_map_urn:uuid:a9aeefcf-228c-4534-b4ad-b480a937be7d"
 
 ## ---- eval=FALSE--------------------------------------------------------------
-#  pkg <- getDataPackage(d1c, identifier=packageId, lazyLoad=TRUE, limit="0MB", quiet=FALSE)
+#  pkg <- getDataPackage(d1c, identifier=packageId, lazyLoad=TRUE, quiet=FALSE)
 
 ## ---- eval=FALSE,message=FALSE------------------------------------------------
 #  metadataId <- selectMember(pkg, name="sysmeta@formatId", value="eml://ecoinformatics.org/eml-2.1.1")
@@ -26,7 +26,7 @@ library(dataone)
 #  d1c <- D1Client("STAGING", "urn:node:mnStageUCSB2")
 
 ## ---- eval=FALSE--------------------------------------------------------------
-#  pkg <- getDataPackage(d1c, identifier=packageId, lazyLoad=TRUE, limit="0MB", quiet=FALSE)
+#  pkg <- getDataPackage(d1c, identifier=packageId, lazyLoad=TRUE, quiet=FALSE)
 
 ## ---- echo=FALSE----------------------------------------------------------------------------------
 saveWidth <- getOption("width")

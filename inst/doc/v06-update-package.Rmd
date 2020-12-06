@@ -1,10 +1,11 @@
 ---
-title: "Updating Packages on DataONE"
+title: "Updating Datasets on DataONE"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Updating Packages on DataONE}
+  %\VignetteIndexEntry{Updating Datasets on DataONE}
   %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
   %\usepackage[utf8]{inputenc}
 ---
 
@@ -20,7 +21,7 @@ interested parties that the package needs to be updated, for example to add a mi
 with another, or remove a package member from the package.
 
 These types of modifications can be accomplished by downloading the package from DataONE using the 
-`getDataPackage` method to create a local copy of the package in R, modifying the package contents locally,
+`getDataPackage()` method to create a local copy of the package in R, modifying the package contents locally,
 then uploading the modified package to DataONE. 
 
 The complete example script used to perform a package update is shown below:
@@ -34,7 +35,7 @@ d1c <- D1Client("STAGING", "urn:node:mnStageUCSB2")
 packageId <- "resource_map_urn:uuid:a9aeefcf-228c-4534-b4ad-b480a937be7d"
 ```
 ```{r, eval=FALSE}
-pkg <- getDataPackage(d1c, identifier=packageId, lazyLoad=TRUE, limit="0MB", quiet=FALSE)
+pkg <- getDataPackage(d1c, identifier=packageId, lazyLoad=TRUE, quiet=FALSE)
 ```
 ```{r, eval=FALSE,message=FALSE}
 metadataId <- selectMember(pkg, name="sysmeta@formatId", value="eml://ecoinformatics.org/eml-2.1.1")
@@ -63,24 +64,22 @@ can  be modified locally using methods in the `dataone` package. Modifications c
 the package such as adding  or removing members from the package, or changing the contents of 
 a package member, as would be the case if the wrong file was initially uploaded.
 
-The `getDataPackage` method downloads all files belonging to the package specified by
+The `getDataPackage()` method downloads all files belonging to the package specified by
 the `identifier` parameter. 
 
 ```{r, eval=FALSE}
 d1c <- D1Client("STAGING", "urn:node:mnStageUCSB2")
 ```
 ```{r, eval=FALSE}
-pkg <- getDataPackage(d1c, identifier=packageId, lazyLoad=TRUE, limit="0MB", quiet=FALSE)
+pkg <- getDataPackage(d1c, identifier=packageId, lazyLoad=TRUE, quiet=FALSE)
 ```
 Because packages might contain large files or a large number of files, it is
-possible to `lazyLoad` the package. This means that the metadata describing the files is downloaded 
-downloaded, but the file contents, the data bytes,  are not. An upper size limit can be specified 
-when using `lazyLoad`  by also specifying the `limit` parameter.  Files that are larger than 
-the `limit` value are not downloaded, only system metadata. 
+possible to `lazy load` the package. This means that the metadata describing the files is downloaded 
+downloaded, but the file contents, the data bytes,  are not. For more information on using the 
+'lazyLoad' parameter, see the R console help for the 'getDataPackage()' function.
 
 For the package update that will be shown, it is not necessary to download the data bytes of each
-package member, so `lazyLoading` is acceptable. An example when lazyloading would not be appropriate
-is when the files in a package will be used for local computational processing.
+package member, so `lazy loading` is acceptable. An example when lazy loading would not be appropriate is when the files in a package will be used for local computational processing.
 
 Note that metadata files, such as the EML in this example, are always downloaded regardless of the `lazyLoad` parameter value.
 

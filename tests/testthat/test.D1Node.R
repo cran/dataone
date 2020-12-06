@@ -1,10 +1,9 @@
-context("D1Node tests")
 test_that("dataone library loads", {
   expect_true(require(dataone))
 })
 
 test_that("CNode ping", {
-  if(servicesDown) skip_on_cran()
+  skip_on_cran()
   library(dataone)
   # 'cnProd' is defined in 'helper-base.R' for all tests
   alive <- ping(cnProd)
@@ -12,7 +11,7 @@ test_that("CNode ping", {
 })
 
 test_that("CNode object index query works with query list param", {
-  if(servicesDown) skip_on_cran()
+  skip_on_cran()
   library(dataone)
   # Test query of CN object index using query string
   queryParams <- "q=id:doi*&rows=2&wt=xml"
@@ -26,8 +25,8 @@ test_that("CNode object index query works with query list param", {
   expect_true(length(result) == 2)
   expect_match(result[[2]]$id, "doi:")
   size <- result[[1]]$size
-  expect_is(result[[1]]$dateUploaded, "POSIXct")
-  expect_is(size, "numeric")
+  expect_s3_class(result[[1]]$dateUploaded, "POSIXct")
+  expect_type(size, "double")
 
   # Test query of CN object index using query list
   queryParamList <- list(q="id:doi*", rows="5", fq="(abstract:chlorophyll AND dateUploaded:[2000-01-01T00:00:00Z TO NOW])", fl="title,id,abstract,size,dateUploaded,attributeName", wt="xml")
@@ -36,8 +35,8 @@ test_that("CNode object index query works with query list param", {
   if(is.null(result) || length(result) == 0) skip("DataONE CN is busy")
   expect_match(result[[1]]$id, "doi:")
   size <- result[[1]]$size
-  expect_is(result[[1]]$size, "numeric")
-  expect_is(result[[1]]$dateUploaded, "POSIXct")
+  expect_type(result[[1]]$size, "double")
+  expect_s3_class(result[[1]]$dateUploaded, "POSIXct")
   expect_match(result[[1]]$abstract, "chlorophyll", ignore.case=TRUE)
   
   # Test a query that contains embedded quotes
@@ -61,7 +60,7 @@ test_that("CNode object index query works with query list param", {
 })
 
 test_that("Object listing works for CNode, MNode", {
-  if(servicesDown) skip_on_cran()
+  skip_on_cran()
   library(dataone)
   
   # Note: this test assumes that there are at least 5 EML 2.1.0 documents in DataONE
@@ -99,7 +98,7 @@ test_that("Object listing works for CNode, MNode", {
 })
 
 test_that("listQueryEngines, getQueryEngineDescription works for CNode, MNode", {
-  if(servicesDown) skip_on_cran()
+  skip_on_cran()
   library(dataone)
   
   # Get list of query engines for a CN, and get description for each engine
@@ -126,7 +125,7 @@ test_that("listQueryEngines, getQueryEngineDescription works for CNode, MNode", 
 })
 
 test_that("CNode object index query works with query string param", {
-  if(servicesDown) skip_on_cran()
+  skip_on_cran()
   library(dataone)
   
   am <- AuthenticationManager()
@@ -141,11 +140,11 @@ test_that("CNode object index query works with query string param", {
   expect_true(length(result) == 2)
   expect_match(result[[2]]$id, "doi:")
   size <- result[[1]]$size
-  expect_is(size, "numeric")
+  expect_type(size, "double")
 })
 
 test_that("MNode object index query works", {
-  if(servicesDown) skip_on_cran()
+  skip_on_cran()
   library(dataone)
   queryParams <- "q=id:doi*&rows=2&wt=xml"
   #queryParams <- 'q=attribute:"net primary production" AND (abstract:"above ground" OR title:"above ground")'
@@ -159,26 +158,26 @@ test_that("MNode object index query works", {
   result <- query(mnKNB, queryParams, as="list")
   expect_true(length(result) > 0)
   pid <- result[[1]]$id
-  expect_is(pid, "character")
+  expect_type(pid, "character")
   expect_match(pid, "doi:")
   # Inspect numeric value returned from Solr result type "long"
   size <- result[[1]]$size
-  expect_is(size, "numeric")
+  expect_type(size, "double")
   # Inspect list value converted from Solr result type "<arr>"
   attList <- result[[1]]$attribute
   if (!is.null(attList)) {
-    expect_is(attList, "list")
-    expect_is(attList[[1]], "character")
+    expect_type(attList, "list")
+    expect_type(attList[[1]], "character")
     expect_true(length(attList) > 0)
   }
   
   # Request that an XML object is returned
   result <- query(mnKNB, queryParams, as="xml", parse=TRUE)
-  expect_is(result, "XMLInternalDocument")
+  expect_s3_class(result, "XMLInternalDocument")
   
   # Request that a character object is returned
   result <- query(mnKNB, queryParams, as="xml", parse=FALSE)
-  expect_is(result, "character")
+  expect_type(result, "character")
   expect_match(result, "<?xml")
 })
 

@@ -1,16 +1,15 @@
-context("MNode tests")
 test_that("dataone library loads", {
 	expect_true(require(dataone))
 })
 test_that("MNode constructors", {
-  if(servicesDown) skip_on_cran()
+  skip_on_cran()
 	library(dataone)
 	mn_uri <- "https://knb.ecoinformatics.org/knb/d1/mn/v2"
 	mn <- MNode(mn_uri)
 	expect_match(mn@endpoint, mn_uri)
 })
 test_that("MNode getCapabilities()", {
-    if(servicesDown) skip_on_cran()
+    skip_on_cran()
     library(dataone)
     library(XML)
     #mn_uri <- "https://knb.ecoinformatics.org/knb/d1/mn/v2"
@@ -21,7 +20,7 @@ test_that("MNode getCapabilities()", {
     expect_match(mnKNB@identifier, "urn:node")
 })
 test_that("MNode getObject(), getChecksum()", {
-    if(servicesDown) skip_on_cran()
+    skip_on_cran()
     library(dataone)
     #mn_uri <- "https://knb.ecoinformatics.org/knb/d1/mn/v2"
     #mn <- MNode(mn_uri)
@@ -43,11 +42,11 @@ test_that("MNode getObject(), getChecksum()", {
     cname <- class(xml)[1]
     expect_match(cname, "XML")
     chksum <- getChecksum(mnKNB, pid)
-    expect_that(chksum, is_a("character"))
+    expect_type(chksum, "character")
     expect_false(is.null(chksum))
 })
 test_that("MNode getSystemMetadata()", {
-    if(servicesDown) skip_on_cran()
+    skip_on_cran()
     library(dataone)
     #mn <- getMNode(cnProd, "urn:node:KNB")
     pid <- "doi:10.5063/F1QN64NZ"
@@ -101,12 +100,12 @@ test_that("MNode generateIdentifier() on API v1 node", {
 })
 
 test_that("MNode describeObject()", {
-    if(servicesDown) skip_on_cran()
+    skip_on_cran()
     library(dataone)
     #mn_uri <- "https://knb.ecoinformatics.org/knb/d1/mn/v2"
     #mn <- MNode(mn_uri)
     res <- describeObject(mnKNB, "knb.473.1")
-    expect_is(res, "list")
+    expect_type(res, "list")
     expect_equal(res$`content-type`, "text/xml")
 })
 
@@ -130,9 +129,9 @@ test_that("MNode describeObject() with authentication", {
         # Create SystemMetadata for the object
         format <- "text/csv"
         size <- file.info(csvfile)$size
-        sha1 <- digest(csvfile, algo="sha1", serialize=FALSE, file=TRUE)
+        sha256 <- digest(csvfile, algo="sha256", serialize=FALSE, file=TRUE)
         # specify series id for this sysmeta. This will only be used if uploading to a DataONE v2 node
-        sysmeta <- new("SystemMetadata", identifier=newid, formatId=format, size=size, checksum=sha1,
+        sysmeta <- new("SystemMetadata", identifier=newid, formatId=format, size=size, checksum=sha256,
                        originMemberNode=mnTest@identifier, authoritativeMemberNode=mnTest@identifier)
         # sysmeta <- addAccessRule(sysmeta, "public", "read")
         # Upload the data to the MN using createObject(), checking for success and a returned identifier
@@ -142,7 +141,7 @@ test_that("MNode describeObject() with authentication", {
         createdId <- createObject(mnTest, newid, csvfile, sysmeta)
         expect_false(is.null(createdId))
         res <- describeObject(mnTest, newid)
-        expect_is(res, "list")
+        expect_type(res, "list")
         expect_equal(res$`content-type`, "text/csv")
     } else {
         skip("This test requires valid authentication.")
@@ -186,15 +185,15 @@ test_that("MNode createObject(), updateObject(), archive()", {
         # Create SystemMetadata for the object
         format <- "text/csv"
         size <- file.info(csvfile)$size
-        sha1 <- digest(csvfile, algo="sha1", serialize=FALSE, file=TRUE)
+        sha256 <- digest(csvfile, algo="sha256", serialize=FALSE, file=TRUE)
         # specify series id for this sysmeta. This will only be used if uploading to a DataONE v2 node
         seriesId <- UUIDgenerate()
-        sysmeta <- new("SystemMetadata", identifier=newid, formatId=format, size=size, checksum=sha1,
+        sysmeta <- new("SystemMetadata", identifier=newid, formatId=format, size=size, checksum=sha256,
                        originMemberNode=mnTest@identifier, authoritativeMemberNode=mnTest@identifier, seriesId=seriesId)
         sysmeta <- addAccessRule(sysmeta, "public", "read")
-        expect_that(sysmeta@checksum, equals(sha1))
-        expect_that(sysmeta@originMemberNode, equals(mnTest@identifier))
-        expect_that(sysmeta@authoritativeMemberNode, equals(mnTest@identifier))
+        expect_equal(sysmeta@checksum, sha256)
+        expect_equal(sysmeta@originMemberNode, mnTest@identifier)
+        expect_equal(sysmeta@authoritativeMemberNode, mnTest@identifier)
         
         # Upload the data to the MN using createObject(), checking for success and a returned identifier
         createdId <- createObject(mnTest, newid, csvfile, sysmeta)
@@ -207,10 +206,10 @@ test_that("MNode createObject(), updateObject(), archive()", {
         csvfile <- paste(tempfile(), ".csv", sep="")
         write.csv(testdf, csvfile, row.names=FALSE)
         size <- file.info(csvfile)$size
-        sha1 <- digest(csvfile, algo="sha1", serialize=FALSE, file=TRUE)
+        sha256 <- digest(csvfile, algo="sha256", serialize=FALSE, file=TRUE)
         sysmeta@identifier <- updateid
         sysmeta@size <- size
-        sysmeta@checksum <- sha1
+        sysmeta@checksum <- sha256
         sysmeta@obsoletes <- newid
         newId <- updateObject(mnTest, newid, csvfile, updateid, sysmeta)
         expect_false(is.null(newId))
@@ -270,12 +269,12 @@ test_that("MNode createObject() with in-memory object", {
         # Create SystemMetadata for the object
         format <- "text/csv"
         size <- length(csvdata)
-        sha1 <- digest(csvdata, algo="sha1", serialize=FALSE, file=FALSE)
+        sha256 <- digest(csvdata, algo="sha256", serialize=FALSE, file=FALSE)
         # specify series id for this sysmeta. This will only be used if uploading to a DataONE v2 node
         
-        sysmeta <- new("SystemMetadata", identifier=newid, formatId=format, size=size, checksum=sha1)
+        sysmeta <- new("SystemMetadata", identifier=newid, formatId=format, size=size, checksum=sha256)
         sysmeta <- addAccessRule(sysmeta, "public", "read")
-        expect_that(sysmeta@checksum, equals(sha1))
+        expect_equal(sysmeta@checksum, sha256)
         
         # Upload the data to the MN using createObject(), checking for success and a returned identifier
         createdId <- createObject(mnTest, newid, sysmeta = sysmeta, dataobj=csvdata)
@@ -322,12 +321,12 @@ test_that("MNode createObject() works for large files", {
       # Create SystemMetadata for the object
       format <- "text/csv"
       size <- file.info(csvfile)$size
-      sha1 <- digest(csvfile, algo="sha1", serialize=FALSE, file=TRUE)
-      sysmeta <- new("SystemMetadata", identifier=newid, formatId=format, size=size, checksum=sha1, originMemberNode=mnTest@identifier, authoritativeMemberNode=mnTest@identifier)
+      sha256 <- digest(csvfile, algo="sha256", serialize=FALSE, file=TRUE)
+      sysmeta <- new("SystemMetadata", identifier=newid, formatId=format, size=size, checksum=sha256, originMemberNode=mnTest@identifier, authoritativeMemberNode=mnTest@identifier)
       sysmeta <- addAccessRule(sysmeta, "public", "read")
-      expect_that(sysmeta@checksum, equals(sha1))
-      expect_that(sysmeta@originMemberNode, equals(mnTest@identifier))
-      expect_that(sysmeta@authoritativeMemberNode, equals(mnTest@identifier))
+      expect_equal(sysmeta@checksum, sha256)
+      expect_equal(sysmeta@originMemberNode, mnTest@identifier)
+      expect_equal(sysmeta@authoritativeMemberNode, mnTest@identifier)
       
       # Upload the data to the MN using createObject(), checking for success and a returned identifier
       # Note: createObject() will ensure that sysmeta@submitter, sysmeta@rightsHolder are set
@@ -343,9 +342,9 @@ test_that("MNode createObject() works for large files", {
 })
 
 test_that("MNode getPackage() works", {
+  skip_on_cran()
   library(uuid)
   # This test can exceed the CRAN test running time limits
-  skip_on_cran()
   resMapPid <- "resourceMap_lrw.3.5"
   am <- AuthenticationManager()
   suppressWarnings(authValid <- dataone:::isAuthValid(am, mnKNB))
@@ -401,4 +400,71 @@ test_that("updateSystemMetadata() works",{
   } else {
       skip("This test requires valid authentication.")
   }
+})
+
+test_that("MNode updateObject() using dataobj argument", {
+    # This test requires valid DataONE user authentication and writes to unstable development machines
+    skip_on_cran()
+    library(dataone)
+    library(digest)
+    library(datapack)
+    library(uuid)
+    library(XML)
+    #cn <- CNode("SANDBOX")
+    #cn <- CNode("DEV2")
+    #cn <- CNode("STAGING")
+    # mnDemo1 is api v1 on 20151208, but that could change
+    # Use this v1 node to test with both a current token available
+    # and a certificate.
+    #mnId <- "urn:node:mnSandboxUCSB2"
+    #mnId <- "urn:node:mnDevUCSB2"
+    #mnId <- "urn:node:mnStageUCSB2"
+    #mn <- getMNode(cn, mnId)
+    am <- AuthenticationManager()
+    # Suppress openssl, cert missing warnings
+    suppressMessages(authValid <- dataone:::isAuthValid(am, mnTest))
+    if (authValid) {
+        if(dataone:::getAuthMethod(am, mnTest) == "cert" && grepl("apple-darwin", sessionInfo()$platform)) skip("Skip authentication w/cert on Mac OS X")
+        user <- dataone:::getAuthSubject(am, mnTest)
+        newid <- generateIdentifier(mnTest, "UUID")
+
+        # Create a data object, and convert it to csv format
+        testdf <- data.frame(x=1:10,y=11:20)
+        csvfile <- paste(tempfile(), ".csv", sep="")
+        write.csv(testdf, csvfile, row.names=FALSE)
+        
+        # Create SystemMetadata for the object
+        format <- "text/csv"
+        size <- file.info(csvfile)$size
+        sha256 <- digest(csvfile, algo="sha256", serialize=FALSE, file=TRUE)
+        # specify series id for this sysmeta. This will only be used if uploading to a DataONE v2 node
+        seriesId <- UUIDgenerate()
+        sysmeta <- new("SystemMetadata", identifier=newid, formatId=format, size=size, checksum=sha256,
+                       originMemberNode=mnTest@identifier, authoritativeMemberNode=mnTest@identifier, seriesId=seriesId)
+        sysmeta <- addAccessRule(sysmeta, "public", "read")
+        
+        
+        # Upload the data to the MN using createObject()
+        createdId <- createObject(mnTest, newid, csvfile, sysmeta)
+        
+        # Update the object with a new version
+        updateid <- generateIdentifier(mnTest, "UUID")
+        d1test <- D1Client(cnStaging2, mnTest)
+        dataObject <- getDataObject(d1test, createdId)
+        dataObject@sysmeta@identifier <- updateid
+        
+        newId <- updateObject(mnTest, 
+                              pid = createdId, 
+                              newpid = updateid,
+                              sysmeta = dataObject@sysmeta,
+                              dataobj = dataObject@data)
+        expect_false(is.null(newId))
+        expect_match(newId, updateid)
+        updsysmeta <- getSystemMetadata(mnTest, updateid)
+        expect_match(class(updsysmeta)[1], "SystemMetadata")
+        expect_match(updsysmeta@obsoletes, newid)
+    }    
+    else {
+        skip("This test requires valid authentication.")
+    }
 })

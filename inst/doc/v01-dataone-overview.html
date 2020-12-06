@@ -11,17 +11,81 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 
 
-<meta name="date" content="2020-02-15" />
+<meta name="date" content="2020-12-04" />
 
-<title>dataone R Package Overview</title>
+<title>dataone Package Overview</title>
 
+<script>// Hide empty <a> tag within highlighted CodeBlock for screen reader accessibility (see https://github.com/jgm/pandoc/issues/6352#issuecomment-626106786) -->
+// v0.0.1
+// Written by JooYoung Seo (jooyoung@psu.edu) and Atsushi Yasumoto on June 1st, 2020.
+
+document.addEventListener('DOMContentLoaded', function() {
+  const codeList = document.getElementsByClassName("sourceCode");
+  for (var i = 0; i < codeList.length; i++) {
+    var linkList = codeList[i].getElementsByTagName('a');
+    for (var j = 0; j < linkList.length; j++) {
+      if (linkList[j].innerHTML === "") {
+        linkList[j].setAttribute('aria-hidden', 'true');
+      }
+    }
+  }
+});
+</script>
+<style type="text/css">
+a.anchor-section {margin-left: 10px; visibility: hidden; color: inherit;}
+a.anchor-section::before {content: '#';}
+.hasAnchor:hover a.anchor-section {visibility: visible;}
+</style>
+<script>// Anchor sections v1.0 written by Atsushi Yasumoto on Oct 3rd, 2020.
+document.addEventListener('DOMContentLoaded', function() {
+  // Do nothing if AnchorJS is used
+  if (typeof window.anchors === 'object' && anchors.hasOwnProperty('hasAnchorJSLink')) {
+    return;
+  }
+
+  const h = document.querySelectorAll('h1, h2, h3, h4, h5, h6');
+
+  // Do nothing if sections are already anchored
+  if (Array.from(h).some(x => x.classList.contains('hasAnchor'))) {
+    return null;
+  }
+
+  // Use section id when pandoc runs with --section-divs
+  const section_id = function(x) {
+    return ((x.classList.contains('section') || (x.tagName === 'SECTION'))
+            ? x.id : '');
+  };
+
+  // Add anchors
+  h.forEach(function(x) {
+    const id = x.id || section_id(x.parentElement);
+    if (id === '') {
+      return null;
+    }
+    let anchor = document.createElement('a');
+    anchor.href = '#' + id;
+    anchor.classList = ['anchor-section'];
+    x.classList.add('hasAnchor');
+    x.appendChild(anchor);
+  });
+});
+</script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
 
 
 <style type="text/css">code{white-space: pre;}</style>
 <style type="text/css" data-origin="pandoc">
-a.sourceLine { display: inline-block; line-height: 1.25; }
-a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
-a.sourceLine:empty { height: 1.2em; position: absolute; }
+code.sourceCode > span { display: inline-block; line-height: 1.25; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode { white-space: pre; position: relative; }
 div.sourceCode { margin: 1em 0; }
@@ -31,16 +95,16 @@ div.sourceCode { overflow: auto; }
 }
 @media print {
 code.sourceCode { white-space: pre-wrap; }
-a.sourceLine { text-indent: -1em; padding-left: 1em; }
+code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
 }
-pre.numberSource a.sourceLine
-  { position: relative; }
-pre.numberSource a.sourceLine:empty
-  { position: absolute; }
-pre.numberSource a.sourceLine::before
-  { content: attr(data-line-number);
-    position: absolute; left: -5em; text-align: right; vertical-align: baseline;
-    border: none; pointer-events: all;
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
     -webkit-touch-callout: none; -webkit-user-select: none;
     -khtml-user-select: none; -moz-user-select: none;
     -ms-user-select: none; user-select: none;
@@ -49,9 +113,9 @@ pre.numberSource a.sourceLine::before
   }
 pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
 div.sourceCode
-  {  }
+  {   }
 @media screen {
-a.sourceLine::before { text-decoration: underline; }
+code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 code span.al { color: #ff0000; font-weight: bold; } /* Alert */
 code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
@@ -300,8 +364,8 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 
 
-<h1 class="title toc-ignore">dataone R Package Overview</h1>
-<h4 class="date">2020-02-15</h4>
+<h1 class="title toc-ignore">dataone Package Overview</h1>
+<h4 class="date">2020-12-04</h4>
 
 
 
@@ -313,37 +377,37 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <h2>Quick Start</h2>
 <p>See the full manual (<code>help dataone</code>) for documentation.</p>
 <p>To search the DataONE Federation Member Node <em>Knowledge Network for Biocomplexity (KNB)</em> for a dataset:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="kw">library</span>(dataone)</a>
-<a class="sourceLine" id="cb1-2" data-line-number="2">cn &lt;-<span class="st"> </span><span class="kw">CNode</span>(<span class="st">&quot;PROD&quot;</span>)</a>
-<a class="sourceLine" id="cb1-3" data-line-number="3">mn &lt;-<span class="st"> </span><span class="kw">getMNode</span>(cn, <span class="st">&quot;urn:node:KNB&quot;</span>)</a>
-<a class="sourceLine" id="cb1-4" data-line-number="4">mySearchTerms &lt;-<span class="st"> </span><span class="kw">list</span>(<span class="dt">q=</span><span class="st">&quot;abstract:salmon+AND+keywords:acoustics+AND+keywords:</span><span class="ch">\&quot;</span><span class="st">Oncorhynchus nerka</span><span class="ch">\&quot;</span><span class="st">&quot;</span>,</a>
-<a class="sourceLine" id="cb1-5" data-line-number="5">                      <span class="dt">fl=</span><span class="st">&quot;id,title,dateUploaded,abstract,size&quot;</span>,</a>
-<a class="sourceLine" id="cb1-6" data-line-number="6">                      <span class="dt">fq=</span><span class="st">&quot;dateUploaded:[2013-01-01T00:00:00.000Z TO 2014-01-01T00:00:00.000Z]&quot;</span>,</a>
-<a class="sourceLine" id="cb1-7" data-line-number="7">                      <span class="dt">sort=</span><span class="st">&quot;dateUploaded+desc&quot;</span>)</a>
-<a class="sourceLine" id="cb1-8" data-line-number="8">result &lt;-<span class="st"> </span><span class="kw">query</span>(mn, <span class="dt">solrQuery=</span>mySearchTerms, <span class="dt">as=</span><span class="st">&quot;data.frame&quot;</span>)</a>
-<a class="sourceLine" id="cb1-9" data-line-number="9">result[<span class="dv">1</span>,<span class="kw">c</span>(<span class="st">&quot;id&quot;</span>, <span class="st">&quot;title&quot;</span>)]</a>
-<a class="sourceLine" id="cb1-10" data-line-number="10">pid &lt;-<span class="st"> </span>result[<span class="dv">1</span>,<span class="st">'id'</span>]</a></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="kw">library</span>(dataone)</span>
+<span id="cb1-2"><a href="#cb1-2"></a>cn &lt;-<span class="st"> </span><span class="kw">CNode</span>(<span class="st">&quot;PROD&quot;</span>)</span>
+<span id="cb1-3"><a href="#cb1-3"></a>mn &lt;-<span class="st"> </span><span class="kw">getMNode</span>(cn, <span class="st">&quot;urn:node:KNB&quot;</span>)</span>
+<span id="cb1-4"><a href="#cb1-4"></a>mySearchTerms &lt;-<span class="st"> </span><span class="kw">list</span>(<span class="dt">q=</span><span class="st">&quot;abstract:salmon+AND+keywords:acoustics+AND+keywords:</span><span class="ch">\&quot;</span><span class="st">Oncorhynchus nerka</span><span class="ch">\&quot;</span><span class="st">&quot;</span>,</span>
+<span id="cb1-5"><a href="#cb1-5"></a>                      <span class="dt">fl=</span><span class="st">&quot;id,title,dateUploaded,abstract,size&quot;</span>,</span>
+<span id="cb1-6"><a href="#cb1-6"></a>                      <span class="dt">fq=</span><span class="st">&quot;dateUploaded:[2013-01-01T00:00:00.000Z TO 2014-01-01T00:00:00.000Z]&quot;</span>,</span>
+<span id="cb1-7"><a href="#cb1-7"></a>                      <span class="dt">sort=</span><span class="st">&quot;dateUploaded+desc&quot;</span>)</span>
+<span id="cb1-8"><a href="#cb1-8"></a>result &lt;-<span class="st"> </span><span class="kw">query</span>(mn, <span class="dt">solrQuery=</span>mySearchTerms, <span class="dt">as=</span><span class="st">&quot;data.frame&quot;</span>)</span>
+<span id="cb1-9"><a href="#cb1-9"></a>result[<span class="dv">1</span>,<span class="kw">c</span>(<span class="st">&quot;id&quot;</span>, <span class="st">&quot;title&quot;</span>)]</span>
+<span id="cb1-10"><a href="#cb1-10"></a>pid &lt;-<span class="st"> </span>result[<span class="dv">1</span>,<span class="st">&#39;id&#39;</span>]</span></code></pre></div>
 <p>The metadata file located in the above search can be downloaded with the commands:</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="kw">library</span>(XML)</a>
-<a class="sourceLine" id="cb2-2" data-line-number="2">metadata &lt;-<span class="st"> </span><span class="kw">rawToChar</span>(<span class="kw">getObject</span>(mn, pid))</a></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a><span class="kw">library</span>(XML)</span>
+<span id="cb2-2"><a href="#cb2-2"></a>metadata &lt;-<span class="st"> </span><span class="kw">rawToChar</span>(<span class="kw">getObject</span>(mn, pid))</span></code></pre></div>
 <p>The metadata file that describes the located research can be viewed in an XML viewer or text editor, once it is written to a disk file. This file details a data file (CSV) that can be obtained using the listed identifier, using the commands:</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1">dataRaw &lt;-<span class="st"> </span><span class="kw">getObject</span>(mn, <span class="st">&quot;df35d.443.1&quot;</span>)</a>
-<a class="sourceLine" id="cb3-2" data-line-number="2">dataChar &lt;-<span class="st"> </span><span class="kw">rawToChar</span>(dataRaw)</a>
-<a class="sourceLine" id="cb3-3" data-line-number="3">theData &lt;-<span class="st"> </span><span class="kw">textConnection</span>(dataChar)</a>
-<a class="sourceLine" id="cb3-4" data-line-number="4">df &lt;-<span class="st"> </span><span class="kw">read.csv</span>(theData, <span class="dt">stringsAsFactors=</span><span class="ot">FALSE</span>)</a>
-<a class="sourceLine" id="cb3-5" data-line-number="5">df[<span class="dv">1</span>,]</a></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a>dataRaw &lt;-<span class="st"> </span><span class="kw">getObject</span>(mn, <span class="st">&quot;df35d.443.1&quot;</span>)</span>
+<span id="cb3-2"><a href="#cb3-2"></a>dataChar &lt;-<span class="st"> </span><span class="kw">rawToChar</span>(dataRaw)</span>
+<span id="cb3-3"><a href="#cb3-3"></a>theData &lt;-<span class="st"> </span><span class="kw">textConnection</span>(dataChar)</span>
+<span id="cb3-4"><a href="#cb3-4"></a>df &lt;-<span class="st"> </span><span class="kw">read.csv</span>(theData, <span class="dt">stringsAsFactors=</span><span class="ot">FALSE</span>)</span>
+<span id="cb3-5"><a href="#cb3-5"></a>df[<span class="dv">1</span>,]</span></code></pre></div>
 <p>Uploading a CSV file to a DataONE Member Node requires user authentication. DataONE user authentication is described in the vignette <code>DataONE-Federation</code>.</p>
 <p>Once the authentication steps have been followed, uploading is done with:</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1"><span class="kw">library</span>(datapack)</a>
-<a class="sourceLine" id="cb4-2" data-line-number="2"><span class="kw">library</span>(uuid)</a>
-<a class="sourceLine" id="cb4-3" data-line-number="3">d1c &lt;-<span class="st"> </span><span class="kw">D1Client</span>(<span class="st">&quot;STAGING&quot;</span>, <span class="st">&quot;urn:node:mnStageUCSB2&quot;</span>)</a>
-<a class="sourceLine" id="cb4-4" data-line-number="4">id &lt;-<span class="st"> </span><span class="kw">paste</span>(<span class="st">&quot;urn:uuid:&quot;</span>, <span class="kw">UUIDgenerate</span>(), <span class="dt">sep=</span><span class="st">&quot;&quot;</span>)</a>
-<a class="sourceLine" id="cb4-5" data-line-number="5">testdf &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">x=</span><span class="dv">1</span><span class="op">:</span><span class="dv">10</span>,<span class="dt">y=</span><span class="dv">11</span><span class="op">:</span><span class="dv">20</span>)</a>
-<a class="sourceLine" id="cb4-6" data-line-number="6">csvfile &lt;-<span class="st"> </span><span class="kw">paste</span>(<span class="kw">tempfile</span>(), <span class="st">&quot;.csv&quot;</span>, <span class="dt">sep=</span><span class="st">&quot;&quot;</span>)</a>
-<a class="sourceLine" id="cb4-7" data-line-number="7"><span class="kw">write.csv</span>(testdf, csvfile, <span class="dt">row.names=</span><span class="ot">FALSE</span>)</a>
-<a class="sourceLine" id="cb4-8" data-line-number="8"><span class="co"># Build a DataObject containing the csv, and upload it to the Member Node</span></a>
-<a class="sourceLine" id="cb4-9" data-line-number="9">d1Object &lt;-<span class="st"> </span><span class="kw">new</span>(<span class="st">&quot;DataObject&quot;</span>, id, <span class="dt">format=</span><span class="st">&quot;text/csv&quot;</span>, <span class="dt">filename=</span>csvfile)</a></code></pre></div>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1"><span class="kw">uploadDataObject</span>(d1c, d1Object, <span class="dt">public=</span><span class="ot">TRUE</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a><span class="kw">library</span>(datapack)</span>
+<span id="cb4-2"><a href="#cb4-2"></a><span class="kw">library</span>(uuid)</span>
+<span id="cb4-3"><a href="#cb4-3"></a>d1c &lt;-<span class="st"> </span><span class="kw">D1Client</span>(<span class="st">&quot;STAGING&quot;</span>, <span class="st">&quot;urn:node:mnStageUCSB2&quot;</span>)</span>
+<span id="cb4-4"><a href="#cb4-4"></a>id &lt;-<span class="st"> </span><span class="kw">paste</span>(<span class="st">&quot;urn:uuid:&quot;</span>, <span class="kw">UUIDgenerate</span>(), <span class="dt">sep=</span><span class="st">&quot;&quot;</span>)</span>
+<span id="cb4-5"><a href="#cb4-5"></a>testdf &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">x=</span><span class="dv">1</span><span class="op">:</span><span class="dv">10</span>,<span class="dt">y=</span><span class="dv">11</span><span class="op">:</span><span class="dv">20</span>)</span>
+<span id="cb4-6"><a href="#cb4-6"></a>csvfile &lt;-<span class="st"> </span><span class="kw">paste</span>(<span class="kw">tempfile</span>(), <span class="st">&quot;.csv&quot;</span>, <span class="dt">sep=</span><span class="st">&quot;&quot;</span>)</span>
+<span id="cb4-7"><a href="#cb4-7"></a><span class="kw">write.csv</span>(testdf, csvfile, <span class="dt">row.names=</span><span class="ot">FALSE</span>)</span>
+<span id="cb4-8"><a href="#cb4-8"></a><span class="co"># Build a DataObject containing the csv, and upload it to the Member Node</span></span>
+<span id="cb4-9"><a href="#cb4-9"></a>d1Object &lt;-<span class="st"> </span><span class="kw">new</span>(<span class="st">&quot;DataObject&quot;</span>, id, <span class="dt">format=</span><span class="st">&quot;text/csv&quot;</span>, <span class="dt">filename=</span>csvfile)</span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a><span class="kw">uploadDataObject</span>(d1c, d1Object, <span class="dt">public=</span><span class="ot">TRUE</span>)</span></code></pre></div>
 </div>
 <div id="additional-resources" class="section level2">
 <h2>Additional Resources</h2>

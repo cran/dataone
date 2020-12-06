@@ -21,7 +21,7 @@ outputData <- system.file("extdata/Strix-occidentalis-obs.csv", package="dataone
 outputObj <- new("DataObject", format="text/csv", filename=outputData) 
 dp <- addMember(dp, outputObj, metadataObj)
 
-myAccessRules <- data.frame(subject="http://orcid.org/0000-0002-2192-403X", permission="changePermission") 
+myAccessRules <- data.frame(subject="https://orcid.org/0000-0002-2192-403X", permission="changePermission") 
 
 
 ## ---- eval=FALSE--------------------------------------------------------------
@@ -68,7 +68,7 @@ dp <- addMember(dp, outputObj, mo=metadataObj)
 sourceObj <- setPublicAccess(sourceObj)
 
 ## -----------------------------------------------------------------------------
-myAccessRules <- data.frame(subject="http://orcid.org/0000-0002-2192-403X", permission="changePermission") 
+myAccessRules <- data.frame(subject="https://orcid.org/0000-0002-2192-403X", permission="changePermission") 
 sourceObj <- addAccessRule(sourceObj, myAccessRules)
 
 ## ---- eval=FALSE--------------------------------------------------------------
@@ -82,6 +82,10 @@ sourceObj <- addAccessRule(sourceObj, myAccessRules)
 #  doi <- generateIdentifier(mn, "DOI")
 #  metadataObj <- new("DataObject", id=doi, format="eml://ecoinformatics.org/eml-2.1.1", file=sampleEML)
 
+## ---- eval=FALSE--------------------------------------------------------------
+#  dataObj <- getDataObject(d1c, id="urn:uuid:1234", lazyLoad=T, limit="1TB")
+#  dp <- addMember(dp, dataObj, mo=metadatqObj)
+
 ## -----------------------------------------------------------------------------
 library(digest)
 # Create a system metadata object for a data file. 
@@ -91,10 +95,10 @@ csvfile <- paste(tempfile(), ".csv", sep="")
 write.csv(testdf, csvfile, row.names=FALSE)
 format <- "text/csv"
 size <- file.info(csvfile)$size
-sha1 <- digest(csvfile, algo="sha1", serialize=FALSE, file=TRUE)
+sha256 <- digest(csvfile, algo="sha256", serialize=FALSE, file=TRUE)
 # Generate a unique identifier for the dataset
 pid <- sprintf("urn:uuid:%s", UUIDgenerate())
-sysmeta <- new("SystemMetadata", identifier=pid, formatId=format, size=size, checksum=sha1)
+sysmeta <- new("SystemMetadata", identifier=pid, formatId=format, size=size, checksum=sha256)
 sysmeta <- addAccessRule(sysmeta, "public", "read")
 
 ## -----------------------------------------------------------------------------
@@ -105,12 +109,12 @@ csvfile <- paste(tempfile(), ".csv", sep="")
 write.csv(testdf, csvfile, row.names=FALSE)
 format <- "text/csv"
 size <- file.info(csvfile)$size
-sha1 <- digest(csvfile, algo="sha1", serialize=FALSE, file=TRUE)
+sha256 <- digest(csvfile, algo="sha256", serialize=FALSE, file=TRUE)
 # Generate a unique identifier for the dataset
 pid <- sprintf("urn:uuid:%s", UUIDgenerate())
 # The seriesId can be any unique character string.
 seriesId <- sprintf("urn:uuid:%s", UUIDgenerate())
-sysmeta <- new("SystemMetadata", identifier=pid, formatId=format, size=size, checksum=sha1,  seriesId=seriesId)
+sysmeta <- new("SystemMetadata", identifier=pid, formatId=format, size=size, checksum=sha256,  seriesId=seriesId)
 
 ## ----eval=F-------------------------------------------------------------------
 #  cn <- CNode("STAGING")
@@ -131,13 +135,13 @@ sysmeta <- new("SystemMetadata", identifier=pid, formatId=format, size=size, che
 #  csvfile <- paste(tempfile(), ".csv", sep="")
 #  write.csv(testdf, csvfile, row.names=FALSE)
 #  size <- file.info(csvfile)$size
-#  sha1 <- digest(csvfile, algo="sha1", serialize=FALSE, file=TRUE)
+#  sha256 <- digest(csvfile, algo="sha256", serialize=FALSE, file=TRUE)
 #  # Start with the old object's sysmeta, then modify it to match
 #  # the new object. We could have also created a sysmeta from scratch.
 #  sysmeta <- getSystemMetadata(mn, pid)
 #  sysmeta@identifier <- updateid
 #  sysmeta@size <- size
-#  sysmeta@checksum <- sha1
+#  sysmeta@checksum <- sha256
 #  sysmeta@obsoletes <- pid
 #  # Now update the object on the member node.
 #  response <- updateObject(mn, pid, csvfile, updateid, sysmeta)

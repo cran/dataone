@@ -29,6 +29,7 @@
 #' @slot cn The Coordinating Node associated with the D1Client object
 #' @slot mn The Member Node associated with this D1Client object
 #' @import datapack
+#' @import stringi
 #' @importFrom stringr str_match str_replace
 #' @importFrom utils URLencode
 #' @section Methods:
@@ -134,7 +135,21 @@ setMethod("initialize", signature = "D1Client", definition = function(.Object, c
         .Object@cn <- CNode(env)
     }
     if (!missing(mNodeid) && !is.na(mNodeid) && !is.null(mNodeid) && (nchar(mNodeid) > 0)) {
-      .Object@mn <- getMNode(.Object@cn, mNodeid)
+        err <- FALSE
+        tryCatch({
+          mn <- NULL
+          mn <- getMNode(.Object@cn, mNodeid)
+        }, warning = function(wrn) {
+            err <- TRUE
+        }, error = function(err) {
+            err <- TRUE
+        })
+        if(identical(err, TRUE) || is.null(mn)) {
+            stop(sprintf("The member node identifier '%s' was not found in the '%s' environment.\n Note: the 'listNodes' function can be used to list member node identifiers for a DataONE environment.", 
+                     mNodeid, toupper(.Object@cn@env)))   
+        } else {
+            .Object@mn <- mn
+        }
     }
     return(.Object)
 })
@@ -206,23 +221,40 @@ setMethod("getD1Object", "D1Client", function(x, identifier) {
   return(getDataObject(x, identifier))
 })
 
-#' Download a from the DataONE Federation as a DataObject.
+#' Download a file (and it's associated system metadata) from the DataONE Federation as a DataObject.
 #' @description A convenience method to download a data object and its associated SystemMetadata, wrapped
 #' in a DataObject class.
 #' @details This method performs multiple underlying calls to the DataONE repository network. 
 #' CN.resolve() is called to locate the object on one or more repositories, and then each of these
-#' is accessed until success at downloading the associated SystemMetadata and data bytes, which are 
-#' finally wrapped in a DataObject and returned. Replaces previous getD1Object() method in the version 1
-#' dataone library. The \code{lazyLoad} parameter specifies that only sysmeta metadata is downloaded and
-#' not the data itself. This argument is used together with the \code{limit} parameter, which specifies 
-#' the maximum size of data object that will be downloaded. IF \code{lazyLoad} is FALSE, then \code{limit}
-#' is ignored.
+#' is accessed until the associated SystemMetadata and data bytes are successfully downloaded. This 
+#' data is then used to construct the returned DataObject. This function replaces the previous 
+#' getD1Object() method in the version 1
+#' dataone library. \cr\cr
+#' The \code{lazyLoad} parameter controls whether the data byes for a DataONE item are downloaded (the system
+#' metadata is always downloaded). When \code{lazyLoad}=FALSE,the \code{limit} parameter can be used to specify
+#' the maximum size of a data file that will be downloaded. If \code{lazyLoad} is TRUE, then \code{limit}
+#' is ignored. The \code{lazyLoad} and \code{limit} can be used together in the following ways:
+#' 
+#' \tabular{lllll}{
+#' \tab 'lazyLoad' \tab 'limit' \tab result \tab comments \cr
+#' \tab ---------- \tab ------- \tab ------ \tab --------------------- \cr
+#' \tab TRUE \tab Any value \tab Data bytes are not downloaded \tab The 'limit' parameter is ignored \cr
+#' \tab FALSE \tab Not specified \tab Data bytes are download if less than 1MB \tab The default 'limit' of 1MB is used \cr
+#' \tab FALSE \tab 10MB \tab Data bytes are downloaded if less than 10MB \tab The specified 'limit' values is used \cr
+#' }
+#' 
+#' Note that DataONE system metadata is always downloaded and populated into the resulting DataObject, regardless
+#' of the 'lazyLoad' and 'limit' values specified in the call to 'getDataObject()'.
+#' 
 #' @param x A D1Client object.
 #' @param identifier The identifier of the object to get.
 #' @param lazyLoad A \code{logical} value. If TRUE, then only package member system metadata is downloaded and not data.
 #' @param limit A \code{character} value specifying maximum package member size to download. Specified with "KB", "MB" or "TB"
-#'              for example: "100KB", "10MB", "20GB", "1TB". The default is "1MB".
+#'              for example: "100KB", "10MB", "20GB", "1TB". The default is "1MB". Only takes effect if 'lazyLoad=FALSE'.
 #' @param quiet A \code{'logical'}. If TRUE (the default) then informational messages will not be printed.
+#' @param checksumAlgorithm A \code{character} value specifying the algorithm to use to re-calculate (after download) the system metadata checksum 
+#'              for the object's data bytes for example: "SHA-256". The default is "NA", which specifies that this 
+#'              re-calculation will not be performed.
 #' @param ... (not yet used)
 #' @rdname getDataObject
 #' @aliases getDataObject
@@ -242,7 +274,8 @@ setGeneric("getDataObject", function(x, identifier, ...) {
 
 #' @rdname getDataObject
 #' @export
-setMethod("getDataObject", "D1Client", function(x, identifier, lazyLoad=FALSE, limit="1MB", quiet=TRUE) {
+setMethod("getDataObject", "D1Client", function(x, identifier, lazyLoad=FALSE, limit="1MB", quiet=TRUE,
+                                                checksumAlgorithm=as.character(NA)) {
     
     # Resolve the object location
     # This service is too chatty if any of the locations aren't available
@@ -283,6 +316,7 @@ setMethod("getDataObject", "D1Client", function(x, identifier, lazyLoad=FALSE, l
     success <- FALSE
     dataURL <- as.character(NA)
     deferredDownload <- lazyLoad
+    currentMN = NULL
     if(nrow(mntable) > 0) {
       for (i in 1:nrow(mntable)) { 
         suppressWarnings(currentMN <- getMNode(x@cn, mntable[i,]$nodeIdentifier))
@@ -291,20 +325,20 @@ setMethod("getDataObject", "D1Client", function(x, identifier, lazyLoad=FALSE, l
         if (!is.null(currentMN)) {
           sysmeta <- getSystemMetadata(currentMN, identifier)
           if(is.null(sysmeta)) next
-          # If lazy loading, check if the object size is larger that the specified
+          # If lazyLoad is true, don't download data bytes, regardless of limit setting.
+          # If lazyLoad is false, check if the object size is larger that the specified
           # download threshold for loading now.
-          if(!lazyLoad) { 
-            deferredDownload <- FALSE
-            bytes <- getObject(currentMN, identifier)
-            if (!is.null(sysmeta) & !is.null(bytes)) {
-              success <- TRUE
-              dataURL <- mntable[i,]$url
-              break
-            }
+          if(lazyLoad) { 
+            deferredDownload <- TRUE
+            bytes <- NA
+            success <- TRUE
+            dataURL <- mntable[i,]$url
+            break
           } else {
             if(as.numeric(sysmeta@size) <= limitBytes) {
               deferredDownload <- FALSE
-              bytes <- getObject(currentMN, identifier)
+              bytes <- NULL
+              try(bytes <- getObject(currentMN, identifier), silent=TRUE)
               if (!is.null(sysmeta) & !is.null(bytes)) {
                 success <- TRUE
                 dataURL <- mntable[i,]$url
@@ -338,10 +372,35 @@ setMethod("getDataObject", "D1Client", function(x, identifier, lazyLoad=FALSE, l
       }
     }
     
+    # If the checksum for current object does not match the requested checksum algorithm, then calculate
+    # it if the object's data is local, otherwise ask DataONE to calculate it.
+    if(!is.na(checksumAlgorithm)) {
+      if(tolower(sysmeta@checksumAlgorithm) != tolower(checksumAlgorithm)) {
+        # Bytes were not downloaded into the DataObject
+        if (deferredDownload) {
+          checksum = getChecksum(currentMN, pid=identifier, checksumAlgorithm=checksumAlgorithm)
+          sysmeta@checksum = checksum
+          sysmeta@checksumAlgorithm <- checksumAlgorithm
+        }
+        if(!quiet) {
+            cat(sprintf("Fetched recalculated checksum from DataONE using %s for id %s: %s\n",  sysmeta@checksumAlgorithm, 
+                        sysmeta@identifier, sysmeta@checksum))
+        }
+      } 
+    } else {
+      # The checksum algorithm was set to NA, meaning don't re-calculate the checksum after download. Since the
+      # DataObject constructor requires an algorithm to be specified, use the algorithm specified in the
+      # system metadata that was just downloaded for this object.
+      checksumAlgorithm <- sysmeta@checksumAlgorithm
+    }
+    
     # Construct and return a DataObject
     # Notice that we are passing the existing sysmeta for this object via the 'id' parameter,
-    # which will cause the DataObject to use this sysmeta and not generate a new one.
-    do <- new("DataObject", id=sysmeta, dataobj=bytes, dataURL=dataURL)
+    # which will cause the DataObject to use this sysmeta and not generate a new one. However, if the
+    # sysmeta checksum algorithm is different than the specified algorithm, then the checksum will
+    # be recalculated. 
+    do <- new("DataObject", id=sysmeta, dataobj=bytes, dataURL=dataURL, checksumAlgorithm=checksumAlgorithm)
+    
     # Save the identifier that this object had on the repository. If this update is to be updated,
     # the old identifier is needed for the update processing on the repo.
     do@oldId <- getIdentifier(do)
@@ -353,7 +412,19 @@ setMethod("getDataObject", "D1Client", function(x, identifier, lazyLoad=FALSE, l
 #' and insert them into a DataPackage, including associated SystemMetadata for each package
 #' member.
 #' @details A 'data package' that resides on a DataONE member node is defined as a collection of
-#' digital objects that are described by a metadata document. The 
+#' digital objects that are described by a metadata document. \cr\cr
+#' The \code{lazyLoad} parameter controls whether the data bytes for a DataONE package member are downloaded (the system
+#' metadata is always downloaded). When \code{lazyLoad}=FALSE, the \code{limit} parameter can be used to specify
+#' the maximum size of a data file that will be downloaded. If \code{lazyLoad} is TRUE, then \code{limit}
+#' is ignored. The \code{lazyLoad} and \code{limit} parameters can be used together in the following ways:
+#' 
+#' \tabular{lllll}{
+#' \tab 'lazyLoad' \tab 'limit' \tab result \tab comments \cr
+#' \tab ---------- \tab ------- \tab ------ \tab --------------------- \cr
+#' \tab TRUE \tab Any value \tab Data bytes are not downloaded \tab The 'limit' parameter is ignored \cr
+#' \tab FALSE \tab Not specified \tab Data bytes are download if less than 1MB \tab The default 'limit' of 1MB is used \cr
+#' \tab FALSE \tab 10MB \tab Data bytes are downloaded if less than 10MB \tab The specified 'limit' values is used \cr
+#' }
 #' @param x A D1Client object.
 #' @rdname getDataPackage
 #' @aliases getDataPackage
@@ -372,14 +443,17 @@ setGeneric("getDataPackage", function(x, identifier, ...) {
 
 #' @rdname getDataPackage
 #' @param identifier The identifier of a package, package metadata or other package member
-#' @param lazyLoad A \code{logical} value. If TRUE, then only package member system metadata is downloaded and not data. 
+#' @param lazyLoad A \code{logical} value. If TRUE, then only package member system metadata is downloaded and not data.
 #' The default is \code{FALSE}.
 #' @param limit A \code{character} value specifying maximum package member size to download. Specified with "KB", "MB" or "TB"
-#'              for example: "100KB", "10MB", "20GB", "1TB". The default is "1MB".
+#'              for example: "100KB", "10MB", "20GB", "1TB". The default is "1MB". Only takes effect if 'lazyLoad=FALSE'.
 #' @param quiet A \code{'logical'}. If TRUE (the default) then informational messages will not be printed.
+#' @param checksumAlgorithm A \code{character} value specifying the algorithm to use to re-calculate (after download) the system metadata checksum 
+#'              for the object's data bytes for example: "SHA-256". The default is "NA", which specifies that this re-calculation will not be performed.
 #' @param ... (not yet used)
 #' @export
-setMethod("getDataPackage", "D1Client", function(x, identifier, lazyLoad=FALSE, limit="1MB", quiet=TRUE) {
+setMethod("getDataPackage", "D1Client", function(x, identifier, lazyLoad=FALSE, limit="1MB", quiet=TRUE,
+                                                 checksumAlgorithm=as.character(NA)) {
     
   # The identifier provided could be the package id (resource map), the metadata id or a package member (data, etc)
   # The solr queries attempt to determine which id was specified and may issue additional queries to get all the
@@ -420,7 +494,7 @@ setMethod("getDataPackage", "D1Client", function(x, identifier, lazyLoad=FALSE, 
     queryParamList <- list(q=sprintf('resourceMap:\"%s\"', identifier), fq='formatType:METADATA+AND+-obsoletedBy:*', fl='id,documents')
     result <- query(node, queryParamList, as="list")
     if (length(result) == 0) {
-      stop(sprintf("Unable to find unobsolted metadata object for identifier: %s on node %s", identifier, node@identifier))
+      stop(sprintf("Unable to find unobsoleted metadata object for identifier: %s on node %s", identifier, node@identifier))
     }
     metadataPid <- unlist(result[[1]]$id)
     packageMembers <- unlist(result[[1]]$documents)
@@ -511,7 +585,8 @@ setMethod("getDataPackage", "D1Client", function(x, identifier, lazyLoad=FALSE, 
   resmapId <- unlist(resmapId)[[1]]
   dpkg@resmapId <- resmapId
   # Don't lazyload the metadata
-  metadataObj <- getDataObject(x, identifier=metadataPid, lazyLoad=FALSE, quiet=quiet)
+  metadataObj <- getDataObject(x, identifier=metadataPid, lazyLoad=FALSE, quiet=quiet, 
+                               checksumAlgorithm=checksumAlgorithm)
   if(length(packageMembers) > 0) {
     for (iPid in 1:length(packageMembers)) {
       thisPid <- packageMembers[[iPid]]
@@ -519,7 +594,7 @@ setMethod("getDataPackage", "D1Client", function(x, identifier, lazyLoad=FALSE, 
         if(!quiet) cat(sprintf("Skipping metadata object, already downloaded\n"))
         next
       }
-      obj <- getDataObject(x, identifier=thisPid, lazyLoad=lazyLoad, limit=limit, quiet=quiet)
+      obj <- getDataObject(x, identifier=thisPid, lazyLoad=lazyLoad, limit=limit, quiet=quiet, checksumAlgorithm)
       # The metadata object will be added this first time addMember is called.
       # Note that the 'cito:documents' relationship should already be in the package
       # resource map, so don't add this relationship now.
@@ -536,7 +611,13 @@ setMethod("getDataPackage", "D1Client", function(x, identifier, lazyLoad=FALSE, 
   # Download the resource map, parse it and load the relationships into the DataPackage
   # Currently we only use the first resource map
   if(!quiet) cat(sprintf("Getting resource map with id: %s\n", dpkg@resmapId))
-  resMapBytes <- getObject(x@mn, pid=resmapId)
+  resMapObj <- getDataObject(x, identifier=resmapId, lazyLoad=FALSE, checksumAlgorithm=checksumAlgorithm)
+  # The resource map is not a 'member' of the package, but the sysmeta for it must be retained so that 
+  # the state and 'history' of the package can be inspected, so save the resmap sysmeta to the corresponding
+  # DataPackage R slot. An example case for inspecting the sysmeta is to determine if the package was newly
+  # created locally or downloaded from DataONE.
+  dpkg@sysmeta <- resMapObj@sysmeta
+  resMapBytes <- getData(resMapObj)
   resMap <- new("ResourceMap", id=resmapId)
   resMap <- parseRDF(resMap, rdf=rawToChar(resMapBytes), asText=TRUE)
   # All identifiers from the package are needed for obtaining the triples, including
@@ -898,21 +979,24 @@ setMethod("uploadDataPackage", signature("D1Client"), function(x, dp, replicate=
       stop("Please set the DataONE Member Node to upload to using setMNodeId()")
     }
     
-    # First check if any members of this DataPackage have been previously uploaded. If a package
-    # was first downloaded from a repository and then at least one member was modified, then this 
-    # is considered a package update.
     downloadedPkg <- FALSE
-    dates <- getValue(dp, name="sysmeta@dateUploaded")
-    for (thisDate in dates) {
-        if(!is.na(thisDate)) downloadedPkg <- TRUE
-    }
-    if(!quiet) {
-      if(downloadedPkg) {
-          cat(sprintf("Updating a modified package to member node %s\n", x@mn@endpoint))
-      } else {
-          cat(sprintf("Uploading a new package to member node %s.\n", x@mn@endpoint))
+    # If the package was downloaded from DataONE, then the resource map object will have
+    # a sysmeta upload datetime defined. If this is the case, then this upload is considered
+    # a package update, and the current resource map will be updated (obsoleted by a new PID)
+    # Note that this package can be modified by removing or replacing members, or adding
+    # new DataObjects or DataObjects created using the  # 'lazyload=T' parameter. 
+    if (!is.na(dp@sysmeta@dateUploaded)) {
+      downloadedPkg <- TRUE
+      if (!quiet) {
+        cat(sprintf("Updating a modified package to member node %s\n", x@mn@endpoint))
+      }
+    } else {
+      downloadedPkg <- FALSE
+      if (!quiet) {
+        cat(sprintf("Uploading a new package to member node %s\n", x@mn@endpoint))
       }
     }
+    
     # Use the CN resolve URI from the D1Client object, if it was not specified on the command line.
     if(is.na(resolveURI)) {
         resolveURI <- paste0(x@cn@endpoint, "/resolve")
@@ -991,9 +1075,33 @@ setMethod("uploadDataPackage", signature("D1Client"), function(x, dp, replicate=
     
     # Now upload or update the resource map if necessary.
     returnId <- as.character(NA)
+    
+    # Check if a 'documents' relationship has been included for the metadata object.
+    # See https://github.com/DataONEorg/rdataone/issues/269
+    metadataId <- getMetadataMember(x, dp)
+    relationships <- getRelationships(dp)
+    if(nrow(relationships) > 0 ) {
+      subject <- relationships[relationships[,"subject"]==metadataId
+                    & relationships[,"predicate"]==datapack:::citoDocuments 
+                    & relationships[,"object"]==metadataId,
+                    "subject"]
+    } else {
+      # Same result that would be returned from the above subset, if no self-documenting 
+      # metadata relationship found.
+      subject <- character(0)
+    }
+    
+    # If a 'documents' relationship hasn't been included for the metadata object, add it now.
+    # The 'documents' and 'isDocumentedBy' relationships are added by default by 'insertRelationships', if
+    # no relation is specified. Note that this self-referring relationship should be inserted by datapack 1.4.1+
+    # so if using a lower version, it will be installed now.
+    if(length(subject) == 0) {
+      dp <- insertRelationship(dp, metadataId, metadataId)
+    } 
+    
     # This is a new package, so potentially we need to upload a resource map
     if(!downloadedPkg) {
-        # Only upplad a resource map if a DataObjects was uploaded, i.e. not all uploads failed.
+        # Only upload a resource map if a DataObject was uploaded, i.e. not all uploads failed.
         if (uploadedMember) {
             if(!is.na(packageId)) {
                 newPid <- packageId
@@ -1027,7 +1135,7 @@ setMethod("uploadDataPackage", signature("D1Client"), function(x, dp, replicate=
             if(!is.na(returnId)) {
                 if(!quiet) cat(sprintf("Uploaded resource map with id: %s\n", returnId))
                 dp@resmapId <- returnId
-                dp@relations[['update']] <- FALSE
+                dp@relations[['updated']] <- FALSE
             } else {
                 cat(sprintf("Error uploading resource map %s.", getIdentifier(resMapObj)))
             }
@@ -1099,7 +1207,7 @@ setMethod("uploadDataPackage", signature("D1Client"), function(x, dp, replicate=
             returnId <- uploadDataObject(x, do=resMapObj, replicate=replicate, numberReplicas=numberReplicas, 
                                          preferredNodes=preferredNodes, public=public, accessRules=accessRules,
                                          quiet=quiet) 
-            dp@relations[['update']] <- FALSE
+            dp@relations[['updated']] <- FALSE
             if(!is.na(returnId)) {
                 if(!quiet) cat(sprintf("Updated resource map wth new id: %s, obsoleting id: %s\n", newPid, resMapObj@oldId))
                 dp@resmapId <- returnId

@@ -11,17 +11,81 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 
 
-<meta name="date" content="2020-02-15" />
+<meta name="date" content="2020-12-04" />
 
 <title>Known Issues</title>
 
+<script>// Hide empty <a> tag within highlighted CodeBlock for screen reader accessibility (see https://github.com/jgm/pandoc/issues/6352#issuecomment-626106786) -->
+// v0.0.1
+// Written by JooYoung Seo (jooyoung@psu.edu) and Atsushi Yasumoto on June 1st, 2020.
+
+document.addEventListener('DOMContentLoaded', function() {
+  const codeList = document.getElementsByClassName("sourceCode");
+  for (var i = 0; i < codeList.length; i++) {
+    var linkList = codeList[i].getElementsByTagName('a');
+    for (var j = 0; j < linkList.length; j++) {
+      if (linkList[j].innerHTML === "") {
+        linkList[j].setAttribute('aria-hidden', 'true');
+      }
+    }
+  }
+});
+</script>
+<style type="text/css">
+a.anchor-section {margin-left: 10px; visibility: hidden; color: inherit;}
+a.anchor-section::before {content: '#';}
+.hasAnchor:hover a.anchor-section {visibility: visible;}
+</style>
+<script>// Anchor sections v1.0 written by Atsushi Yasumoto on Oct 3rd, 2020.
+document.addEventListener('DOMContentLoaded', function() {
+  // Do nothing if AnchorJS is used
+  if (typeof window.anchors === 'object' && anchors.hasOwnProperty('hasAnchorJSLink')) {
+    return;
+  }
+
+  const h = document.querySelectorAll('h1, h2, h3, h4, h5, h6');
+
+  // Do nothing if sections are already anchored
+  if (Array.from(h).some(x => x.classList.contains('hasAnchor'))) {
+    return null;
+  }
+
+  // Use section id when pandoc runs with --section-divs
+  const section_id = function(x) {
+    return ((x.classList.contains('section') || (x.tagName === 'SECTION'))
+            ? x.id : '');
+  };
+
+  // Add anchors
+  h.forEach(function(x) {
+    const id = x.id || section_id(x.parentElement);
+    if (id === '') {
+      return null;
+    }
+    let anchor = document.createElement('a');
+    anchor.href = '#' + id;
+    anchor.classList = ['anchor-section'];
+    x.classList.add('hasAnchor');
+    x.appendChild(anchor);
+  });
+});
+</script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
 
 
 <style type="text/css">code{white-space: pre;}</style>
 <style type="text/css" data-origin="pandoc">
-a.sourceLine { display: inline-block; line-height: 1.25; }
-a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
-a.sourceLine:empty { height: 1.2em; position: absolute; }
+code.sourceCode > span { display: inline-block; line-height: 1.25; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode { white-space: pre; position: relative; }
 div.sourceCode { margin: 1em 0; }
@@ -31,16 +95,16 @@ div.sourceCode { overflow: auto; }
 }
 @media print {
 code.sourceCode { white-space: pre-wrap; }
-a.sourceLine { text-indent: -1em; padding-left: 1em; }
+code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
 }
-pre.numberSource a.sourceLine
-  { position: relative; }
-pre.numberSource a.sourceLine:empty
-  { position: absolute; }
-pre.numberSource a.sourceLine::before
-  { content: attr(data-line-number);
-    position: absolute; left: -5em; text-align: right; vertical-align: baseline;
-    border: none; pointer-events: all;
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
     -webkit-touch-callout: none; -webkit-user-select: none;
     -khtml-user-select: none; -moz-user-select: none;
     -ms-user-select: none; user-select: none;
@@ -49,9 +113,9 @@ pre.numberSource a.sourceLine::before
   }
 pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
 div.sourceCode
-  {  }
+  {   }
 @media screen {
-a.sourceLine::before { text-decoration: underline; }
+code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 code span.al { color: #ff0000; font-weight: bold; } /* Alert */
 code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
@@ -301,7 +365,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 
 <h1 class="title toc-ignore">Known Issues</h1>
-<h4 class="date">2020-02-15</h4>
+<h4 class="date">2020-12-04</h4>
 
 
 
@@ -314,22 +378,22 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 Problem with the local SSL certificate </code></pre>
 <p>(Note that it is recommended that you use DataONE authentication tokens instead of an X.509 certificate if possible.)</p>
 <p>Changes in the Mac OS X system libraries in OS X Mavericks have taken away support of these X.509 certificates. A workaround to make these certificates usable on Mac OS X with R is to install a version of the <em>curl</em> R package that supports these certificates.</p>
-<p>On Mac OS X, the libcurl library can be installed with either <a href="https://www.macports.org">Mac Ports</a> package manager or the <a href="http://brew.sh">HomeBrew</a> package manager. The HomeBrew package manager can be significantly faster to install but either one will work provided the directions shown below are followed.</p>
+<p>On Mac OS X, the libcurl library can be installed with either <a href="https://www.macports.org">Mac Ports</a> package manager or the <a href="https://brew.sh">HomeBrew</a> package manager. The HomeBrew package manager can be significantly faster to install but either one will work provided the directions shown below are followed.</p>
 <p>You can check if you have MacPorts installed by entering the following command in a terminal window:</p>
 <pre><code>port version</code></pre>
 <div id="create-new-curl-package-using-macports" class="section level4">
 <h4>Create new <em>curl</em> package using MacPorts</h4>
 <p>If MacPorts is being used on your system, the following commands can be entered to install a <em>curl</em> package that can read the certificate and allow them to be used by the <em>dataone</em> package for authentication to a DataONE node. In a terminal window enter the commands:</p>
 <pre><code>sudo port install curl</code></pre>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1"><span class="kw">Sys.setenv</span>(<span class="dt">LIB_DIR=</span><span class="st">&quot;/opt/local/lib&quot;</span>)</a>
-<a class="sourceLine" id="cb4-2" data-line-number="2"><span class="kw">Sys.setenv</span>(<span class="dt">INCLUDE_DIR=</span><span class="st">&quot;/opt/local/include&quot;</span>)</a>
-<a class="sourceLine" id="cb4-3" data-line-number="3"><span class="kw">install.packages</span>(<span class="st">&quot;curl&quot;</span>, <span class="dt">type=</span><span class="st">&quot;source&quot;</span>)</a>
-<a class="sourceLine" id="cb4-4" data-line-number="4"><span class="kw">library</span>(curl)</a>
-<a class="sourceLine" id="cb4-5" data-line-number="5"><span class="kw">library</span>(dataone)</a>
-<a class="sourceLine" id="cb4-6" data-line-number="6"></a>
-<a class="sourceLine" id="cb4-7" data-line-number="7"><span class="co"># Remove the environment variables as they are no longer needed.</span></a>
-<a class="sourceLine" id="cb4-8" data-line-number="8"><span class="kw">Sys.setenv</span>(<span class="dt">LIB_DIR=</span><span class="st">&quot;&quot;</span>)</a>
-<a class="sourceLine" id="cb4-9" data-line-number="9"><span class="kw">Sys.setenv</span>(<span class="dt">INCLUDE_DIR=</span><span class="st">&quot;&quot;</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a><span class="kw">Sys.setenv</span>(<span class="dt">LIB_DIR=</span><span class="st">&quot;/opt/local/lib&quot;</span>)</span>
+<span id="cb4-2"><a href="#cb4-2"></a><span class="kw">Sys.setenv</span>(<span class="dt">INCLUDE_DIR=</span><span class="st">&quot;/opt/local/include&quot;</span>)</span>
+<span id="cb4-3"><a href="#cb4-3"></a><span class="kw">install.packages</span>(<span class="st">&quot;curl&quot;</span>, <span class="dt">type=</span><span class="st">&quot;source&quot;</span>)</span>
+<span id="cb4-4"><a href="#cb4-4"></a><span class="kw">library</span>(curl)</span>
+<span id="cb4-5"><a href="#cb4-5"></a><span class="kw">library</span>(dataone)</span>
+<span id="cb4-6"><a href="#cb4-6"></a></span>
+<span id="cb4-7"><a href="#cb4-7"></a><span class="co"># Remove the environment variables as they are no longer needed.</span></span>
+<span id="cb4-8"><a href="#cb4-8"></a><span class="kw">Sys.setenv</span>(<span class="dt">LIB_DIR=</span><span class="st">&quot;&quot;</span>)</span>
+<span id="cb4-9"><a href="#cb4-9"></a><span class="kw">Sys.setenv</span>(<span class="dt">INCLUDE_DIR=</span><span class="st">&quot;&quot;</span>)</span></code></pre></div>
 <p>At this point you should be able to use X.509 Certificates.</p>
 </div>
 <div id="create-new-curl-package-using-homebrew" class="section level4">
@@ -340,15 +404,15 @@ Problem with the local SSL certificate </code></pre>
 <pre><code>brew install curl --with-openssl
 brew link curl --force</code></pre>
 <p>In the R console enter the commands:</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" data-line-number="1"><span class="kw">Sys.setenv</span>(<span class="dt">LIB_DIR=</span><span class="st">&quot;/usr/local/opt/curl/lib&quot;</span>)</a>
-<a class="sourceLine" id="cb7-2" data-line-number="2"><span class="kw">Sys.setenv</span>(<span class="dt">INCLUDE_DIR=</span><span class="st">&quot;/usr/local/opt/curl/include&quot;</span>)</a>
-<a class="sourceLine" id="cb7-3" data-line-number="3"><span class="kw">install.packages</span>(<span class="st">&quot;curl&quot;</span>, <span class="dt">type=</span><span class="st">&quot;source&quot;</span>)</a>
-<a class="sourceLine" id="cb7-4" data-line-number="4"><span class="kw">library</span>(curl)</a>
-<a class="sourceLine" id="cb7-5" data-line-number="5"><span class="kw">library</span>(dataone)</a>
-<a class="sourceLine" id="cb7-6" data-line-number="6"></a>
-<a class="sourceLine" id="cb7-7" data-line-number="7"><span class="co"># Remove the environment variables as they are no longer needed.</span></a>
-<a class="sourceLine" id="cb7-8" data-line-number="8"><span class="kw">Sys.setenv</span>(<span class="dt">LIB_DIR=</span><span class="st">&quot;&quot;</span>)</a>
-<a class="sourceLine" id="cb7-9" data-line-number="9"><span class="kw">Sys.setenv</span>(<span class="dt">INCLUDE_DIR=</span><span class="st">&quot;&quot;</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a><span class="kw">Sys.setenv</span>(<span class="dt">LIB_DIR=</span><span class="st">&quot;/usr/local/opt/curl/lib&quot;</span>)</span>
+<span id="cb7-2"><a href="#cb7-2"></a><span class="kw">Sys.setenv</span>(<span class="dt">INCLUDE_DIR=</span><span class="st">&quot;/usr/local/opt/curl/include&quot;</span>)</span>
+<span id="cb7-3"><a href="#cb7-3"></a><span class="kw">install.packages</span>(<span class="st">&quot;curl&quot;</span>, <span class="dt">type=</span><span class="st">&quot;source&quot;</span>)</span>
+<span id="cb7-4"><a href="#cb7-4"></a><span class="kw">library</span>(curl)</span>
+<span id="cb7-5"><a href="#cb7-5"></a><span class="kw">library</span>(dataone)</span>
+<span id="cb7-6"><a href="#cb7-6"></a></span>
+<span id="cb7-7"><a href="#cb7-7"></a><span class="co"># Remove the environment variables as they are no longer needed.</span></span>
+<span id="cb7-8"><a href="#cb7-8"></a><span class="kw">Sys.setenv</span>(<span class="dt">LIB_DIR=</span><span class="st">&quot;&quot;</span>)</span>
+<span id="cb7-9"><a href="#cb7-9"></a><span class="kw">Sys.setenv</span>(<span class="dt">INCLUDE_DIR=</span><span class="st">&quot;&quot;</span>)</span></code></pre></div>
 <p>At this point you should be able to use X.509 Certificates.</p>
 </div>
 </div>

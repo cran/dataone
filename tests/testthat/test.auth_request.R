@@ -1,10 +1,9 @@
-context("auth_request tests")
 test_that("dataone library loads", {
 	expect_true(require(dataone))
 })
 
 test_that("auth_get", {
-  if(servicesDown) skip_on_cran()
+  skip_on_cran()
   library(dataone)
   library(httr)
   library(XML)

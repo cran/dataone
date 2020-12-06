@@ -71,9 +71,9 @@
 #' write.csv(testdf, csvfile, row.names=FALSE)
 #' f <- "text/csv"
 #' size <- file.info(csvfile)$size
-#' sha1 <- digest(csvfile, algo="sha1", serialize=FALSE, file=TRUE)
+#' sha256 <- digest(csvfile, algo="sha256", serialize=FALSE, file=TRUE)
 #' sysmeta <- new("SystemMetadata", identifier=newid, formatId=f, size=size,
-#'     checksum=sha1, originMemberNode=mnid, authoritativeMemberNode=mnid)
+#'     checksum=sha256, originMemberNode=mnid, authoritativeMemberNode=mnid)
 #' # Upload data to DataONE (requires authentication)
 #' \dontrun{
 #' response <- createObject(mn, newid, csvfile, sysmeta)
@@ -280,12 +280,19 @@ setMethod("getSystemMetadata", signature("MNode"), function(x, pid) {
 })
 
 #' @rdname getChecksum
-#' @param checksumAlgorithm The algorithm used to calculate the checksum. Default="SHA-1"
+#' @param checksumAlgorithm The algorithm used to calculate the checksum. Default="SHA-256"
 #' @export
-setMethod("getChecksum", signature("MNode"), function(x, pid, checksumAlgorithm="SHA-1") {
+setMethod("getChecksum", signature("MNode"), function(x, pid, checksumAlgorithm="SHA-256") {
   stopifnot(is.character(pid))
   url <- paste(x@endpoint, "checksum", URLencode(pid, reserved=T), sep="/")
-  response<-GET(url, query=list(checksumAlgorithm=checksumAlgorithm), user_agent(get_user_agent()))
+  url <- paste0(url, '?checksumAlgorithm=', checksumAlgorithm)
+  response <- auth_get(url, node=x)
+  
+  if(response$status_code != "200") {
+    warning(sprintf("Error getting checksum: %s\n", getErrorDescription(response)))
+    return(NULL)
+  }
+  
   if (is.raw(response$content)) {
     tmpres <- content(response, as="raw")
     resultText <- rawToChar(tmpres)
@@ -346,8 +353,8 @@ setMethod("getChecksum", signature("MNode"), function(x, pid, checksumAlgorithm=
 #' write.csv(testdf, csvfile, row.names=FALSE)
 #' format <- "text/csv"
 #' size <- file.info(csvfile)$size
-#' sha1 <- digest(csvfile, algo="sha1", serialize=FALSE, file=TRUE)
-#' sysmeta <- new("SystemMetadata", identifier=newid, formatId=format, size=size, checksum=sha1)
+#' sha256 <- digest(csvfile, algo="sha256", serialize=FALSE, file=TRUE)
+#' sysmeta <- new("SystemMetadata", identifier=newid, formatId=format, size=size, checksum=sha256)
 #' sysmeta <- addAccessRule(sysmeta, "public", "read")
 #' # Upload the data to DataONE (requires authentication)
 #' \dontrun{
@@ -493,7 +500,7 @@ setMethod("updateObject", signature("MNode"), function(x, pid, file=as.character
         stop("Both 'file' and 'dataobj' arguments have been specified")
       }
       file <- tempfile()
-      writeBin(file, dataobj)
+      writeBin(dataobj, file)
     }
     response <- auth_put(url, encode="multipart", 
                 body=list(pid=pid, object=upload_file(file), 

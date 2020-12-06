@@ -1,12 +1,14 @@
 ---
-title: "Uploading Data to DataONE"
+title: "Uploading Datasets to DataONE"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Uploading Data to DataONE}
+  %\VignetteIndexEntry{Uploading Datasets to DataONE}
   %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
   %\usepackage[utf8]{inputenc}
 ---
+
 
 ## Introduction
   
@@ -29,11 +31,12 @@ R objects or existing on a DataONE repository, will be informally referred to as
 'data package'. Figure 1. is a diagram of a typical DataONE package showing a metadata file that
 describes, or `documents` the data granules that the package contains.
 
-![](package-diagram.png)
+![](https://raw.githubusercontent.com/DataONEorg/rdataone/master/vignettes/package-diagram.png)
 
 The steps necessary to
 to prepare and upload a package to DataONE using the `uploadDataPackage` method 
-will be shown. A complete script that uses these steps is shown here: 
+will be shown. A complete script that uses these steps is shown here, with
+detailed explanations of the steps following.
 
 ```{r}
 library(dataone)
@@ -58,7 +61,7 @@ outputData <- system.file("extdata/Strix-occidentalis-obs.csv", package="dataone
 outputObj <- new("DataObject", format="text/csv", filename=outputData) 
 dp <- addMember(dp, outputObj, metadataObj)
 
-myAccessRules <- data.frame(subject="http://orcid.org/0000-0002-2192-403X", permission="changePermission") 
+myAccessRules <- data.frame(subject="https://orcid.org/0000-0002-2192-403X", permission="changePermission") 
 
 ```
 ```{r, eval=FALSE}
@@ -186,6 +189,8 @@ outputObj <- new("DataObject", format="text/csv", filename=outputData)
 dp <- addMember(dp, outputObj, mo=metadataObj)
 ```
 
+*Important Note*: files previously uploaded to DataONE can be added to the DataPackage, for more information see the section "Adding Existing DataONE Files To A Package". 
+
 ### 4. Determine what access your data and metadata should have 
 DataONE provides a mechanism that allows data submitters to control access to their data.
 
@@ -219,10 +224,10 @@ sourceObj <- setPublicAccess(sourceObj)
 Individual access rules to be added for a DataONE user identity can also be added to the access policy. 
 
 Access rules are added to a *DataObject* using the `addAccessRule` method. The following access rule will grant the 
-user with the ORCID `http://orcid.org/0000-0002-2192-403X` `changePermission` access to the dataset:
+user with the ORCID `https://orcid.org/0000-0002-2192-403X` `changePermission` access to the dataset:
 
 ```{r}
-myAccessRules <- data.frame(subject="http://orcid.org/0000-0002-2192-403X", permission="changePermission") 
+myAccessRules <- data.frame(subject="https://orcid.org/0000-0002-2192-403X", permission="changePermission") 
 sourceObj <- addAccessRule(sourceObj, myAccessRules)
 ```
 DataONE user identities and user authentication are described in  section *DataONE User Authentication*  in the vignette *dataone-overview* (to view this vignette, type this command in the R console: `vignette("dataone-overview")`)
@@ -262,6 +267,20 @@ metadataObj <- new("DataObject", id=doi, format="eml://ecoinformatics.org/eml-2.
 
 The `generateIdentifier` method requests that the DataONE MN generate a properly formatted DOI. 
 
+## Adding Existing DataONE Files To A Package
+
+Files that have previously been uploaded to DataONE can be added to a new DataPackage. New DataObjects can be
+created by downloading an existing DataONE item:
+```{r, eval=FALSE}
+dataObj <- getDataObject(d1c, id="urn:uuid:1234", lazyLoad=T, limit="1TB")
+dp <- addMember(dp, dataObj, mo=metadatqObj)
+```
+
+The above example creates a new DataObject by downloading the existing item from DataONE that has the identifier  "urn:uuid:1234" and using the 'd1c` variable previously defined. This DataObject is then added to the package. 
+In this example, the optional "lazyLoad" and "limit" parameters are used. These parameters cause *getDataObject* to only download the system information (i.e. access rules, format information) and not the data bytes associated with this identifier.  Using these parameters can be helpful if the file associated with this identifier is very large. For the purpose of adding this DataONE identifier to a DataPackage, the data bytes are not required.
+
+Reusing DataONE items this way results in one copy of the item existing in DataONE but being included in multiple DataONE packages.
+
 ## Uploading Individual Data And Metadata Files
 
 A single data or metadata file can be uploaded to a DataONE MN using the *createObject* method.
@@ -280,10 +299,10 @@ csvfile <- paste(tempfile(), ".csv", sep="")
 write.csv(testdf, csvfile, row.names=FALSE)
 format <- "text/csv"
 size <- file.info(csvfile)$size
-sha1 <- digest(csvfile, algo="sha1", serialize=FALSE, file=TRUE)
+sha256 <- digest(csvfile, algo="sha256", serialize=FALSE, file=TRUE)
 # Generate a unique identifier for the dataset
 pid <- sprintf("urn:uuid:%s", UUIDgenerate())
-sysmeta <- new("SystemMetadata", identifier=pid, formatId=format, size=size, checksum=sha1)
+sysmeta <- new("SystemMetadata", identifier=pid, formatId=format, size=size, checksum=sha256)
 sysmeta <- addAccessRule(sysmeta, "public", "read")
 ```
 
@@ -299,12 +318,12 @@ csvfile <- paste(tempfile(), ".csv", sep="")
 write.csv(testdf, csvfile, row.names=FALSE)
 format <- "text/csv"
 size <- file.info(csvfile)$size
-sha1 <- digest(csvfile, algo="sha1", serialize=FALSE, file=TRUE)
+sha256 <- digest(csvfile, algo="sha256", serialize=FALSE, file=TRUE)
 # Generate a unique identifier for the dataset
 pid <- sprintf("urn:uuid:%s", UUIDgenerate())
 # The seriesId can be any unique character string.
 seriesId <- sprintf("urn:uuid:%s", UUIDgenerate())
-sysmeta <- new("SystemMetadata", identifier=pid, formatId=format, size=size, checksum=sha1,  seriesId=seriesId)
+sysmeta <- new("SystemMetadata", identifier=pid, formatId=format, size=size, checksum=sha256,  seriesId=seriesId)
 ```
 A unique identifier must be specified for each system metadata, whether or not a seriesId is used.
 
@@ -353,13 +372,13 @@ testdf <- data.frame(x=1:20,y=11:30)
 csvfile <- paste(tempfile(), ".csv", sep="")
 write.csv(testdf, csvfile, row.names=FALSE)
 size <- file.info(csvfile)$size
-sha1 <- digest(csvfile, algo="sha1", serialize=FALSE, file=TRUE)
+sha256 <- digest(csvfile, algo="sha256", serialize=FALSE, file=TRUE)
 # Start with the old object's sysmeta, then modify it to match
 # the new object. We could have also created a sysmeta from scratch.
 sysmeta <- getSystemMetadata(mn, pid)
 sysmeta@identifier <- updateid
 sysmeta@size <- size
-sysmeta@checksum <- sha1
+sysmeta@checksum <- sha256
 sysmeta@obsoletes <- pid
 # Now update the object on the member node.
 response <- updateObject(mn, pid, csvfile, updateid, sysmeta)
