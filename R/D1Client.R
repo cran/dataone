@@ -107,6 +107,13 @@ setMethod("D1Client", signature("CNode", "MNode"), function(x, y, ...) {
     return(result)
 })
 
+#' @rdname D1Client
+#' @export
+setMethod("D1Client", signature("character", "MNode"), function(x, y, ...) {
+    result <- new("D1Client", env=x, mn=y)
+    return(result)
+})
+
 #' Initialize a D1Client object
 #' @param .Object A D1client object.
 #' @param cn The Member Node object to associate this D1Client with.
@@ -277,6 +284,62 @@ setGeneric("getDataObject", function(x, identifier, ...) {
 setMethod("getDataObject", "D1Client", function(x, identifier, lazyLoad=FALSE, limit="1MB", quiet=TRUE,
                                                 checksumAlgorithm=as.character(NA)) {
     
+  # Convert download size limit to a number. This will only be used if lazyLoad=FALSE
+  if(grepl("tb", limit, ignore.case=TRUE)) {
+    limitBytes <- as.numeric(gsub("tb", "", limit, ignore.case=TRUE)) * 1099511627776
+  } else if(grepl("gb", limit, ignore.case=TRUE)) {
+    limitBytes <- as.numeric(gsub("gb", "", limit, ignore.case=TRUE)) * 1073741824
+  } else if(grepl("mb", limit, ignore.case=TRUE)) {
+    limitBytes <- as.numeric(gsub("mb", "", limit, ignore.case=TRUE)) * 1048576
+  } else if (grepl("kb", limit, ignore.case=TRUE)) {
+    limitBytes <- as.numeric(gsub("kb", "", limit, ignore.case=TRUE)) * 1024
+  } else if(!is.na(as.numeric(x))) {
+    limitByptes <- as.numeric(limit)
+  } else {
+    stop(sprintf("Unknown limit specified: %s", limit))
+  }
+  
+  # First attempt to get the object from the current member node
+  sysmeta <- getSystemMetadata(x@mn, identifier)
+  
+  # If lazyLoad is true, don't download data bytes, regardless of limit setting.
+  # If lazyLoad is false, check if the object size is larger that the specified
+  # If there was not problem gettig the sysmeta from the current MN, then attempt to get
+  # the data object from the same location.
+  # to download the data from.
+  if(!is.null(sysmeta)) {
+    # download threshold for loading now.
+    dataURL <- sprintf("%s/%s/object/%s", x@mn@baseURL, x@mn@APIversion, URLencode(identifier, reserved=T)) 
+    if(lazyLoad) { 
+      deferredDownload <- TRUE
+      bytes <- NA
+      success <- TRUE
+    } else {
+      if(as.numeric(sysmeta@size) <= limitBytes) {
+        deferredDownload <- FALSE
+        bytes <- NULL
+        try(bytes <- getObject(x@mn, identifier), silent=TRUE)
+        if (!is.null(bytes)) {
+          success <- TRUE
+        } else {
+          success <- FALSE
+        }
+      } else {
+        # This object is larger than the download max size, so just set
+        # the bytes to NULL - DataObject initialize() will have to be
+        # told that lazyLoad = TRUE for this object.
+        deferredDownload <- TRUE
+        bytes <- NA
+        success <- TRUE
+      }
+    }
+  } else {
+    success <- FALSE
+  }
+  
+  # If there was a problem getting the sysmeta or data object from the current MN, then
+  # ask the CN for all MNs that may have a replicated copy.
+  if(!success) {
     # Resolve the object location
     # This service is too chatty if any of the locations aren't available
     suppressMessages(result <- resolve(x@cn, identifier))
@@ -294,21 +357,6 @@ setMethod("getDataObject", "D1Client", function(x, identifier, lazyLoad=FALSE, l
       mntable <- result$data
     }
     
-    # Convert download size limit to a number. This will only be used if lazyLoad=TRUE
-    if(grepl("tb", limit, ignore.case=TRUE)) {
-      limitBytes <- as.numeric(gsub("tb", "", limit, ignore.case=TRUE)) * 1099511627776
-    } else if(grepl("gb", limit, ignore.case=TRUE)) {
-      limitBytes <- as.numeric(gsub("gb", "", limit, ignore.case=TRUE)) * 1073741824
-    } else if(grepl("mb", limit, ignore.case=TRUE)) {
-      limitBytes <- as.numeric(gsub("mb", "", limit, ignore.case=TRUE)) * 1048576
-    } else if (grepl("kb", limit, ignore.case=TRUE)) {
-      limitBytes <- as.numeric(gsub("kb", "", limit, ignore.case=TRUE)) * 1024
-    } else if(!is.na(as.numeric(x))) {
-      limitByptes <- as.numeric(limit)
-    } else {
-      stop(sprintf("Unknown limit specified: %s", limit))
-    }
-    
     # Get the SystemMetadata and object bytes from one of the MNs
     # Process them in order, until we get non-NULL responses from a node
     sysmeta <- NA
@@ -316,9 +364,12 @@ setMethod("getDataObject", "D1Client", function(x, identifier, lazyLoad=FALSE, l
     success <- FALSE
     dataURL <- as.character(NA)
     deferredDownload <- lazyLoad
-    currentMN = NULL
+    currentMN <- NULL
     if(nrow(mntable) > 0) {
       for (i in 1:nrow(mntable)) { 
+        # Is this the current D1Client MN? If yes, then skip it because at this point, we
+        # have already had an error getting the object from there.
+        if(mntable[i,]$nodeIdentifier == x@mn@identifier) next
         suppressWarnings(currentMN <- getMNode(x@cn, mntable[i,]$nodeIdentifier))
         # If cn couldn't return the member node, then fallback to the D1Client@mn
         if(is.null(currentMN)) currentMN <- x@mn
@@ -358,6 +409,9 @@ setMethod("getDataObject", "D1Client", function(x, identifier, lazyLoad=FALSE, l
         }
       } 
     }
+  } else {
+      currentMN <- x@mn
+  }
     
     if(!success) {
        message(sprintf("Unable to download object with identifier: %s\n", identifier))
@@ -378,8 +432,8 @@ setMethod("getDataObject", "D1Client", function(x, identifier, lazyLoad=FALSE, l
       if(tolower(sysmeta@checksumAlgorithm) != tolower(checksumAlgorithm)) {
         # Bytes were not downloaded into the DataObject
         if (deferredDownload) {
-          checksum = getChecksum(currentMN, pid=identifier, checksumAlgorithm=checksumAlgorithm)
-          sysmeta@checksum = checksum
+          checksum <- getChecksum(currentMN, pid=identifier, checksumAlgorithm=checksumAlgorithm)
+          sysmeta@checksum <- checksum
           sysmeta@checksumAlgorithm <- checksumAlgorithm
         }
         if(!quiet) {
@@ -611,7 +665,7 @@ setMethod("getDataPackage", "D1Client", function(x, identifier, lazyLoad=FALSE, 
   # Download the resource map, parse it and load the relationships into the DataPackage
   # Currently we only use the first resource map
   if(!quiet) cat(sprintf("Getting resource map with id: %s\n", dpkg@resmapId))
-  resMapObj <- getDataObject(x, identifier=resmapId, lazyLoad=FALSE, checksumAlgorithm=checksumAlgorithm)
+  resMapObj <- getDataObject(x, identifier=resmapId, lazyLoad=FALSE, limit="1TB", checksumAlgorithm=checksumAlgorithm)
   # The resource map is not a 'member' of the package, but the sysmeta for it must be retained so that 
   # the state and 'history' of the package can be inspected, so save the resmap sysmeta to the corresponding
   # DataPackage R slot. An example case for inspecting the sysmeta is to determine if the package was newly
@@ -974,7 +1028,7 @@ setMethod("uploadDataPackage", signature("D1Client"), function(x, dp, replicate=
   
     # Define the creator that will appear in the ORE Resource Map for this package.
     creator <- "DataONE R Client"
-    stopifnot(class(dp) == "DataPackage")
+    stopifnot(inherits(dp, "DataPackage"))
     if (nchar(x@mn@identifier) == 0) {
       stop("Please set the DataONE Member Node to upload to using setMNodeId()")
     }
@@ -1013,7 +1067,8 @@ setMethod("uploadDataPackage", signature("D1Client"), function(x, dp, replicate=
         do <- getMember(dp, doId)
         submitter <- do@sysmeta@submitter
         if (public) {
-            do <- setPublicAccess(do)
+             do <- setPublicAccess(do)
+             do@updated[['sysmeta']] <- TRUE
         }
         
         if(!is.na(do@filename)) {
@@ -1128,7 +1183,12 @@ setMethod("uploadDataPackage", signature("D1Client"), function(x, dp, replicate=
             status <- serializePackage(dp, file=tf, id=newPid, resolveURI=resolveURI, creator=creator)
             # Recreate the old resource map, so that it can be updated with a new pid
             resMapObj <- new("DataObject", id=newPid, format="http://www.openarchives.org/ore/terms", filename=tf)
+            
+            # preserve any changes the user made to the sysmeta for the data package in the resource map object
+            resMapObj@sysmeta@rightsHolder <- dp@sysmeta@rightsHolder
             resMapObj@sysmeta@accessPolicy <- unique(resMapAP)
+            
+            
             returnId <- uploadDataObject(x, resMapObj, replicate, numberReplicas, preferredNodes, public, accessRules,
                                          quiet=quiet)
             
@@ -1200,6 +1260,8 @@ setMethod("uploadDataPackage", signature("D1Client"), function(x, dp, replicate=
             # Make it appear that this object was downloaded and is now being updated. The resource map
             # is different than any other object in the package, because there is not a DataObject contained
             # in the DataPackage, instead the resource map info is stored in the package relationships.
+            resMapObj@sysmeta@seriesId <- dp@sysmeta@seriesId
+            resMapObj@sysmeta@rightsHolder <- dp@sysmeta@rightsHolder
             resMapObj@sysmeta@dateUploaded <- format.POSIXct(Sys.time(), format="%FT%H:%M:%SZ", tz="GMT", usetz=FALSE)
             resMapObj@sysmeta@accessPolicy <- unique(resMapAP)
             resMapObj@updated[['sysmeta']] <- TRUE
@@ -1266,7 +1328,7 @@ setMethod("uploadDataObject", signature("D1Client"),  function(x, do, replicate=
                                                                preferredNodes=NA,  public=as.logical(FALSE),  accessRules=NA, 
                                                                quiet=TRUE, ...)  { 
     
-    stopifnot(class(do) == "DataObject")
+    stopifnot(inherits(do, "DataObject"))
     if (nchar(x@mn@identifier) == 0) {
         stop("Please set the DataONE Member Node using setMNodeId()")
     }
@@ -1274,7 +1336,7 @@ setMethod("uploadDataObject", signature("D1Client"),  function(x, do, replicate=
     # Checks are made for a DataObject being "new" or "downloaded, not modified" or "downloaded,"
     
     # Object is new, as it has never been uploaded
-    if(is.na(do@sysmeta@dateUploaded)) {
+    if (is.na(do@sysmeta@dateUploaded)) {
         if (nchar(x@mn@identifier) == 0) {
             stop("Please set the DataONE Member Node to upload to using setMN()")
         }
@@ -1298,14 +1360,6 @@ setMethod("uploadDataObject", signature("D1Client"),  function(x, do, replicate=
         # addAccessRule will add all rules (rows) in accessRules in one call
         if(!all(is.na(accessRules))) {
             do@sysmeta <- addAccessRule(do@sysmeta, accessRules)
-        }
-        
-        if (!is.na(do@sysmeta@dateUploaded)) {
-            msg <- sprintf("SystemMetadata indicates that the object with pid: %s was already uploaded to DataONE on %s.\n", do@sysmeta@identifier, do@sysmeta@dateUploaded)
-            msg <- sprintf("%sThis object will not be uploaded.", msg)
-            warning(msg)
-            # options(warn) may be set to essentially ignore warnings, so return NA if this is the case.
-            return(as.character(NA))
         }
         
         # If the DataObject has both @filename and @data defined, filename takes precedence 
@@ -1332,6 +1386,7 @@ setMethod("uploadDataObject", signature("D1Client"),  function(x, do, replicate=
             return(createdId)
         }
     } else {
+        
         # This object has been downloaded from a repository and possibly updated.
         if(!is.na(do@sysmeta@obsoletedBy)) {
             msg <- sprintf("This DataObject with identifier %s has been obsoleted by identifier %s\nso will not be updated", 
@@ -1341,13 +1396,7 @@ setMethod("uploadDataObject", signature("D1Client"),  function(x, do, replicate=
         }
         
         pid <- getIdentifier(do)
-        # Update the sysmeta with the necessary new values
-        # Set these values to NA so they won't be included in the serialized sysmeta,
-        # as DataONE will complain or get confused if they are set. DataONE will
-        # set these values on upload/update.
-        do@sysmeta@obsoletes <- as.character(NA)
-        do@sysmeta@obsoletedBy <- as.character(NA)
-        do@sysmeta@archived <- as.logical(NA)
+
         # Set sysmeta values if passed in and not already set in sysmeta for each data object
         if (!is.na(replicate)) {
             do@sysmeta@replicationAllowed <- as.logical(replicate)
@@ -1377,6 +1426,15 @@ setMethod("uploadDataObject", signature("D1Client"),  function(x, do, replicate=
             if(!quiet) cat(sprintf("Updated sysmetadata for DataObject %s.", pid))
             updateId <- pid
         } else {
+            
+            # Update the sysmeta with the necessary new values
+            # Set these values to NA so they won't be included in the serialized sysmeta,
+            # as DataONE will complain or get confused if they are set. DataONE will
+            # set these values on upload/update.
+            do@sysmeta@obsoletes <- as.character(NA)
+            do@sysmeta@obsoletedBy <- as.character(NA)
+            do@sysmeta@archived <- as.logical(NA)
+            
             oldId <- do@oldId
             # The obsoleting object will always have serialVersion = 1, it's new!
             do@sysmeta@serialVersion <- 1

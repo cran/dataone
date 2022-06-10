@@ -11,63 +11,21 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 
 
-<meta name="date" content="2020-12-04" />
+<meta name="date" content="2022-06-10" />
 
 <title>Updating Datasets on DataONE</title>
 
-<script>// Hide empty <a> tag within highlighted CodeBlock for screen reader accessibility (see https://github.com/jgm/pandoc/issues/6352#issuecomment-626106786) -->
-// v0.0.1
-// Written by JooYoung Seo (jooyoung@psu.edu) and Atsushi Yasumoto on June 1st, 2020.
-
-document.addEventListener('DOMContentLoaded', function() {
-  const codeList = document.getElementsByClassName("sourceCode");
-  for (var i = 0; i < codeList.length; i++) {
-    var linkList = codeList[i].getElementsByTagName('a');
-    for (var j = 0; j < linkList.length; j++) {
-      if (linkList[j].innerHTML === "") {
-        linkList[j].setAttribute('aria-hidden', 'true');
-      }
-    }
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
   }
-});
-</script>
-<style type="text/css">
-a.anchor-section {margin-left: 10px; visibility: hidden; color: inherit;}
-a.anchor-section::before {content: '#';}
-.hasAnchor:hover a.anchor-section {visibility: visible;}
-</style>
-<script>// Anchor sections v1.0 written by Atsushi Yasumoto on Oct 3rd, 2020.
-document.addEventListener('DOMContentLoaded', function() {
-  // Do nothing if AnchorJS is used
-  if (typeof window.anchors === 'object' && anchors.hasOwnProperty('hasAnchorJSLink')) {
-    return;
-  }
-
-  const h = document.querySelectorAll('h1, h2, h3, h4, h5, h6');
-
-  // Do nothing if sections are already anchored
-  if (Array.from(h).some(x => x.classList.contains('hasAnchor'))) {
-    return null;
-  }
-
-  // Use section id when pandoc runs with --section-divs
-  const section_id = function(x) {
-    return ((x.classList.contains('section') || (x.tagName === 'SECTION'))
-            ? x.id : '');
-  };
-
-  // Add anchors
-  h.forEach(function(x) {
-    const id = x.id || section_id(x.parentElement);
-    if (id === '') {
-      return null;
-    }
-    let anchor = document.createElement('a');
-    anchor.href = '#' + id;
-    anchor.classList = ['anchor-section'];
-    x.classList.add('hasAnchor');
-    x.appendChild(anchor);
-  });
 });
 </script>
 
@@ -81,21 +39,29 @@ document.addEventListener('DOMContentLoaded', function() {
     </style>
 
 
-<style type="text/css">code{white-space: pre;}</style>
+
+<style type="text/css">
+  code {
+    white-space: pre;
+  }
+  .sourceCode {
+    overflow: visible;
+  }
+</style>
 <style type="text/css" data-origin="pandoc">
-code.sourceCode > span { display: inline-block; line-height: 1.25; }
-code.sourceCode > span { color: inherit; text-decoration: inherit; }
-code.sourceCode > span:empty { height: 1.2em; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
-code.sourceCode { white-space: pre; position: relative; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
 div.sourceCode { margin: 1em 0; }
 pre.sourceCode { margin: 0; }
 @media screen {
 div.sourceCode { overflow: auto; }
 }
 @media print {
-code.sourceCode { white-space: pre-wrap; }
-code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
 }
 pre.numberSource code
   { counter-reset: source-line 0; }
@@ -115,7 +81,7 @@ pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-le
 div.sourceCode
   {   }
 @media screen {
-code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 code span.al { color: #ff0000; font-weight: bold; } /* Alert */
 code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
@@ -169,6 +135,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   }
 })();
 </script>
+
 
 
 
@@ -365,92 +332,182 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 
 <h1 class="title toc-ignore">Updating Datasets on DataONE</h1>
-<h4 class="date">2020-12-04</h4>
+<h4 class="date">2022-06-10</h4>
 
 
 
 <div id="updating-a-dataone-package" class="section level2">
 <h2>Updating A DataONE Package</h2>
-<p>A DataONE package is a collection of datasets and other files that are described by a metadata file.</p>
-<p>A <em>DataPackage</em> is a <code>dataone</code> R object that can contain a DataONE package that is either downloaded from DataONE or newly created locally in R and then uploaded to DataONE.</p>
-<p>After a package has been uploaded to a DataONE Member Node, it may be determined by the package submitter or other interested parties that the package needs to be updated, for example to add a missing file, replace one file with another, or remove a package member from the package.</p>
-<p>These types of modifications can be accomplished by downloading the package from DataONE using the <code>getDataPackage()</code> method to create a local copy of the package in R, modifying the package contents locally, then uploading the modified package to DataONE.</p>
-<p>The complete example script used to perform a package update is shown below:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="kw">library</span>(datapack)</span>
-<span id="cb1-2"><a href="#cb1-2"></a><span class="kw">library</span>(dataone)</span></code></pre></div>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a>d1c &lt;-<span class="st"> </span><span class="kw">D1Client</span>(<span class="st">&quot;STAGING&quot;</span>, <span class="st">&quot;urn:node:mnStageUCSB2&quot;</span>)</span>
-<span id="cb2-2"><a href="#cb2-2"></a>packageId &lt;-<span class="st"> &quot;resource_map_urn:uuid:a9aeefcf-228c-4534-b4ad-b480a937be7d&quot;</span></span></code></pre></div>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a>pkg &lt;-<span class="st"> </span><span class="kw">getDataPackage</span>(d1c, <span class="dt">identifier=</span>packageId, <span class="dt">lazyLoad=</span><span class="ot">TRUE</span>, <span class="dt">quiet=</span><span class="ot">FALSE</span>)</span></code></pre></div>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a>metadataId &lt;-<span class="st"> </span><span class="kw">selectMember</span>(pkg, <span class="dt">name=</span><span class="st">&quot;sysmeta@formatId&quot;</span>, <span class="dt">value=</span><span class="st">&quot;eml://ecoinformatics.org/eml-2.1.1&quot;</span>)</span>
-<span id="cb4-2"><a href="#cb4-2"></a>objId &lt;-<span class="st"> </span><span class="kw">selectMember</span>(pkg, <span class="dt">name=</span><span class="st">&quot;sysmeta@fileName&quot;</span>, <span class="dt">value=</span><span class="st">&#39;Strix-occidentalis-obs.csv&#39;</span>)</span>
-<span id="cb4-3"><a href="#cb4-3"></a>zipfile &lt;-<span class="st"> </span><span class="kw">system.file</span>(<span class="st">&quot;extdata/Strix-occidentalis-obs.csv.zip&quot;</span>, <span class="dt">package=</span><span class="st">&quot;dataone&quot;</span>)</span>
-<span id="cb4-4"><a href="#cb4-4"></a>pkg &lt;-<span class="st"> </span><span class="kw">replaceMember</span>(pkg, objId, <span class="dt">replacement=</span>zipfile, <span class="dt">formatId=</span><span class="st">&quot;application/octet-stream&quot;</span>)</span>
-<span id="cb4-5"><a href="#cb4-5"></a>auxFile &lt;-<span class="st"> </span><span class="kw">system.file</span>(<span class="st">&quot;extdata/WeatherInf.txt&quot;</span>, <span class="dt">package=</span><span class="st">&quot;dataone&quot;</span>)</span>
-<span id="cb4-6"><a href="#cb4-6"></a>auxObj &lt;-<span class="st"> </span><span class="kw">new</span>(<span class="st">&quot;DataObject&quot;</span>, <span class="dt">format=</span><span class="st">&quot;text/plain&quot;</span>, <span class="dt">filename=</span>auxFile) </span>
-<span id="cb4-7"><a href="#cb4-7"></a>pkg &lt;-<span class="st"> </span><span class="kw">addMember</span>(pkg, auxObj, metadataId)</span></code></pre></div>
+<p>A DataONE package is a collection of datasets and other files that
+are described by a metadata file.</p>
+<p>A <em>DataPackage</em> is a <code>dataone</code> R object that can
+contain a DataONE package that is either downloaded from DataONE or
+newly created locally in R and then uploaded to DataONE.</p>
+<p>After a package has been uploaded to a DataONE Member Node, it may be
+determined by the package submitter or other interested parties that the
+package needs to be updated, for example to add a missing file, replace
+one file with another, or remove a package member from the package.</p>
+<p>These types of modifications can be accomplished by downloading the
+package from DataONE using the <code>getDataPackage()</code> method to
+create a local copy of the package in R, modifying the package contents
+locally, then uploading the modified package to DataONE.</p>
+<p>The complete example script used to perform a package update is shown
+below:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(datapack)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dataone)</span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>d1c <span class="ot">&lt;-</span> <span class="fu">D1Client</span>(<span class="st">&quot;STAGING&quot;</span>, <span class="st">&quot;urn:node:mnStageUCSB2&quot;</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>packageId <span class="ot">&lt;-</span> <span class="st">&quot;resource_map_urn:uuid:a9aeefcf-228c-4534-b4ad-b480a937be7d&quot;</span></span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>pkg <span class="ot">&lt;-</span> <span class="fu">getDataPackage</span>(d1c, <span class="at">identifier=</span>packageId, <span class="at">lazyLoad=</span><span class="cn">TRUE</span>, <span class="at">quiet=</span><span class="cn">FALSE</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>metadataId <span class="ot">&lt;-</span> <span class="fu">selectMember</span>(pkg, <span class="at">name=</span><span class="st">&quot;sysmeta@formatId&quot;</span>, <span class="at">value=</span><span class="st">&quot;eml://ecoinformatics.org/eml-2.1.1&quot;</span>)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>objId <span class="ot">&lt;-</span> <span class="fu">selectMember</span>(pkg, <span class="at">name=</span><span class="st">&quot;sysmeta@fileName&quot;</span>, <span class="at">value=</span><span class="st">&#39;Strix-occidentalis-obs.csv&#39;</span>)</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>zipfile <span class="ot">&lt;-</span> <span class="fu">system.file</span>(<span class="st">&quot;extdata/Strix-occidentalis-obs.csv.zip&quot;</span>, <span class="at">package=</span><span class="st">&quot;dataone&quot;</span>)</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>pkg <span class="ot">&lt;-</span> <span class="fu">replaceMember</span>(pkg, objId, <span class="at">replacement=</span>zipfile, <span class="at">formatId=</span><span class="st">&quot;application/octet-stream&quot;</span>)</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>auxFile <span class="ot">&lt;-</span> <span class="fu">system.file</span>(<span class="st">&quot;extdata/WeatherInf.txt&quot;</span>, <span class="at">package=</span><span class="st">&quot;dataone&quot;</span>)</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>auxObj <span class="ot">&lt;-</span> <span class="fu">new</span>(<span class="st">&quot;DataObject&quot;</span>, <span class="at">format=</span><span class="st">&quot;text/plain&quot;</span>, <span class="at">filename=</span>auxFile) </span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>pkg <span class="ot">&lt;-</span> <span class="fu">addMember</span>(pkg, auxObj, metadataId)</span></code></pre></div>
 <!-- Need authentication, so can't upload from a vignette. -->
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a>newPackageId &lt;-<span class="st"> </span><span class="kw">uploadDataPackage</span>(d1c, pkg, <span class="dt">public=</span><span class="ot">TRUE</span>, <span class="dt">quiet=</span><span class="ot">FALSE</span>)</span></code></pre></div>
-<p>This example script downloads the example package that was created and uploaded to DataONE in the vignette <code>upload-data</code>.</p>
-<p>Each line of this script will be described in the following sections.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>newPackageId <span class="ot">&lt;-</span> <span class="fu">uploadDataPackage</span>(d1c, pkg, <span class="at">public=</span><span class="cn">TRUE</span>, <span class="at">quiet=</span><span class="cn">FALSE</span>)</span></code></pre></div>
+<p>This example script downloads the example package that was created
+and uploaded to DataONE in the vignette <code>upload-data</code>.</p>
+<p>Each line of this script will be described in the following
+sections.</p>
 <div id="download-the-package-from-dataone" class="section level3">
 <h3>1. Download the package from DataONE</h3>
-<p>The first step in updating a package is to download the package from DataONE into R, so that it can be modified locally using methods in the <code>dataone</code> package. Modifications can be made to the package such as adding or removing members from the package, or changing the contents of a package member, as would be the case if the wrong file was initially uploaded.</p>
-<p>The <code>getDataPackage()</code> method downloads all files belonging to the package specified by the <code>identifier</code> parameter.</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a>d1c &lt;-<span class="st"> </span><span class="kw">D1Client</span>(<span class="st">&quot;STAGING&quot;</span>, <span class="st">&quot;urn:node:mnStageUCSB2&quot;</span>)</span></code></pre></div>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a>pkg &lt;-<span class="st"> </span><span class="kw">getDataPackage</span>(d1c, <span class="dt">identifier=</span>packageId, <span class="dt">lazyLoad=</span><span class="ot">TRUE</span>, <span class="dt">quiet=</span><span class="ot">FALSE</span>)</span></code></pre></div>
-<p>Because packages might contain large files or a large number of files, it is possible to <code>lazy load</code> the package. This means that the metadata describing the files is downloaded downloaded, but the file contents, the data bytes, are not. For more information on using the ‘lazyLoad’ parameter, see the R console help for the ‘getDataPackage()’ function.</p>
-<p>For the package update that will be shown, it is not necessary to download the data bytes of each package member, so <code>lazy loading</code> is acceptable. An example when lazy loading would not be appropriate is when the files in a package will be used for local computational processing.</p>
-<p>Note that metadata files, such as the EML in this example, are always downloaded regardless of the <code>lazyLoad</code> parameter value.</p>
+<p>The first step in updating a package is to download the package from
+DataONE into R, so that it can be modified locally using methods in the
+<code>dataone</code> package. Modifications can be made to the package
+such as adding or removing members from the package, or changing the
+contents of a package member, as would be the case if the wrong file was
+initially uploaded.</p>
+<p>The <code>getDataPackage()</code> method downloads all files
+belonging to the package specified by the <code>identifier</code>
+parameter.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>d1c <span class="ot">&lt;-</span> <span class="fu">D1Client</span>(<span class="st">&quot;STAGING&quot;</span>, <span class="st">&quot;urn:node:mnStageUCSB2&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>pkg <span class="ot">&lt;-</span> <span class="fu">getDataPackage</span>(d1c, <span class="at">identifier=</span>packageId, <span class="at">lazyLoad=</span><span class="cn">TRUE</span>, <span class="at">quiet=</span><span class="cn">FALSE</span>)</span></code></pre></div>
+<p>Because packages might contain large files or a large number of
+files, it is possible to <code>lazy load</code> the package. This means
+that the metadata describing the files is downloaded downloaded, but the
+file contents, the data bytes, are not. For more information on using
+the ‘lazyLoad’ parameter, see the R console help for the
+‘getDataPackage()’ function.</p>
+<p>For the package update that will be shown, it is not necessary to
+download the data bytes of each package member, so
+<code>lazy loading</code> is acceptable. An example when lazy loading
+would not be appropriate is when the files in a package will be used for
+local computational processing.</p>
+<p>Note that metadata files, such as the EML in this example, are always
+downloaded regardless of the <code>lazyLoad</code> parameter value.</p>
 </div>
 <div id="review-package-contents." class="section level3">
 <h3>2. Review package contents.</h3>
-<p>The downloaded package can be viewed by typing the DataPackage object name at the console, which invokes the R <code>show</code> method for the object:</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1"></a>pkg</span></code></pre></div>
-<p>Note that the <code>show</code> output for a DataPackage is condensed to fit the width of the current R console. If the output is condensed and more detail is required, set the R console width to a larger value, for example, <code>options(width=120)</code>, or if using <code>Rstudio</code>, widen the console window by clicking and dragging on the window boarder.</p>
+<p>The downloaded package can be viewed by typing the DataPackage object
+name at the console, which invokes the R <code>show</code> method for
+the object:</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>pkg</span></code></pre></div>
+<p>Note that the <code>show</code> output for a DataPackage is condensed
+to fit the width of the current R console. If the output is condensed
+and more detail is required, set the R console width to a larger value,
+for example, <code>options(width=120)</code>, or if using
+<code>Rstudio</code>, widen the console window by clicking and dragging
+on the window boarder.</p>
 </div>
 <div id="modify-dataobjects-in-the-package" class="section level3">
 <h3>3. Modify DataObjects in the package</h3>
-<p>The original uploaded package included the file <code>Strix-occidentalis-obs.csv</code>. This file can be substituted for a different file, as would be necessary if it was determined that the zipped form of the file should have been used instead.</p>
-<p>First, determine which DataObject in the DataPackage <code>pkg</code> contains the file to be replaced:</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1"></a>objId &lt;-<span class="st"> </span><span class="kw">selectMember</span>(pkg, <span class="dt">name=</span><span class="st">&quot;sysmeta@fileName&quot;</span>, <span class="dt">value=</span><span class="st">&#39;Strix-occidentalis-obs.csv&#39;</span>)</span></code></pre></div>
-<p>The <code>selectMember</code> method inspects every DataObject in the package <code>pkg</code> and checks for a match in the R S4 slot specified by the <code>name</code> argument for the value specified with the <code>value</code> argument. The identifier for any matching DataObject is returned.</p>
-<p>The documentation for the DataObject R slots available can be viewed with the command <code>help(&quot;DataObject-class&quot;)</code>. As a <em>SystemMetadata</em> object is contained in each DataObject, the slots for SystemMetadata are available, with documentation viewable with <code>help(&quot;SystemMetadata-class&quot;)</code></p>
-<p>Next, update the DataObject in <code>pkg</code> to replace the file <code>Strix-occidentalis-obs.csv</code> with <code>Strix-occidentalis-obs.csv.zip</code> using the <code>replaceMember</code> method:</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1"></a>objId &lt;-<span class="st"> </span><span class="kw">selectMember</span>(pkg, <span class="dt">name=</span><span class="st">&quot;sysmeta@fileName&quot;</span>, <span class="dt">value=</span><span class="st">&#39;Strix-occidentalis-obs.csv&#39;</span>)</span>
-<span id="cb10-2"><a href="#cb10-2"></a>zipfile &lt;-<span class="st"> </span><span class="kw">system.file</span>(<span class="st">&quot;extdata/Strix-occidentalis-obs.csv.zip&quot;</span>, <span class="dt">package=</span><span class="st">&quot;dataone&quot;</span>)</span>
-<span id="cb10-3"><a href="#cb10-3"></a>pkg &lt;-<span class="st"> </span><span class="kw">replaceMember</span>(pkg, objId, <span class="dt">replacement=</span>zipfile, <span class="dt">formatId=</span><span class="st">&quot;application/octet-stream&quot;</span>)</span></code></pre></div>
-<p>The <code>replaceMember</code> method updates the DataPackage <code>pkg</code>, replacing the data content of the DataObject with identifier <code>objId</code>, and updating the relevant system metadata slots such as <code>size</code> and <code>checksum</code>, to reflect the new contents of the DataObject.</p>
-<p>In this example, the file <code>WeatherInf.txt</code> was mistakenly omitted from the original package upload, so add it now:</p>
-<p>First, the identifier for the metadata DataObject that describes the package members will be retrieved from the DataPackage:</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1"></a>metadataId &lt;-<span class="st"> </span><span class="kw">selectMember</span>(pkg, <span class="dt">name=</span><span class="st">&quot;sysmeta@formatId&quot;</span>, <span class="dt">value=</span><span class="st">&quot;eml://ecoinformatics.org/eml-2.1.1&quot;</span>)</span></code></pre></div>
-<p>The <code>selectMember</code> method returns the identifier of any DataObject in the package with an R slot name specified in the parameter <code>name</code> that matches the value specified in the argument <code>value</code>. In this particular package, there is only one DataPackage that has <code>formatId</code> of <code>eml://ecoinformatics.org/eml-2.1.1</code>, so only that identifier is returned.</p>
-<p>Note that the <code>getValue</code> method can be used to retrieve the values for DataObject slots, for example:</p>
-<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1"></a><span class="kw">getValue</span>(pkg, <span class="dt">name=</span><span class="st">&quot;sysmeta@formatId&quot;</span>)</span></code></pre></div>
-<p>An R named list is returned, with the names being the identifiers of each DataPackage in the DataPackage and the values being the slot value.</p>
-<p>Next, add a new package member that was omitted from the original package:</p>
-<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1"></a>auxFile &lt;-<span class="st"> </span><span class="kw">system.file</span>(<span class="st">&quot;extdata/WeatherInf.txt&quot;</span>, <span class="dt">package=</span><span class="st">&quot;dataone&quot;</span>)</span>
-<span id="cb13-2"><a href="#cb13-2"></a>auxObj &lt;-<span class="st"> </span><span class="kw">new</span>(<span class="st">&quot;DataObject&quot;</span>, <span class="dt">format=</span><span class="st">&quot;text/csv&quot;</span>, <span class="dt">filename=</span>auxFile)</span>
-<span id="cb13-3"><a href="#cb13-3"></a>pkg &lt;-<span class="st"> </span><span class="kw">addMember</span>(pkg, auxObj, metadataId)</span></code></pre></div>
+<p>The original uploaded package included the file
+<code>Strix-occidentalis-obs.csv</code>. This file can be substituted
+for a different file, as would be necessary if it was determined that
+the zipped form of the file should have been used instead.</p>
+<p>First, determine which DataObject in the DataPackage <code>pkg</code>
+contains the file to be replaced:</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>objId <span class="ot">&lt;-</span> <span class="fu">selectMember</span>(pkg, <span class="at">name=</span><span class="st">&quot;sysmeta@fileName&quot;</span>, <span class="at">value=</span><span class="st">&#39;Strix-occidentalis-obs.csv&#39;</span>)</span></code></pre></div>
+<p>The <code>selectMember</code> method inspects every DataObject in the
+package <code>pkg</code> and checks for a match in the R S4 slot
+specified by the <code>name</code> argument for the value specified with
+the <code>value</code> argument. The identifier for any matching
+DataObject is returned.</p>
+<p>The documentation for the DataObject R slots available can be viewed
+with the command <code>help(&quot;DataObject-class&quot;)</code>. As a
+<em>SystemMetadata</em> object is contained in each DataObject, the
+slots for SystemMetadata are available, with documentation viewable with
+<code>help(&quot;SystemMetadata-class&quot;)</code></p>
+<p>Next, update the DataObject in <code>pkg</code> to replace the file
+<code>Strix-occidentalis-obs.csv</code> with
+<code>Strix-occidentalis-obs.csv.zip</code> using the
+<code>replaceMember</code> method:</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>objId <span class="ot">&lt;-</span> <span class="fu">selectMember</span>(pkg, <span class="at">name=</span><span class="st">&quot;sysmeta@fileName&quot;</span>, <span class="at">value=</span><span class="st">&#39;Strix-occidentalis-obs.csv&#39;</span>)</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>zipfile <span class="ot">&lt;-</span> <span class="fu">system.file</span>(<span class="st">&quot;extdata/Strix-occidentalis-obs.csv.zip&quot;</span>, <span class="at">package=</span><span class="st">&quot;dataone&quot;</span>)</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>pkg <span class="ot">&lt;-</span> <span class="fu">replaceMember</span>(pkg, objId, <span class="at">replacement=</span>zipfile, <span class="at">formatId=</span><span class="st">&quot;application/octet-stream&quot;</span>)</span></code></pre></div>
+<p>The <code>replaceMember</code> method updates the DataPackage
+<code>pkg</code>, replacing the data content of the DataObject with
+identifier <code>objId</code>, and updating the relevant system metadata
+slots such as <code>size</code> and <code>checksum</code>, to reflect
+the new contents of the DataObject.</p>
+<p>In this example, the file <code>WeatherInf.txt</code> was mistakenly
+omitted from the original package upload, so add it now:</p>
+<p>First, the identifier for the metadata DataObject that describes the
+package members will be retrieved from the DataPackage:</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>metadataId <span class="ot">&lt;-</span> <span class="fu">selectMember</span>(pkg, <span class="at">name=</span><span class="st">&quot;sysmeta@formatId&quot;</span>, <span class="at">value=</span><span class="st">&quot;eml://ecoinformatics.org/eml-2.1.1&quot;</span>)</span></code></pre></div>
+<p>The <code>selectMember</code> method returns the identifier of any
+DataObject in the package with an R slot name specified in the parameter
+<code>name</code> that matches the value specified in the argument
+<code>value</code>. In this particular package, there is only one
+DataPackage that has <code>formatId</code> of
+<code>eml://ecoinformatics.org/eml-2.1.1</code>, so only that identifier
+is returned.</p>
+<p>Note that the <code>getValue</code> method can be used to retrieve
+the values for DataObject slots, for example:</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">getValue</span>(pkg, <span class="at">name=</span><span class="st">&quot;sysmeta@formatId&quot;</span>)</span></code></pre></div>
+<p>An R named list is returned, with the names being the identifiers of
+each DataPackage in the DataPackage and the values being the slot
+value.</p>
+<p>Next, add a new package member that was omitted from the original
+package:</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>auxFile <span class="ot">&lt;-</span> <span class="fu">system.file</span>(<span class="st">&quot;extdata/WeatherInf.txt&quot;</span>, <span class="at">package=</span><span class="st">&quot;dataone&quot;</span>)</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>auxObj <span class="ot">&lt;-</span> <span class="fu">new</span>(<span class="st">&quot;DataObject&quot;</span>, <span class="at">format=</span><span class="st">&quot;text/csv&quot;</span>, <span class="at">filename=</span>auxFile)</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>pkg <span class="ot">&lt;-</span> <span class="fu">addMember</span>(pkg, auxObj, metadataId)</span></code></pre></div>
 <p>The modified package can be reviewed before updating to DataONE:</p>
 </div>
 <div id="upload-the-modified-datapackage" class="section level3">
 <h3>4. Upload the modified DataPackage</h3>
-<p>Now upload the modified package to DataONE. Each DataObject in the DataPackage will be inspected by <code>uploadDataPackage</code> and DataObjects that have been modified will be updated and DataObjects that have been added to the DataPackage will be uploaded.</p>
-<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1"></a>newPackageId &lt;-<span class="st"> </span><span class="kw">uploadDataPackage</span>(d1c, pkg, <span class="dt">public=</span><span class="ot">TRUE</span>, <span class="dt">quiet=</span><span class="ot">FALSE</span>)</span></code></pre></div>
+<p>Now upload the modified package to DataONE. Each DataObject in the
+DataPackage will be inspected by <code>uploadDataPackage</code> and
+DataObjects that have been modified will be updated and DataObjects that
+have been added to the DataPackage will be uploaded.</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>newPackageId <span class="ot">&lt;-</span> <span class="fu">uploadDataPackage</span>(d1c, pkg, <span class="at">public=</span><span class="cn">TRUE</span>, <span class="at">quiet=</span><span class="cn">FALSE</span>)</span></code></pre></div>
 </div>
 </div>
 <div id="updating-metadata-for-a-datapackage" class="section level2">
 <h2>Updating Metadata For A DataPackage</h2>
-<p>As DataPackage members are modified, the DataObject that holds the metadata that describes the package members may become outdated.</p>
-<p>For example, it was shown above that a package member was updated to contain the file <code>Strix-occidentalis-obs.csv.zip</code> instead of <code>Strix-occidentalis-obs.csv</code>. After this change, the DataObject holding the EML metadata should be updated so that the EML element <code>objectName</code> for this dataset matched the new filename:</p>
-<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1"></a>metadataId &lt;-<span class="st"> </span><span class="kw">selectMember</span>(pkg, <span class="dt">name=</span><span class="st">&quot;sysmeta@formatId&quot;</span>, <span class="dt">value=</span><span class="st">&quot;eml://ecoinformatics.org/eml-2.1.1&quot;</span>)</span>
-<span id="cb15-2"><a href="#cb15-2"></a>nameXpath &lt;-<span class="st"> &#39;//dataTable/physical/objectName[text()=&quot;Strix-occidentalis-obs.csv&quot;]&#39;</span></span>
-<span id="cb15-3"><a href="#cb15-3"></a>newName &lt;-<span class="st"> </span><span class="kw">basename</span>(zipfile)</span>
-<span id="cb15-4"><a href="#cb15-4"></a>pkg &lt;-<span class="st"> </span><span class="kw">updateMetadata</span>(pkg, metadataId, <span class="dt">xpath=</span>nameXpath, <span class="dt">replacement=</span>newName)</span></code></pre></div>
-<p>The <code>updateMetadata</code> method updates a DataObject containing XML, substituting the value located in the document specified with the <code>xpath</code> argument with the value provided in the <code>replacement</code> argument. In this example, the XML contained in the DataObject with identifier <code>metadataId</code> is an EML metadata document. The EML element <code>objectName</code> is updated with the value <code>Strix-occidentalis-obs.csv.zip</code>.</p>
-<p>Note the the <code>xpath</code> argument uses the XPath query language, which is used to locate elements within an XML document.</p>
-<p>For EML metadata, another element that may need to be updated, if it is present in the original EML file, is the distribution url. This element contains the link that can be used to download the file from DataONE, which includes the DataONE identifier for the object. Because the identifier value is set when the DataObject is created, the EML metadata is out of date and needs to be updated with the new identifier value.</p>
-<p>In this example, the section of the metadata that describes the dataset <code>Strix-occidentalis-obs.csv.zip</code> will be updated.</p>
+<p>As DataPackage members are modified, the DataObject that holds the
+metadata that describes the package members may become outdated.</p>
+<p>For example, it was shown above that a package member was updated to
+contain the file <code>Strix-occidentalis-obs.csv.zip</code> instead of
+<code>Strix-occidentalis-obs.csv</code>. After this change, the
+DataObject holding the EML metadata should be updated so that the EML
+element <code>objectName</code> for this dataset matched the new
+filename:</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>metadataId <span class="ot">&lt;-</span> <span class="fu">selectMember</span>(pkg, <span class="at">name=</span><span class="st">&quot;sysmeta@formatId&quot;</span>, <span class="at">value=</span><span class="st">&quot;eml://ecoinformatics.org/eml-2.1.1&quot;</span>)</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>nameXpath <span class="ot">&lt;-</span> <span class="st">&#39;//dataTable/physical/objectName[text()=&quot;Strix-occidentalis-obs.csv&quot;]&#39;</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>newName <span class="ot">&lt;-</span> <span class="fu">basename</span>(zipfile)</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>pkg <span class="ot">&lt;-</span> <span class="fu">updateMetadata</span>(pkg, metadataId, <span class="at">xpath=</span>nameXpath, <span class="at">replacement=</span>newName)</span></code></pre></div>
+<p>The <code>updateMetadata</code> method updates a DataObject
+containing XML, substituting the value located in the document specified
+with the <code>xpath</code> argument with the value provided in the
+<code>replacement</code> argument. In this example, the XML contained in
+the DataObject with identifier <code>metadataId</code> is an EML
+metadata document. The EML element <code>objectName</code> is updated
+with the value <code>Strix-occidentalis-obs.csv.zip</code>.</p>
+<p>Note the the <code>xpath</code> argument uses the XPath query
+language, which is used to locate elements within an XML document.</p>
+<p>For EML metadata, another element that may need to be updated, if it
+is present in the original EML file, is the distribution url. This
+element contains the link that can be used to download the file from
+DataONE, which includes the DataONE identifier for the object. Because
+the identifier value is set when the DataObject is created, the EML
+metadata is out of date and needs to be updated with the new identifier
+value.</p>
+<p>In this example, the section of the metadata that describes the
+dataset <code>Strix-occidentalis-obs.csv.zip</code> will be updated.</p>
 <p>A portion of the EML from our example looks like this:</p>
 <pre><code>    &lt;dataTable&gt;
       &lt;entityName&gt;Strix Occidentalis&lt;/entityName&gt;
@@ -471,16 +528,33 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
       &lt;/physical&gt;
       &lt;entityType&gt;Other&lt;/entityType&gt;
     &lt;/dataTable&gt;</code></pre>
-<p>The following lines get the current identifier for the DataObject that contains the correct file, and uses this identifier value to construct a standard DataONE access URL, using the base URL of the DataONE coordinating node.</p>
-<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1"></a>objId &lt;-<span class="st"> </span><span class="kw">selectMember</span>(pkg, <span class="dt">name=</span><span class="st">&quot;sysmeta@fileName&quot;</span>, <span class="dt">value=</span><span class="st">&#39;Strix-occidentalis-obs.csv.zip&#39;</span>)</span>
-<span id="cb17-2"><a href="#cb17-2"></a>newURL &lt;-<span class="st"> </span><span class="kw">sprintf</span>(<span class="st">&quot;%s/%s/resolve/%s&quot;</span>, d1c<span class="op">@</span>cn<span class="op">@</span>baseURL, d1c<span class="op">@</span>cn<span class="op">@</span>APIversion, objId)</span>
-<span id="cb17-3"><a href="#cb17-3"></a>newURL</span></code></pre></div>
-<p>The <code>selectMember</code> method checks slot specified in <code>name</code> argument, in this case <code>sysmeta@fileName</code>, of each <em>DataObject</em> in the <em>DataPackage</em> <code>pkg</code> and returns the identifier of any member that matches the specified value. This package has only one <em>DataObject</em> with the name <code>Strix-occidentalis-obs.csv.zip</code> so only one identifier is returned in <code>objId</code>.</p>
-<p>Next, the metadata element for the distribution url will be updated in the <em>DataObject</em> that contains the EML metadata in the package <code>pkg</code></p>
-<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1"></a>metadataId &lt;-<span class="st"> </span><span class="kw">selectMember</span>(pkg, <span class="dt">name=</span><span class="st">&quot;sysmeta@formatId&quot;</span>, <span class="dt">value=</span><span class="st">&quot;eml://ecoinformatics.org/eml-2.1.1&quot;</span>)</span>
-<span id="cb18-2"><a href="#cb18-2"></a>xpathToURL &lt;-<span class="st"> &quot;//dataTable/physical/distribution[../objectName/text()=</span><span class="ch">\&quot;</span><span class="st">OwlNightj.csv</span><span class="ch">\&quot;</span><span class="st">]/online/url&quot;</span></span>
-<span id="cb18-3"><a href="#cb18-3"></a>pkg &lt;-<span class="st"> </span><span class="kw">updateMetadata</span>(pkg, <span class="dt">do=</span>metadataId, <span class="dt">xpath=</span>xpathToURL, <span class="dt">replacement=</span>newURL)</span></code></pre></div>
-<p>When the modified metadata file is updated to DataONE, a new identifier is required, as the modified metadata will replace the old one by created a new object in DataONE, and marking the old one as <code>obsoleted</code> by the new one. For this reason, the call to <code>updateMetadata</code> will assign a new identifier to the metadata <em>DataObject</em> in the DataPackage <code>pkg</code>, if necessary.</p>
+<p>The following lines get the current identifier for the DataObject
+that contains the correct file, and uses this identifier value to
+construct a standard DataONE access URL, using the base URL of the
+DataONE coordinating node.</p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>objId <span class="ot">&lt;-</span> <span class="fu">selectMember</span>(pkg, <span class="at">name=</span><span class="st">&quot;sysmeta@fileName&quot;</span>, <span class="at">value=</span><span class="st">&#39;Strix-occidentalis-obs.csv.zip&#39;</span>)</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>newURL <span class="ot">&lt;-</span> <span class="fu">sprintf</span>(<span class="st">&quot;%s/%s/resolve/%s&quot;</span>, d1c<span class="sc">@</span>cn<span class="sc">@</span>baseURL, d1c<span class="sc">@</span>cn<span class="sc">@</span>APIversion, objId)</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>newURL</span></code></pre></div>
+<p>The <code>selectMember</code> method checks slot specified in
+<code>name</code> argument, in this case <code>sysmeta@fileName</code>,
+of each <em>DataObject</em> in the <em>DataPackage</em> <code>pkg</code>
+and returns the identifier of any member that matches the specified
+value. This package has only one <em>DataObject</em> with the name
+<code>Strix-occidentalis-obs.csv.zip</code> so only one identifier is
+returned in <code>objId</code>.</p>
+<p>Next, the metadata element for the distribution url will be updated
+in the <em>DataObject</em> that contains the EML metadata in the package
+<code>pkg</code></p>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>metadataId <span class="ot">&lt;-</span> <span class="fu">selectMember</span>(pkg, <span class="at">name=</span><span class="st">&quot;sysmeta@formatId&quot;</span>, <span class="at">value=</span><span class="st">&quot;eml://ecoinformatics.org/eml-2.1.1&quot;</span>)</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>xpathToURL <span class="ot">&lt;-</span> <span class="st">&quot;//dataTable/physical/distribution[../objectName/text()=</span><span class="sc">\&quot;</span><span class="st">OwlNightj.csv</span><span class="sc">\&quot;</span><span class="st">]/online/url&quot;</span></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>pkg <span class="ot">&lt;-</span> <span class="fu">updateMetadata</span>(pkg, <span class="at">do=</span>metadataId, <span class="at">xpath=</span>xpathToURL, <span class="at">replacement=</span>newURL)</span></code></pre></div>
+<p>When the modified metadata file is updated to DataONE, a new
+identifier is required, as the modified metadata will replace the old
+one by created a new object in DataONE, and marking the old one as
+<code>obsoleted</code> by the new one. For this reason, the call to
+<code>updateMetadata</code> will assign a new identifier to the metadata
+<em>DataObject</em> in the DataPackage <code>pkg</code>, if
+necessary.</p>
 </div>
 
 

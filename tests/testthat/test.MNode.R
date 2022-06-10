@@ -236,6 +236,21 @@ test_that("MNode createObject(), updateObject(), archive()", {
     }
 })
 
+test_that("MNode archive() return error response messages", {
+    skip_on_cran()
+    am <- AuthenticationManager()
+    suppressMessages({authValid <- dataone:::isAuthValid(am, mnTest)})
+    
+    if (authValid) {
+        pid <- uuid::UUIDgenerate()
+        expect_warning({
+            archive(mnTest, pid)
+        }, paste0("No system metadata could be found for given PID: ", pid))
+    } else {
+        skip("This test requires valid authentication.")
+    }
+})
+
 test_that("MNode createObject() with in-memory object", {
     # This test requires valid DataONE user authentication and writes to unstable development machines
     skip_on_cran()
@@ -449,7 +464,7 @@ test_that("MNode updateObject() using dataobj argument", {
         
         # Update the object with a new version
         updateid <- generateIdentifier(mnTest, "UUID")
-        d1test <- D1Client(cnStaging2, mnTest)
+        d1test <- D1Client(cnStaging, mnTest)
         dataObject <- getDataObject(d1test, createdId)
         dataObject@sysmeta@identifier <- updateid
         

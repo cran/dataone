@@ -11,63 +11,21 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 
 
-<meta name="date" content="2020-12-04" />
+<meta name="date" content="2022-06-10" />
 
 <title>dataone Package Overview</title>
 
-<script>// Hide empty <a> tag within highlighted CodeBlock for screen reader accessibility (see https://github.com/jgm/pandoc/issues/6352#issuecomment-626106786) -->
-// v0.0.1
-// Written by JooYoung Seo (jooyoung@psu.edu) and Atsushi Yasumoto on June 1st, 2020.
-
-document.addEventListener('DOMContentLoaded', function() {
-  const codeList = document.getElementsByClassName("sourceCode");
-  for (var i = 0; i < codeList.length; i++) {
-    var linkList = codeList[i].getElementsByTagName('a');
-    for (var j = 0; j < linkList.length; j++) {
-      if (linkList[j].innerHTML === "") {
-        linkList[j].setAttribute('aria-hidden', 'true');
-      }
-    }
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
   }
-});
-</script>
-<style type="text/css">
-a.anchor-section {margin-left: 10px; visibility: hidden; color: inherit;}
-a.anchor-section::before {content: '#';}
-.hasAnchor:hover a.anchor-section {visibility: visible;}
-</style>
-<script>// Anchor sections v1.0 written by Atsushi Yasumoto on Oct 3rd, 2020.
-document.addEventListener('DOMContentLoaded', function() {
-  // Do nothing if AnchorJS is used
-  if (typeof window.anchors === 'object' && anchors.hasOwnProperty('hasAnchorJSLink')) {
-    return;
-  }
-
-  const h = document.querySelectorAll('h1, h2, h3, h4, h5, h6');
-
-  // Do nothing if sections are already anchored
-  if (Array.from(h).some(x => x.classList.contains('hasAnchor'))) {
-    return null;
-  }
-
-  // Use section id when pandoc runs with --section-divs
-  const section_id = function(x) {
-    return ((x.classList.contains('section') || (x.tagName === 'SECTION'))
-            ? x.id : '');
-  };
-
-  // Add anchors
-  h.forEach(function(x) {
-    const id = x.id || section_id(x.parentElement);
-    if (id === '') {
-      return null;
-    }
-    let anchor = document.createElement('a');
-    anchor.href = '#' + id;
-    anchor.classList = ['anchor-section'];
-    x.classList.add('hasAnchor');
-    x.appendChild(anchor);
-  });
 });
 </script>
 
@@ -81,21 +39,29 @@ document.addEventListener('DOMContentLoaded', function() {
     </style>
 
 
-<style type="text/css">code{white-space: pre;}</style>
+
+<style type="text/css">
+  code {
+    white-space: pre;
+  }
+  .sourceCode {
+    overflow: visible;
+  }
+</style>
 <style type="text/css" data-origin="pandoc">
-code.sourceCode > span { display: inline-block; line-height: 1.25; }
-code.sourceCode > span { color: inherit; text-decoration: inherit; }
-code.sourceCode > span:empty { height: 1.2em; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
-code.sourceCode { white-space: pre; position: relative; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
 div.sourceCode { margin: 1em 0; }
 pre.sourceCode { margin: 0; }
 @media screen {
 div.sourceCode { overflow: auto; }
 }
 @media print {
-code.sourceCode { white-space: pre-wrap; }
-code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
 }
 pre.numberSource code
   { counter-reset: source-line 0; }
@@ -115,7 +81,7 @@ pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-le
 div.sourceCode
   {   }
 @media screen {
-code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 code span.al { color: #ff0000; font-weight: bold; } /* Alert */
 code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
@@ -169,6 +135,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   }
 })();
 </script>
+
 
 
 
@@ -365,59 +332,78 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 
 <h1 class="title toc-ignore">dataone Package Overview</h1>
-<h4 class="date">2020-12-04</h4>
+<h4 class="date">2022-06-10</h4>
 
 
 
 <div id="dataone-r-package-overview" class="section level2">
 <h2><em>dataone</em> R Package Overview</h2>
-<p>The <em>dataone</em> R package enables R scripts to search, download and upload science data and metadata to the <a href="https://www.dataone.org">DataONE Federation</a>. This package calls DataONE web services that allow client programs to interact with <a href="https://www.dataone.org/current-member-nodes">Member Nodes (MN)</a> and DataONE Coordinating Nodes (CN).</p>
+<p>The <em>dataone</em> R package enables R scripts to search, download
+and upload science data and metadata to the <a href="https://www.dataone.org">DataONE Federation</a>. This package
+calls DataONE web services that allow client programs to interact with
+<a href="https://www.dataone.org/current-member-nodes">Member Nodes
+(MN)</a> and DataONE Coordinating Nodes (CN).</p>
 </div>
 <div id="quick-start" class="section level2">
 <h2>Quick Start</h2>
-<p>See the full manual (<code>help dataone</code>) for documentation.</p>
-<p>To search the DataONE Federation Member Node <em>Knowledge Network for Biocomplexity (KNB)</em> for a dataset:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="kw">library</span>(dataone)</span>
-<span id="cb1-2"><a href="#cb1-2"></a>cn &lt;-<span class="st"> </span><span class="kw">CNode</span>(<span class="st">&quot;PROD&quot;</span>)</span>
-<span id="cb1-3"><a href="#cb1-3"></a>mn &lt;-<span class="st"> </span><span class="kw">getMNode</span>(cn, <span class="st">&quot;urn:node:KNB&quot;</span>)</span>
-<span id="cb1-4"><a href="#cb1-4"></a>mySearchTerms &lt;-<span class="st"> </span><span class="kw">list</span>(<span class="dt">q=</span><span class="st">&quot;abstract:salmon+AND+keywords:acoustics+AND+keywords:</span><span class="ch">\&quot;</span><span class="st">Oncorhynchus nerka</span><span class="ch">\&quot;</span><span class="st">&quot;</span>,</span>
-<span id="cb1-5"><a href="#cb1-5"></a>                      <span class="dt">fl=</span><span class="st">&quot;id,title,dateUploaded,abstract,size&quot;</span>,</span>
-<span id="cb1-6"><a href="#cb1-6"></a>                      <span class="dt">fq=</span><span class="st">&quot;dateUploaded:[2013-01-01T00:00:00.000Z TO 2014-01-01T00:00:00.000Z]&quot;</span>,</span>
-<span id="cb1-7"><a href="#cb1-7"></a>                      <span class="dt">sort=</span><span class="st">&quot;dateUploaded+desc&quot;</span>)</span>
-<span id="cb1-8"><a href="#cb1-8"></a>result &lt;-<span class="st"> </span><span class="kw">query</span>(mn, <span class="dt">solrQuery=</span>mySearchTerms, <span class="dt">as=</span><span class="st">&quot;data.frame&quot;</span>)</span>
-<span id="cb1-9"><a href="#cb1-9"></a>result[<span class="dv">1</span>,<span class="kw">c</span>(<span class="st">&quot;id&quot;</span>, <span class="st">&quot;title&quot;</span>)]</span>
-<span id="cb1-10"><a href="#cb1-10"></a>pid &lt;-<span class="st"> </span>result[<span class="dv">1</span>,<span class="st">&#39;id&#39;</span>]</span></code></pre></div>
-<p>The metadata file located in the above search can be downloaded with the commands:</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a><span class="kw">library</span>(XML)</span>
-<span id="cb2-2"><a href="#cb2-2"></a>metadata &lt;-<span class="st"> </span><span class="kw">rawToChar</span>(<span class="kw">getObject</span>(mn, pid))</span></code></pre></div>
-<p>The metadata file that describes the located research can be viewed in an XML viewer or text editor, once it is written to a disk file. This file details a data file (CSV) that can be obtained using the listed identifier, using the commands:</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a>dataRaw &lt;-<span class="st"> </span><span class="kw">getObject</span>(mn, <span class="st">&quot;df35d.443.1&quot;</span>)</span>
-<span id="cb3-2"><a href="#cb3-2"></a>dataChar &lt;-<span class="st"> </span><span class="kw">rawToChar</span>(dataRaw)</span>
-<span id="cb3-3"><a href="#cb3-3"></a>theData &lt;-<span class="st"> </span><span class="kw">textConnection</span>(dataChar)</span>
-<span id="cb3-4"><a href="#cb3-4"></a>df &lt;-<span class="st"> </span><span class="kw">read.csv</span>(theData, <span class="dt">stringsAsFactors=</span><span class="ot">FALSE</span>)</span>
-<span id="cb3-5"><a href="#cb3-5"></a>df[<span class="dv">1</span>,]</span></code></pre></div>
-<p>Uploading a CSV file to a DataONE Member Node requires user authentication. DataONE user authentication is described in the vignette <code>DataONE-Federation</code>.</p>
-<p>Once the authentication steps have been followed, uploading is done with:</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a><span class="kw">library</span>(datapack)</span>
-<span id="cb4-2"><a href="#cb4-2"></a><span class="kw">library</span>(uuid)</span>
-<span id="cb4-3"><a href="#cb4-3"></a>d1c &lt;-<span class="st"> </span><span class="kw">D1Client</span>(<span class="st">&quot;STAGING&quot;</span>, <span class="st">&quot;urn:node:mnStageUCSB2&quot;</span>)</span>
-<span id="cb4-4"><a href="#cb4-4"></a>id &lt;-<span class="st"> </span><span class="kw">paste</span>(<span class="st">&quot;urn:uuid:&quot;</span>, <span class="kw">UUIDgenerate</span>(), <span class="dt">sep=</span><span class="st">&quot;&quot;</span>)</span>
-<span id="cb4-5"><a href="#cb4-5"></a>testdf &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">x=</span><span class="dv">1</span><span class="op">:</span><span class="dv">10</span>,<span class="dt">y=</span><span class="dv">11</span><span class="op">:</span><span class="dv">20</span>)</span>
-<span id="cb4-6"><a href="#cb4-6"></a>csvfile &lt;-<span class="st"> </span><span class="kw">paste</span>(<span class="kw">tempfile</span>(), <span class="st">&quot;.csv&quot;</span>, <span class="dt">sep=</span><span class="st">&quot;&quot;</span>)</span>
-<span id="cb4-7"><a href="#cb4-7"></a><span class="kw">write.csv</span>(testdf, csvfile, <span class="dt">row.names=</span><span class="ot">FALSE</span>)</span>
-<span id="cb4-8"><a href="#cb4-8"></a><span class="co"># Build a DataObject containing the csv, and upload it to the Member Node</span></span>
-<span id="cb4-9"><a href="#cb4-9"></a>d1Object &lt;-<span class="st"> </span><span class="kw">new</span>(<span class="st">&quot;DataObject&quot;</span>, id, <span class="dt">format=</span><span class="st">&quot;text/csv&quot;</span>, <span class="dt">filename=</span>csvfile)</span></code></pre></div>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a><span class="kw">uploadDataObject</span>(d1c, d1Object, <span class="dt">public=</span><span class="ot">TRUE</span>)</span></code></pre></div>
+<p>See the full manual (<code>help dataone</code>) for
+documentation.</p>
+<p>To search the DataONE Federation Member Node <em>Knowledge Network
+for Biocomplexity (KNB)</em> for a dataset:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dataone)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>cn <span class="ot">&lt;-</span> <span class="fu">CNode</span>(<span class="st">&quot;PROD&quot;</span>)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>mn <span class="ot">&lt;-</span> <span class="fu">getMNode</span>(cn, <span class="st">&quot;urn:node:KNB&quot;</span>)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>mySearchTerms <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">q=</span><span class="st">&quot;abstract:salmon+AND+keywords:acoustics+AND+keywords:</span><span class="sc">\&quot;</span><span class="st">Oncorhynchus nerka</span><span class="sc">\&quot;</span><span class="st">&quot;</span>,</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>                      <span class="at">fl=</span><span class="st">&quot;id,title,dateUploaded,abstract,size&quot;</span>,</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>                      <span class="at">fq=</span><span class="st">&quot;dateUploaded:[2013-01-01T00:00:00.000Z TO 2014-01-01T00:00:00.000Z]&quot;</span>,</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>                      <span class="at">sort=</span><span class="st">&quot;dateUploaded+desc&quot;</span>)</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>result <span class="ot">&lt;-</span> <span class="fu">query</span>(mn, <span class="at">solrQuery=</span>mySearchTerms, <span class="at">as=</span><span class="st">&quot;data.frame&quot;</span>)</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>result[<span class="dv">1</span>,<span class="fu">c</span>(<span class="st">&quot;id&quot;</span>, <span class="st">&quot;title&quot;</span>)]</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>pid <span class="ot">&lt;-</span> result[<span class="dv">1</span>,<span class="st">&#39;id&#39;</span>]</span></code></pre></div>
+<p>The metadata file located in the above search can be downloaded with
+the commands:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(XML)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>metadata <span class="ot">&lt;-</span> <span class="fu">rawToChar</span>(<span class="fu">getObject</span>(mn, pid))</span></code></pre></div>
+<p>The metadata file that describes the located research can be viewed
+in an XML viewer or text editor, once it is written to a disk file. This
+file details a data file (CSV) that can be obtained using the listed
+identifier, using the commands:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>dataRaw <span class="ot">&lt;-</span> <span class="fu">getObject</span>(mn, <span class="st">&quot;df35d.443.1&quot;</span>)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>dataChar <span class="ot">&lt;-</span> <span class="fu">rawToChar</span>(dataRaw)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>theData <span class="ot">&lt;-</span> <span class="fu">textConnection</span>(dataChar)</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(theData, <span class="at">stringsAsFactors=</span><span class="cn">FALSE</span>)</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>df[<span class="dv">1</span>,]</span></code></pre></div>
+<p>Uploading a CSV file to a DataONE Member Node requires user
+authentication. DataONE user authentication is described in the vignette
+<code>DataONE-Federation</code>.</p>
+<p>Once the authentication steps have been followed, uploading is done
+with:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(datapack)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(uuid)</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>d1c <span class="ot">&lt;-</span> <span class="fu">D1Client</span>(<span class="st">&quot;STAGING&quot;</span>, <span class="st">&quot;urn:node:mnStageUCSB2&quot;</span>)</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>id <span class="ot">&lt;-</span> <span class="fu">paste</span>(<span class="st">&quot;urn:uuid:&quot;</span>, <span class="fu">UUIDgenerate</span>(), <span class="at">sep=</span><span class="st">&quot;&quot;</span>)</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>testdf <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">x=</span><span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>,<span class="at">y=</span><span class="dv">11</span><span class="sc">:</span><span class="dv">20</span>)</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>csvfile <span class="ot">&lt;-</span> <span class="fu">paste</span>(<span class="fu">tempfile</span>(), <span class="st">&quot;.csv&quot;</span>, <span class="at">sep=</span><span class="st">&quot;&quot;</span>)</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="fu">write.csv</span>(testdf, csvfile, <span class="at">row.names=</span><span class="cn">FALSE</span>)</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Build a DataObject containing the csv, and upload it to the Member Node</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>d1Object <span class="ot">&lt;-</span> <span class="fu">new</span>(<span class="st">&quot;DataObject&quot;</span>, id, <span class="at">format=</span><span class="st">&quot;text/csv&quot;</span>, <span class="at">filename=</span>csvfile)</span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">uploadDataObject</span>(d1c, d1Object, <span class="at">public=</span><span class="cn">TRUE</span>)</span></code></pre></div>
 </div>
 <div id="additional-resources" class="section level2">
 <h2>Additional Resources</h2>
-<p>The <code>dataone</code> R package vignettes can be viewed using the R <code>vignette</code> command, for example <code>vignette(&quot;dataone-overview&quot;)</code>.</p>
+<p>The <code>dataone</code> R package vignettes can be viewed using the
+R <code>vignette</code> command, for example
+<code>vignette(&quot;dataone-overview&quot;)</code>.</p>
 <p>The <code>dataone</code> vignettes describe these topics:</p>
 <ul>
-<li><p>Searching for data in DataONE described in vignette <em>searching-dataone</em>.</p></li>
-<li><p>Downloading data from DataONE described in vignette <em>download-data</em></p></li>
-<li><p>Uploading data to DataONE is described in vignettes <em>upload-data</em> and <em>update-package</em>.</p></li>
-<li><p>The DataONE Federation is described in the vignettes <em>DataONE-Federation</em>.</p></li>
+<li><p>Searching for data in DataONE described in vignette
+<em>searching-dataone</em>.</p></li>
+<li><p>Downloading data from DataONE described in vignette
+<em>download-data</em></p></li>
+<li><p>Uploading data to DataONE is described in vignettes
+<em>upload-data</em> and <em>update-package</em>.</p></li>
+<li><p>The DataONE Federation is described in the vignettes
+<em>DataONE-Federation</em>.</p></li>
 </ul>
 </div>
 <div id="acknowledgements" class="section level2">
@@ -425,9 +411,13 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <p>Work on this package was supported by:</p>
 <ul>
 <li>NSF-ABI grant #1262458 to C. Gries, M. Jones, and S. Collins.</li>
-<li>NSF-DATANET grants #0830944 and #1430508 to W. Michener, M. Jones, D. Vieglais, S. Allard and P. Cruse</li>
+<li>NSF-DATANET grants #0830944 and #1430508 to W. Michener, M. Jones,
+D. Vieglais, S. Allard and P. Cruse</li>
 </ul>
-<p>Additional support was provided for working group collaboration by the National Center for Ecological Analysis and Synthesis, a Center funded by the University of California, Santa Barbara, and the State of California.</p>
+<p>Additional support was provided for working group collaboration by
+the National Center for Ecological Analysis and Synthesis, a Center
+funded by the University of California, Santa Barbara, and the State of
+California.</p>
 </div>
 
 

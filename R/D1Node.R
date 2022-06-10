@@ -177,9 +177,9 @@ setGeneric("archive", function(x, ...) {
 #' @rdname archive
 setMethod("archive", signature("D1Node"), function(x, pid) {
     url <- paste(x@endpoint, "archive", URLencode(pid, reserved=TRUE), sep="/")
-    response <- auth_put(url, node=x)
+    response <- auth_put(url, node=x, body=NULL)
     if(response$status_code != "200") {
-        warning(sprintf("Error archiving %s\n", pid))
+        warning(sprintf("Error archiving %s\n", pid), getErrorDescription(response))
         return(NULL)
     } else {
         # Comment out body handling because httr::PUT is not returning a response body at all
@@ -676,7 +676,7 @@ setMethod("encodeSolr", signature(x="character"), function(x, ...) {
 #' Search DataONE for data and metadata objects
 #' @description The DataONE search index is searched for data that matches the specified query parameters. 
 #' @details The \code{"query"} method sends a query to a DataONE search index that uses the Apache Solr search 
-#' engine \url{https://lucene.apache.org/solr/}. This same Solr search engine is the underlying mechanism used by the
+#' engine \url{https://solr.apache.org/}. This same Solr search engine is the underlying mechanism used by the
 #' DataONE online search tool available at \url{https://search.dataone.org/}.
 #' 
 #' The \code{"solrQuery"} argument is used to specify search terms that data of interest must match. This parameter uses
@@ -774,7 +774,7 @@ setMethod("query", signature("D1Node"), function(x, solrQuery=as.character(NA), 
       encodedKVs <- character()
       for(key in attributes(solrQuery)$names) {
         # Convert query terms to character if not already
-        if(!class(solrQuery[[key]]) == "character") {
+        if(!inherits(solrQuery[[key]], "character")) {
             solrQuery[[key]] <- as.character(solrQuery[[key]])
         }
         if (encode) {

@@ -1,7 +1,7 @@
 # Reduce redundant calls to the same service - this only needs to be made
 # once per test 
 cnProd <- NULL
-cnStaging2 <- NULL
+cnStaging <- NULL
 d1cKNB <- NULL
 mnKNB <- NULL
 d1cProd <- NULL
@@ -14,11 +14,11 @@ servicesDown <- FALSE
 # If a service is down, skip tests
 tryCatch({
     cnProd <- CNode()
-    cnStaging2 <- CNode("STAGING2")
+    cnStaging <- CNode("STAGING")
     d1cKNB <- D1Client("PROD", "urn:node:KNB")
     mnKNB <- d1cKNB@mn
     d1cProd <- D1Client("PROD")
-    d1cTestKNB <- D1Client("STAGING2", "urn:node:mnTestKNB")
+    d1cTestKNB <- D1Client("STAGING", "urn:node:mnTestKNB")
     # If mnStageUCSB2 isn't available for write tests, use mnTestKNB
     #d1cTest <- D1Client("STAGING", "urn:node:mnStageUCSB2")
     d1cTest <- d1cTestKNB
@@ -30,7 +30,7 @@ tryCatch({
 })
 
 if(is.null(cnProd)) servicesDown <- TRUE
-if(is.null(cnStaging2)) servicesDown <- TRUE
+if(is.null(cnStaging)) servicesDown <- TRUE
 if(is.null(d1cKNB)) servicesDown <- TRUE
 if(is.null(mnKNB)) servicesDown <- TRUE
 if(is.null(d1cProd)) servicesDown <- TRUE
